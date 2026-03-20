@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<MixxxControllerPreset schemaVersion="1" mixxxVersion="2.4+">
+    <info>
+        <name>Native Instruments Maschine MK3</name>
+        <author>mixx-mk3</author>
+        <description>HID mapping for the Native Instruments Maschine MK3 controller.
+Two-deck DJ control with mode layers for hot cues, loops, samplers, and effects.</description>
+        <devices>
+            <product protocol="hid" vendor_id="0x17cc" product_id="0x1600" />
+        </devices>
+    </info>
+    <controller id="MaschineMK3">
+        <scriptfiles>
+            <file filename="Native-Instruments-Maschine-MK3.js" functionprefix="MaschineMK3"/>
+        </scriptfiles>
+    </controller>
+</MixxxControllerPreset>
