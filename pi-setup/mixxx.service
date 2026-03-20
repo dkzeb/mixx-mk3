@@ -1,0 +1,17 @@
+[Unit]
+Description=Mixxx DJ Software
+After=sound.target
+
+[Service]
+Type=simple
+User=pi
+# Use eglfs for GPU-accelerated rendering to DRM/KMS plane (required for DRM capture).
+# Change to linuxfb if using the linuxfb capture backend (disables GPU waveforms).
+Environment=QT_QPA_PLATFORM=eglfs
+Environment=HOME=/home/pi
+ExecStart=/usr/bin/mixxx --fullScreen
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target
