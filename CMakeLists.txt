@@ -9,3 +9,5 @@ add_subdirectory(external/mpi-tools/mk3_test)
 add_subdirectory(external/mpi-tools/mk3_cli)
 # audio_cli requires the Mixxx audio lib, skip for standalone builds
 # add_subdirectory(external/mpi-tools/audio_cli)
+
+add_subdirectory(screen-daemon)
