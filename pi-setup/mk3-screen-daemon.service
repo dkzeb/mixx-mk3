@@ -1,12 +1,14 @@
 [Unit]
 Description=MK3 Screen Mirroring Daemon
-After=mixxx.service
-Requires=mixxx.service
+# Start early — mirrors whatever is on /dev/fb0 (boot console, then Mixxx)
+After=local-fs.target
+Wants=local-fs.target
 
 [Service]
 Type=simple
-User=pi
-ExecStart=/usr/local/bin/mk3-screen-daemon --resolution 960x544 --fps 30 --no-partial
+# Run as root for /dev/fb0 access during early boot.
+# The udev rule grants USB access to the audio group.
+ExecStart=/usr/local/bin/mk3-screen-daemon --resolution 960x544 --fps 15 --no-partial
 Restart=on-failure
 RestartSec=2
 
