@@ -9,7 +9,7 @@ User=pi
 Environment=DISPLAY=:99
 Environment=HOME=/home/pi
 Environment=XDG_RUNTIME_DIR=/run/user/1000
-ExecStartPre=/bin/sleep 5
+ExecStartPre=/bin/bash -c 'for i in $(seq 1 30); do wpctl status 2>/dev/null | grep -q "Maschine MK3" && exit 0; sleep 1; done; echo "MK3 audio not found after 30s, starting anyway"'
 ExecStart=/usr/bin/pw-jack /usr/bin/mixxx --fullScreen
 Restart=on-failure
 RestartSec=5
