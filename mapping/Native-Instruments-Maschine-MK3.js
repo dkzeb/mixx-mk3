@@ -390,10 +390,16 @@ MaschineMK3.updateLibrary = function() {
 MaschineMK3.updatePanels = function() {
     var showLib = MaschineMK3.libraryVisible;
     var showMix = MaschineMK3.mixerVisible;
-    var anyPanel = showLib || showMix;
+    // Show pad panel when no other panel is open
+    var showPads = !showLib && !showMix;
+    var showPadsLoops = showPads && MaschineMK3.padMode === "loops";
+    var showPadsFx = showPads && MaschineMK3.padMode === "effects";
+    var anyPanel = showLib || showMix || showPads;
 
     engine.setValue("[Skin]", "show_library", showLib ? 1 : 0);
     engine.setValue("[Skin]", "show_mixer", showMix ? 1 : 0);
+    engine.setValue("[Skin]", "show_pads_loops", showPadsLoops ? 1 : 0);
+    engine.setValue("[Skin]", "show_pads_fx", showPadsFx ? 1 : 0);
 
     // Hide the non-active deck when any panel is open
     engine.setValue("[Skin]", "hide_deck_a", (anyPanel && MaschineMK3.activeDeck === 2) ? 1 : 0);
@@ -615,14 +621,18 @@ MaschineMK3.onButtonPress = function(name) {
     // --- Pad mode: performFxSelect toggles loops, shift+performFxSelect toggles effects ---
     case "performFxSelect":
         if (MaschineMK3.shiftPressed) {
-            // Shift + press: toggle effects mode
+            // Shift + press: switch to effects mode
             MaschineMK3.padMode = (MaschineMK3.padMode === "effects") ? "loops" : "effects";
         } else {
-            // Normal press: toggle loops mode
+            // Normal press: switch to loops mode
             MaschineMK3.padMode = (MaschineMK3.padMode === "loops") ? "effects" : "loops";
         }
+        // Close library/mixer if open, show pad panel
+        MaschineMK3.libraryVisible = false;
+        MaschineMK3.mixerVisible = false;
         MaschineMK3.updatePadModeLED();
         MaschineMK3.updatePadLEDs();
+        MaschineMK3.updatePanels();
         break;
 
     // --- D buttons: per-deck controls (D1-D4 = Deck A, D5-D8 = Deck B) ---
@@ -1072,6 +1082,7 @@ MaschineMK3.init = function(/* id, debugging */) {
     // Set initial LED state
     MaschineMK3.updatePadLEDs();
     MaschineMK3.updateDeckLEDs();
+    MaschineMK3.updatePanels();
 };
 
 // ---------------------------------------------------------------------------

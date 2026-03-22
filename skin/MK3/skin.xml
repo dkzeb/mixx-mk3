@@ -15,6 +15,8 @@
       <attribute config_key="[Skin],hide_deck_a">0</attribute>
       <attribute config_key="[Skin],hide_deck_b">0</attribute>
       <attribute config_key="[Skin],show_mixer">0</attribute>
+      <attribute config_key="[Skin],show_pads_loops">0</attribute>
+      <attribute config_key="[Skin],show_pads_fx">0</attribute>
     </attributes>
   </manifest>
 
@@ -315,6 +317,137 @@
             <ConfigKey>[Master],crossfader</ConfigKey>
           </Connection>
         </SliderComposed>
+      </Children>
+    </WidgetGroup>
+
+    <!-- ═══════ PAD INFO: LOOPS (480x272) ═══════ -->
+    <WidgetGroup>
+      <ObjectName>PadPanel</ObjectName>
+      <Size>480,272</Size>
+      <SizePolicy>f,f</SizePolicy>
+      <Layout>vertical</Layout>
+      <Connection>
+        <ConfigKey>[Skin],show_pads_loops</ConfigKey>
+        <BindProperty>visible</BindProperty>
+      </Connection>
+      <Children>
+        <Label><ObjectName>PadTitle</ObjectName><Size>480,20</Size><Text>LOOPS</Text></Label>
+
+        <!-- 4x4 grid showing pad assignments -->
+        <WidgetGroup>
+          <ObjectName>PadGrid</ObjectName>
+          <SizePolicy>me,me</SizePolicy>
+          <Layout>vertical</Layout>
+          <Children>
+            <!-- Top row: pads 13-16 (short loops) -->
+            <WidgetGroup>
+              <SizePolicy>me,me</SizePolicy>
+              <Layout>horizontal</Layout>
+              <Children>
+                <Label><ObjectName>PadCell</ObjectName><SizePolicy>me,me</SizePolicy><Text>1/16</Text></Label>
+                <Label><ObjectName>PadCell</ObjectName><SizePolicy>me,me</SizePolicy><Text>1/8</Text></Label>
+                <Label><ObjectName>PadCell</ObjectName><SizePolicy>me,me</SizePolicy><Text>1/4</Text></Label>
+                <Label><ObjectName>PadCell</ObjectName><SizePolicy>me,me</SizePolicy><Text>1/2</Text></Label>
+              </Children>
+            </WidgetGroup>
+            <!-- Row 2: pads 9-12 -->
+            <WidgetGroup>
+              <SizePolicy>me,me</SizePolicy>
+              <Layout>horizontal</Layout>
+              <Children>
+                <Label><ObjectName>PadCell</ObjectName><SizePolicy>me,me</SizePolicy><Text>1</Text></Label>
+                <Label><ObjectName>PadCell</ObjectName><SizePolicy>me,me</SizePolicy><Text>2</Text></Label>
+                <Label><ObjectName>PadCell</ObjectName><SizePolicy>me,me</SizePolicy><Text>4</Text></Label>
+                <Label><ObjectName>PadCell</ObjectName><SizePolicy>me,me</SizePolicy><Text>8</Text></Label>
+              </Children>
+            </WidgetGroup>
+            <!-- Row 3: pads 5-8 -->
+            <WidgetGroup>
+              <SizePolicy>me,me</SizePolicy>
+              <Layout>horizontal</Layout>
+              <Children>
+                <Label><ObjectName>PadCell</ObjectName><SizePolicy>me,me</SizePolicy><Text>16</Text></Label>
+                <Label><ObjectName>PadCell</ObjectName><SizePolicy>me,me</SizePolicy><Text>32</Text></Label>
+                <Label><ObjectName>PadCell</ObjectName><SizePolicy>me,me</SizePolicy><Text>64</Text></Label>
+                <Label><ObjectName>PadCell</ObjectName><SizePolicy>me,me</SizePolicy><Text>128</Text></Label>
+              </Children>
+            </WidgetGroup>
+            <!-- Bottom row: pads 1-4 (actions) -->
+            <WidgetGroup>
+              <SizePolicy>me,me</SizePolicy>
+              <Layout>horizontal</Layout>
+              <Children>
+                <Label><ObjectName>PadCellAction</ObjectName><SizePolicy>me,me</SizePolicy><Text>HALVE</Text></Label>
+                <Label><ObjectName>PadCellAction</ObjectName><SizePolicy>me,me</SizePolicy><Text>DOUBLE</Text></Label>
+                <Label><ObjectName>PadCellAction</ObjectName><SizePolicy>me,me</SizePolicy><Text>RELOOP</Text></Label>
+                <Label><ObjectName>PadCellAction</ObjectName><SizePolicy>me,me</SizePolicy><Text>EXIT</Text></Label>
+              </Children>
+            </WidgetGroup>
+          </Children>
+        </WidgetGroup>
+      </Children>
+    </WidgetGroup>
+
+    <!-- ═══════ PAD INFO: EFFECTS (480x272) ═══════ -->
+    <WidgetGroup>
+      <ObjectName>PadPanel</ObjectName>
+      <Size>480,272</Size>
+      <SizePolicy>f,f</SizePolicy>
+      <Layout>vertical</Layout>
+      <Connection>
+        <ConfigKey>[Skin],show_pads_fx</ConfigKey>
+        <BindProperty>visible</BindProperty>
+      </Connection>
+      <Children>
+        <Label><ObjectName>PadTitle</ObjectName><Size>480,20</Size><Text>EFFECTS</Text></Label>
+        <WidgetGroup>
+          <ObjectName>PadGrid</ObjectName>
+          <SizePolicy>me,me</SizePolicy>
+          <Layout>vertical</Layout>
+          <Children>
+            <!-- FX pads: only bottom row active (1-4) -->
+            <WidgetGroup>
+              <SizePolicy>me,me</SizePolicy>
+              <Layout>horizontal</Layout>
+              <Children>
+                <Label><ObjectName>PadCell</ObjectName><SizePolicy>me,me</SizePolicy><Text></Text></Label>
+                <Label><ObjectName>PadCell</ObjectName><SizePolicy>me,me</SizePolicy><Text></Text></Label>
+                <Label><ObjectName>PadCell</ObjectName><SizePolicy>me,me</SizePolicy><Text></Text></Label>
+                <Label><ObjectName>PadCell</ObjectName><SizePolicy>me,me</SizePolicy><Text></Text></Label>
+              </Children>
+            </WidgetGroup>
+            <WidgetGroup>
+              <SizePolicy>me,me</SizePolicy>
+              <Layout>horizontal</Layout>
+              <Children>
+                <Label><ObjectName>PadCell</ObjectName><SizePolicy>me,me</SizePolicy><Text></Text></Label>
+                <Label><ObjectName>PadCell</ObjectName><SizePolicy>me,me</SizePolicy><Text></Text></Label>
+                <Label><ObjectName>PadCell</ObjectName><SizePolicy>me,me</SizePolicy><Text></Text></Label>
+                <Label><ObjectName>PadCell</ObjectName><SizePolicy>me,me</SizePolicy><Text></Text></Label>
+              </Children>
+            </WidgetGroup>
+            <WidgetGroup>
+              <SizePolicy>me,me</SizePolicy>
+              <Layout>horizontal</Layout>
+              <Children>
+                <Label><ObjectName>PadCell</ObjectName><SizePolicy>me,me</SizePolicy><Text></Text></Label>
+                <Label><ObjectName>PadCell</ObjectName><SizePolicy>me,me</SizePolicy><Text></Text></Label>
+                <Label><ObjectName>PadCell</ObjectName><SizePolicy>me,me</SizePolicy><Text></Text></Label>
+                <Label><ObjectName>PadCell</ObjectName><SizePolicy>me,me</SizePolicy><Text></Text></Label>
+              </Children>
+            </WidgetGroup>
+            <WidgetGroup>
+              <SizePolicy>me,me</SizePolicy>
+              <Layout>horizontal</Layout>
+              <Children>
+                <Label><ObjectName>PadCellAction</ObjectName><SizePolicy>me,me</SizePolicy><Text>FX 1</Text></Label>
+                <Label><ObjectName>PadCellAction</ObjectName><SizePolicy>me,me</SizePolicy><Text>FX 2</Text></Label>
+                <Label><ObjectName>PadCellAction</ObjectName><SizePolicy>me,me</SizePolicy><Text>FX 3</Text></Label>
+                <Label><ObjectName>PadCellAction</ObjectName><SizePolicy>me,me</SizePolicy><Text>FX ON</Text></Label>
+              </Children>
+            </WidgetGroup>
+          </Children>
+        </WidgetGroup>
       </Children>
     </WidgetGroup>
 
