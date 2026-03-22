@@ -266,6 +266,7 @@ MaschineMK3.shiftPressed  = false;
 MaschineMK3.selectPressed = false;     // "select" button held = modifier for deck switching
 MaschineMK3.activeDeck    = 1;         // 1 or 2 — which deck the browser loads to
 MaschineMK3.libraryVisible = false;    // whether the library panel is shown
+MaschineMK3.mixerVisible   = false;    // whether the mixer panel is shown
 MaschineMK3.padMode       = "hotcues"; // "hotcues" | "loops" | "sampler" | "effects"
 MaschineMK3.lastButtonState = {};      // name -> pressed bool, for edge detection
 MaschineMK3.lastStepperPos  = -1;
@@ -330,9 +331,9 @@ MaschineMK3.updateDeckLEDs = function() {
     engine.setValue("[Skin]", "active_deck_a", MaschineMK3.activeDeck === 1 ? 1 : 0);
     engine.setValue("[Skin]", "active_deck_b", MaschineMK3.activeDeck === 2 ? 1 : 0);
 
-    // If library is open, move it to the new non-active side
-    if (MaschineMK3.libraryVisible) {
-        MaschineMK3.updateLibrary();
+    // If any panel is open, move it to the new non-active side
+    if (MaschineMK3.libraryVisible || MaschineMK3.mixerVisible) {
+        MaschineMK3.updatePanels();
     }
 
     // Reconnect transport LEDs to follow new active deck
@@ -345,13 +346,29 @@ MaschineMK3.updateDeckLEDs = function() {
 // non-active deck hides and the library takes its 480x544 slot.
 // ---------------------------------------------------------------------------
 MaschineMK3.updateLibrary = function() {
-    var show = MaschineMK3.libraryVisible;
-    engine.setValue("[Skin]", "show_library", show ? 1 : 0);
-    // Hide the non-active deck to make room for the library
-    engine.setValue("[Skin]", "hide_deck_a", (show && MaschineMK3.activeDeck === 2) ? 1 : 0);
-    engine.setValue("[Skin]", "hide_deck_b", (show && MaschineMK3.activeDeck === 1) ? 1 : 0);
-    MaschineMK3.setLed("browserPlugin", show ? 63 : 16);
-    if (show) {
+    MaschineMK3.updatePanels();
+};
+
+// ---------------------------------------------------------------------------
+// updatePanels — show/hide library or mixer on the non-active deck's screen.
+// Only one panel can be visible at a time. Both replace the non-active deck.
+// ---------------------------------------------------------------------------
+MaschineMK3.updatePanels = function() {
+    var showLib = MaschineMK3.libraryVisible;
+    var showMix = MaschineMK3.mixerVisible;
+    var anyPanel = showLib || showMix;
+
+    engine.setValue("[Skin]", "show_library", showLib ? 1 : 0);
+    engine.setValue("[Skin]", "show_mixer", showMix ? 1 : 0);
+
+    // Hide the non-active deck when any panel is open
+    engine.setValue("[Skin]", "hide_deck_a", (anyPanel && MaschineMK3.activeDeck === 2) ? 1 : 0);
+    engine.setValue("[Skin]", "hide_deck_b", (anyPanel && MaschineMK3.activeDeck === 1) ? 1 : 0);
+
+    MaschineMK3.setLed("browserPlugin", showLib ? 63 : 16);
+    MaschineMK3.setLed("mixer", showMix ? 63 : 16);
+
+    if (showLib) {
         engine.setValue("[Library]", "MoveFocusForward", 1);
         engine.setValue("[Library]", "MoveFocusForward", 0);
     }
@@ -422,30 +439,33 @@ MaschineMK3.updateTouchstripLEDs = function() {
 // Called from parseReport01. Bytes 28-29 are suspected position (16-bit LE).
 // ---------------------------------------------------------------------------
 MaschineMK3.processTouchstrip = function(data) {
-    // Read suspected touchstrip position (16-bit LE at bytes 28-29)
-    var raw = (data[29] << 8) | data[28];
-
-    // Debug: log raw value when it changes significantly
-    if (Math.abs(raw - (MaschineMK3.touchstripLastValue || 0)) > 10) {
-        print("MK3 touchstrip: raw=" + raw + " byte28=" + data[28] + " byte29=" + data[29] +
-              " byte30=" + data[30] + " byte31=" + data[31]);
+    // Debug: scan bytes 28-35 for any changes (touchstrip data location unknown)
+    if (!MaschineMK3.lastTsDebug) { MaschineMK3.lastTsDebug = [0,0,0,0,0,0,0,0]; }
+    var changed = false;
+    var dbg = "";
+    for (var b = 28; b <= 35; b++) {
+        var val = data[b] || 0;
+        if (val !== MaschineMK3.lastTsDebug[b - 28]) { changed = true; }
+        MaschineMK3.lastTsDebug[b - 28] = val;
+        dbg += " b" + b + "=" + val;
+    }
+    if (changed) {
+        print("MK3 ts-scan:" + dbg);
     }
 
-    // Detect touch (raw > 0 means touching, 0 = released)
+    // Try bytes 28-29 as 16-bit LE position
+    var raw = (data[29] << 8) | data[28];
     var touching = raw > 0;
     var wasTouching = MaschineMK3.touchstripTouched;
 
     if (touching && !wasTouching) {
-        // Touch started — check for triple-tap
         var now = Date.now();
         MaschineMK3.touchstripTapTimes.push(now);
-        // Keep only taps within last 800ms
         while (MaschineMK3.touchstripTapTimes.length > 0 &&
                now - MaschineMK3.touchstripTapTimes[0] > 800) {
             MaschineMK3.touchstripTapTimes.shift();
         }
         if (MaschineMK3.touchstripTapTimes.length >= 3) {
-            // Triple-tap: reset crossfader to center
             engine.setValue("[Master]", "crossfader", 0);
             MaschineMK3.touchstripTapTimes = [];
             print("MK3: Crossfader reset to center (triple-tap)");
@@ -453,8 +473,6 @@ MaschineMK3.processTouchstrip = function(data) {
     }
 
     if (touching && raw !== MaschineMK3.touchstripLastValue) {
-        // Map raw position to crossfader (-1 to 1)
-        // Assumed range: ~100-900 or 0-1023 — will need calibration
         var norm = Math.max(0, Math.min(1, raw / 1023.0));
         var xfader = (norm * 2.0) - 1.0;
         engine.setValue("[Master]", "crossfader", xfader);
@@ -594,7 +612,15 @@ MaschineMK3.onButtonPress = function(name) {
     // --- Browser: toggle library panel on the non-active deck's screen ---
     case "browserPlugin":
         MaschineMK3.libraryVisible = !MaschineMK3.libraryVisible;
-        MaschineMK3.updateLibrary();
+        if (MaschineMK3.libraryVisible) { MaschineMK3.mixerVisible = false; }
+        MaschineMK3.updatePanels();
+        break;
+
+    // --- Mixer: toggle mixer panel ---
+    case "mixer":
+        MaschineMK3.mixerVisible = !MaschineMK3.mixerVisible;
+        if (MaschineMK3.mixerVisible) { MaschineMK3.libraryVisible = false; }
+        MaschineMK3.updatePanels();
         break;
 
     // --- Library navigation (4D encoder) ---
@@ -971,8 +997,9 @@ MaschineMK3.init = function(/* id, debugging */) {
     });
     MaschineMK3.updateTouchstripLEDs();
 
-    // --- Browser LED (dim = available, bright = library open) ---
+    // --- Browser + Mixer LEDs (dim = available, bright = open) ---
     MaschineMK3.setLed("browserPlugin", 16);
+    MaschineMK3.setLed("mixer", 16);
 
     // --- Nav encoder LEDs (always dimly lit for navigation) ---
     MaschineMK3.setLed("navUp",    MaschineMK3.Color.WHITE);

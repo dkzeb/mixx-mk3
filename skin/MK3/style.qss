@@ -68,6 +68,49 @@
     qproperty-alignment: AlignCenter;
 }
 
+#MixerPanel {
+    background-color: #111122;
+}
+
+#MixerTitle {
+    font-size: 16px;
+    font-weight: bold;
+    color: #16a085;
+    qproperty-alignment: AlignCenter;
+    background-color: #0d0d1a;
+    border-bottom: 1px solid #16a085;
+    padding: 4px;
+}
+
+#MixerStripA, #MixerStripB {
+    background-color: #0d0d1a;
+    border-right: 1px solid #222222;
+    padding: 8px;
+}
+
+#MixerChLabel {
+    font-size: 14px;
+    font-weight: bold;
+    color: #ffffff;
+    qproperty-alignment: AlignCenter;
+    padding: 4px;
+}
+
+#MixerKnobLabel {
+    font-size: 10px;
+    color: #888888;
+    qproperty-alignment: AlignCenter;
+}
+
+#MixerValue {
+    font-size: 22px;
+    font-weight: bold;
+    color: #16a085;
+    qproperty-alignment: AlignCenter;
+    background-color: #1a1a2e;
+    padding: 2px;
+}
+
 #WaveformOverviewA, #WaveformOverviewB {
     border-top: 1px solid #333333;
     border-bottom: 1px solid #333333;

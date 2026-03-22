@@ -14,6 +14,7 @@
       <attribute persist="true" config_key="[Skin],show_library">0</attribute>
       <attribute persist="true" config_key="[Skin],hide_deck_a">0</attribute>
       <attribute persist="true" config_key="[Skin],hide_deck_b">0</attribute>
+      <attribute persist="true" config_key="[Skin],show_mixer">0</attribute>
     </attributes>
   </manifest>
 
@@ -171,6 +172,102 @@
           <ObjectName>LibraryView</ObjectName>
           <SizePolicy>me,me</SizePolicy>
         </Library>
+      </Children>
+    </WidgetGroup>
+
+    <!-- ═══════ MIXER PANEL (replaces the non-active deck, full height) ═══════ -->
+    <WidgetGroup>
+      <ObjectName>MixerPanel</ObjectName>
+      <Size>480,544</Size>
+      <SizePolicy>f,f</SizePolicy>
+      <Layout>vertical</Layout>
+      <Connection>
+        <ConfigKey>[Skin],show_mixer</ConfigKey>
+        <BindProperty>visible</BindProperty>
+      </Connection>
+      <Children>
+        <Label><ObjectName>MixerTitle</ObjectName><Size>480,28</Size><Text>MIXER</Text></Label>
+
+        <!-- Both decks side by side -->
+        <WidgetGroup>
+          <SizePolicy>me,me</SizePolicy>
+          <Layout>horizontal</Layout>
+          <Children>
+
+            <!-- Deck A strip -->
+            <WidgetGroup>
+              <ObjectName>MixerStripA</ObjectName>
+              <Size>240,0</Size>
+              <SizePolicy>f,me</SizePolicy>
+              <Layout>vertical</Layout>
+              <Children>
+                <Label><ObjectName>MixerChLabel</ObjectName><Size>240,24</Size><Text>DECK A</Text></Label>
+                <Label><ObjectName>MixerKnobLabel</ObjectName><Size>240,18</Size><Text>GAIN</Text></Label>
+                <Number><ObjectName>MixerValue</ObjectName><Size>240,28</Size><SizePolicy>me,f</SizePolicy>
+                  <NumberOfDigits>4</NumberOfDigits>
+                  <Connection><ConfigKey>[Channel1],pregain</ConfigKey></Connection>
+                </Number>
+                <Label><ObjectName>MixerKnobLabel</ObjectName><Size>240,18</Size><Text>HI</Text></Label>
+                <Number><ObjectName>MixerValue</ObjectName><Size>240,28</Size><SizePolicy>me,f</SizePolicy>
+                  <NumberOfDigits>4</NumberOfDigits>
+                  <Connection><ConfigKey>[EqualizerRack1_[Channel1]_Effect1],parameter3</ConfigKey></Connection>
+                </Number>
+                <Label><ObjectName>MixerKnobLabel</ObjectName><Size>240,18</Size><Text>MID</Text></Label>
+                <Number><ObjectName>MixerValue</ObjectName><Size>240,28</Size><SizePolicy>me,f</SizePolicy>
+                  <NumberOfDigits>4</NumberOfDigits>
+                  <Connection><ConfigKey>[EqualizerRack1_[Channel1]_Effect1],parameter2</ConfigKey></Connection>
+                </Number>
+                <Label><ObjectName>MixerKnobLabel</ObjectName><Size>240,18</Size><Text>LO</Text></Label>
+                <Number><ObjectName>MixerValue</ObjectName><Size>240,28</Size><SizePolicy>me,f</SizePolicy>
+                  <NumberOfDigits>4</NumberOfDigits>
+                  <Connection><ConfigKey>[EqualizerRack1_[Channel1]_Effect1],parameter1</ConfigKey></Connection>
+                </Number>
+                <Label><ObjectName>MixerKnobLabel</ObjectName><Size>240,18</Size><Text>VOLUME</Text></Label>
+                <Number><ObjectName>MixerValue</ObjectName><Size>240,28</Size><SizePolicy>me,f</SizePolicy>
+                  <NumberOfDigits>4</NumberOfDigits>
+                  <Connection><ConfigKey>[Channel1],volume</ConfigKey></Connection>
+                </Number>
+              </Children>
+            </WidgetGroup>
+
+            <!-- Deck B strip -->
+            <WidgetGroup>
+              <ObjectName>MixerStripB</ObjectName>
+              <Size>240,0</Size>
+              <SizePolicy>f,me</SizePolicy>
+              <Layout>vertical</Layout>
+              <Children>
+                <Label><ObjectName>MixerChLabel</ObjectName><Size>240,24</Size><Text>DECK B</Text></Label>
+                <Label><ObjectName>MixerKnobLabel</ObjectName><Size>240,18</Size><Text>GAIN</Text></Label>
+                <Number><ObjectName>MixerValue</ObjectName><Size>240,28</Size><SizePolicy>me,f</SizePolicy>
+                  <NumberOfDigits>4</NumberOfDigits>
+                  <Connection><ConfigKey>[Channel2],pregain</ConfigKey></Connection>
+                </Number>
+                <Label><ObjectName>MixerKnobLabel</ObjectName><Size>240,18</Size><Text>HI</Text></Label>
+                <Number><ObjectName>MixerValue</ObjectName><Size>240,28</Size><SizePolicy>me,f</SizePolicy>
+                  <NumberOfDigits>4</NumberOfDigits>
+                  <Connection><ConfigKey>[EqualizerRack1_[Channel2]_Effect1],parameter3</ConfigKey></Connection>
+                </Number>
+                <Label><ObjectName>MixerKnobLabel</ObjectName><Size>240,18</Size><Text>MID</Text></Label>
+                <Number><ObjectName>MixerValue</ObjectName><Size>240,28</Size><SizePolicy>me,f</SizePolicy>
+                  <NumberOfDigits>4</NumberOfDigits>
+                  <Connection><ConfigKey>[EqualizerRack1_[Channel2]_Effect1],parameter2</ConfigKey></Connection>
+                </Number>
+                <Label><ObjectName>MixerKnobLabel</ObjectName><Size>240,18</Size><Text>LO</Text></Label>
+                <Number><ObjectName>MixerValue</ObjectName><Size>240,28</Size><SizePolicy>me,f</SizePolicy>
+                  <NumberOfDigits>4</NumberOfDigits>
+                  <Connection><ConfigKey>[EqualizerRack1_[Channel2]_Effect1],parameter1</ConfigKey></Connection>
+                </Number>
+                <Label><ObjectName>MixerKnobLabel</ObjectName><Size>240,18</Size><Text>VOLUME</Text></Label>
+                <Number><ObjectName>MixerValue</ObjectName><Size>240,28</Size><SizePolicy>me,f</SizePolicy>
+                  <NumberOfDigits>4</NumberOfDigits>
+                  <Connection><ConfigKey>[Channel2],volume</ConfigKey></Connection>
+                </Number>
+              </Children>
+            </WidgetGroup>
+
+          </Children>
+        </WidgetGroup>
       </Children>
     </WidgetGroup>
 
