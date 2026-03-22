@@ -42,7 +42,12 @@ sudo cp "$PROJECT_DIR/skin/MK3/style.qss" /usr/share/mixxx/skins/MK3/
 echo "  Skin updated"
 
 # ── Services ─────────────────────────────────────────────────────────
-for svc in pipewire.service wireplumber.service mk3-screen-daemon.service openbox.service xvfb.service; do
+# PipeWire runs as user-level service (from the pipewire package)
+sudo systemctl disable pipewire.service wireplumber.service 2>/dev/null || true
+sudo rm -f /etc/systemd/system/pipewire.service /etc/systemd/system/wireplumber.service
+sudo loginctl enable-linger "$PI_USER"
+
+for svc in mk3-screen-daemon.service openbox.service xvfb.service; do
     if [ -f "$SCRIPT_DIR/$svc" ]; then
         sed -e "s/User=pi/User=$PI_USER/" \
             -e "s|/run/user/1000|/run/user/$UID_NUM|" \
