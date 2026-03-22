@@ -403,8 +403,8 @@
           <Size>470,16</Size>
           <SizePolicy>me,f</SizePolicy>
           <Horizontal>true</Horizontal>
-          <Handle>skin:slider_handle.png</Handle>
-          <Slider>skin:slider_bg.png</Slider>
+          <Handle>skin:crossfader_handle.png</Handle>
+          <Slider>skin:crossfader_bg.png</Slider>
           <Connection>
             <ConfigKey>[Master],crossfader</ConfigKey>
           </Connection>
