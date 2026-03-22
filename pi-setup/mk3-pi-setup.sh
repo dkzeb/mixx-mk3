@@ -189,11 +189,18 @@ sed -e "s/User=pi/User=$PI_USER/" \
 
 sudo cp "$SCRIPT_DIR/mk3-screen-daemon.service" /etc/systemd/system/
 
+# Settings watcher — patched for this user
+sed -e "s/User=pi/User=$PI_USER/" \
+    -e "s|/home/pi/mixx-mk3|$PI_HOME/mixx-mk3|" \
+    -e "s|/run/user/1000|/run/user/$UID_NUM|" \
+    "$SCRIPT_DIR/mk3-settings-watcher.service" | sudo tee /etc/systemd/system/mk3-settings-watcher.service > /dev/null
+
 sudo systemctl daemon-reload
 sudo systemctl enable xvfb.service
 sudo systemctl enable openbox.service
 sudo systemctl enable mk3-screen-daemon.service
 sudo systemctl enable mixxx.service
+sudo systemctl enable mk3-settings-watcher.service
 
 # Add user to required groups
 sudo usermod -aG audio "$PI_USER"

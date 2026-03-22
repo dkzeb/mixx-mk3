@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """Read MK3 HID buttons and send keyboard events via xdotool.
 
-Runs as a background process during the update dialog.
-Maps: play → Enter (Update Now), stop → Escape (Later)
+Runs as a background process during dialogs/menus.
+Maps MK3 buttons to keyboard events for zenity interaction.
 
 Usage: python3 mk3-button-reader.py &
 """
@@ -12,16 +12,20 @@ import subprocess
 import glob
 import time
 
-# MK3 button positions in Report 0x01
-# play:  byte 0x06, mask 0x20
-# stop:  byte 0x06, mask 0x80
+# MK3 button positions in Report 0x01: (byte_index, bitmask, xdotool_key)
 BUTTONS = {
-    "play": (0x06, 0x20, "Return"),
-    "stop": (0x06, 0x80, "Escape"),
+    "play":     (0x06, 0x20, "Return"),
+    "stop":     (0x06, 0x80, "Escape"),
+    "navPush":  (0x01, 0x01, "Return"),
+    "navUp":    (0x01, 0x04, "Up"),
+    "navDown":  (0x01, 0x10, "Down"),
+    "navLeft":  (0x01, 0x20, "Left"),
+    "navRight": (0x01, 0x08, "Right"),
 }
 
 VENDOR_ID = "17CC"
 PRODUCT_ID = "1600"
+
 
 def find_mk3_hidraw():
     """Find the hidraw device for the MK3 HID interface."""
@@ -36,8 +40,8 @@ def find_mk3_hidraw():
                         return hidraw
         except (IOError, OSError):
             continue
-    # Fallback
     return "/dev/hidraw0"
+
 
 def main():
     display = os.environ.get("DISPLAY", ":99")
@@ -64,6 +68,8 @@ def main():
                 continue
 
             for name, (byte_idx, mask, key) in BUTTONS.items():
+                if byte_idx >= len(data):
+                    continue
                 pressed = (data[byte_idx] & mask) != 0
                 was_pressed = last_state.get(name, False)
 
@@ -74,7 +80,7 @@ def main():
                         stdout=subprocess.DEVNULL,
                         stderr=subprocess.DEVNULL,
                     )
-                    print(f"mk3-button-reader: {name} → {key}", file=sys.stderr)
+                    print(f"mk3-button-reader: {name} -> {key}", file=sys.stderr)
 
                 last_state[name] = pressed
 
@@ -82,6 +88,7 @@ def main():
         pass
     finally:
         os.close(fd)
+
 
 if __name__ == "__main__":
     main()

@@ -997,9 +997,10 @@ MaschineMK3.init = function(/* id, debugging */) {
     });
     MaschineMK3.updateTouchstripLEDs();
 
-    // --- Browser + Mixer LEDs (dim = available, bright = open) ---
+    // --- Browser + Mixer + Settings LEDs (dim = available) ---
     MaschineMK3.setLed("browserPlugin", 16);
     MaschineMK3.setLed("mixer", 16);
+    MaschineMK3.setLed("settings", 16);
 
     // --- Nav encoder LEDs (always dimly lit for navigation) ---
     MaschineMK3.setLed("navUp",    MaschineMK3.Color.WHITE);
