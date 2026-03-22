@@ -303,6 +303,23 @@ MaschineMK3.activeDeck    = 1;         // 1 or 2 — which deck the browser load
 MaschineMK3.libraryVisible = false;    // whether the library panel is shown
 MaschineMK3.mixerVisible   = false;    // whether the mixer panel is shown
 MaschineMK3.padMode       = null;      // null | "loops" | "effects" | "cuepoints" — null = pads inactive
+
+// Effects pad mapping: pad number → {unit, slot} or {unit, "enable"}
+// Layout (physical, bottom to top):
+//   1: Echo       2: Reverb      3: Filter       4: Unit1 ON/OFF
+//   5: MoogFilter 6: Compressor  7: WhiteNoise   8: Unit4 ON/OFF
+//   9: Flanger   10: Phaser     11: Distortion  12: Unit2 ON/OFF
+//  13: AutoPan   14: Glitch     15: PitchShift  16: Unit3 ON/OFF
+MaschineMK3.fxPadMap = {
+    1:  {unit: 1, slot: 1},  2:  {unit: 1, slot: 2},  3:  {unit: 1, slot: 3},
+    4:  {unit: 1, enable: true},
+    5:  {unit: 4, slot: 1},  6:  {unit: 4, slot: 2},  7:  {unit: 4, slot: 3},
+    8:  {unit: 4, enable: true},
+    9:  {unit: 2, slot: 1}, 10:  {unit: 2, slot: 2}, 11:  {unit: 2, slot: 3},
+    12: {unit: 2, enable: true},
+    13: {unit: 3, slot: 1}, 14:  {unit: 3, slot: 2}, 15:  {unit: 3, slot: 3},
+    16: {unit: 3, enable: true}
+};
 MaschineMK3.lastButtonState = {};      // name -> pressed bool, for edge detection
 MaschineMK3.lastStepperPos  = -1;
 MaschineMK3.lastKnobValue  = {};      // name -> last raw value, for delta tracking
@@ -554,16 +571,10 @@ MaschineMK3.updatePadLEDs = function() {
     }
 
     if (MaschineMK3.padMode === "cuepoints") {
-        // 16 pads = hotcues 1-16 on the active deck
         for (var pad = 1; pad <= 16; pad++) {
             var ledName = MaschineMK3.padPhysicalToLed[pad];
             var hcStatus = engine.getValue(ch, "hotcue_" + pad + "_status");
-            if (hcStatus) {
-                color = C.YELLOW;
-            } else {
-                color = C.OFF;
-            }
-            MaschineMK3.setLed(ledName, color);
+            MaschineMK3.setLed(ledName, hcStatus ? C.YELLOW : C.OFF);
         }
         return;
     }
@@ -595,24 +606,23 @@ MaschineMK3.updatePadLEDs = function() {
         }
 
     } else if (MaschineMK3.padMode === "effects") {
-        var fxUnit = MaschineMK3.activeDeck === 1
-            ? "[EffectRack1_EffectUnit1]"
-            : "[EffectRack1_EffectUnit2]";
-
         for (var pad = 1; pad <= 16; pad++) {
             var ledName = MaschineMK3.padPhysicalToLed[pad];
+            var fxDef = MaschineMK3.fxPadMap[pad];
             var color = C.OFF;
 
-            if (pad >= 1 && pad <= 3) {
-                // FX parameter toggles (pads 1-3)
-                var fxOn = engine.getValue(fxUnit, "parameter" + pad);
-                color = fxOn ? C.PURPLE : C.BLUE;
-            } else if (pad === 4) {
-                // FX unit enable
-                var enabled = engine.getValue(fxUnit, "enabled");
-                color = enabled ? C.RED : C.PINK;
+            if (fxDef.enable) {
+                // Unit enable pad
+                var unitGroup = "[EffectRack1_EffectUnit" + fxDef.unit + "]";
+                var unitEnabled = engine.getValue(unitGroup, "enabled");
+                color = unitEnabled ? C.RED : C.PINK;
+            } else {
+                // Effect slot toggle
+                var slotGroup = "[EffectRack1_EffectUnit" + fxDef.unit +
+                                "_Effect" + fxDef.slot + "]";
+                var slotEnabled = engine.getValue(slotGroup, "enabled");
+                color = slotEnabled ? C.PURPLE : C.BLUE;
             }
-            // Pads 5-16: off in effects mode (available for future FX)
 
             MaschineMK3.setLed(ledName, color);
         }
@@ -997,16 +1007,20 @@ MaschineMK3.onPadPress = function(padNumber) {
         }
 
     } else if (MaschineMK3.padMode === "effects") {
-        var fxUnit = MaschineMK3.activeDeck === 1
-            ? "[EffectRack1_EffectUnit1]"
-            : "[EffectRack1_EffectUnit2]";
+        var fxDef = MaschineMK3.fxPadMap[padNumber];
+        if (!fxDef) { return; }
 
-        if (padNumber >= 1 && padNumber <= 3) {
-            var current = engine.getValue(fxUnit, "parameter" + padNumber);
-            engine.setValue(fxUnit, "parameter" + padNumber, current ? 0 : 1);
-        } else if (padNumber === 4) {
-            var enabled = engine.getValue(fxUnit, "enabled");
-            engine.setValue(fxUnit, "enabled", enabled ? 0 : 1);
+        if (fxDef.enable) {
+            // Toggle unit enable
+            var unitGroup = "[EffectRack1_EffectUnit" + fxDef.unit + "]";
+            var enabled = engine.getValue(unitGroup, "enabled");
+            engine.setValue(unitGroup, "enabled", enabled ? 0 : 1);
+        } else {
+            // Toggle individual effect slot
+            var slotGroup = "[EffectRack1_EffectUnit" + fxDef.unit +
+                            "_Effect" + fxDef.slot + "]";
+            var slotEnabled = engine.getValue(slotGroup, "enabled");
+            engine.setValue(slotGroup, "enabled", slotEnabled ? 0 : 1);
         }
     }
 
@@ -1268,35 +1282,42 @@ MaschineMK3.init = function(/* id, debugging */) {
     engine.setValue("[Master]", "gain", 1.0);
     engine.setValue("[Master]", "headGain", 1.0);
 
-    // --- Load default effects for both effect units ---
-    // Effect slots: 3 per unit. Use effect_selector to cycle to the desired effect.
-    // Mixxx built-in effects (alphabetical): AutoPan, Balance, BitCrusher, Echo,
-    // Flanger, Filter, LevelMeter, Loudness, MetaKnob, Moog, Parametric EQ,
-    // Phaser, Pitch Shift, Reverb, Tremolo, White Noise
-    // Strategy: set effect_selector to the index (1-based) of each effect.
-    // The order depends on the Mixxx build, so we use selector values that
-    // correspond to common positions.
-    var defaultFx = [
-        {unit: 1, slot: 1, name: "Echo",    selector: 4},
-        {unit: 1, slot: 2, name: "Reverb",  selector: 14},
-        {unit: 1, slot: 3, name: "Flanger", selector: 5},
-        {unit: 2, slot: 1, name: "Echo",    selector: 4},
-        {unit: 2, slot: 2, name: "Reverb",  selector: 14},
-        {unit: 2, slot: 3, name: "Flanger", selector: 5}
+    // --- Load default effects into 4 units (3 effects each = 12 effects) ---
+    // Effects are sorted alphabetically in Mixxx. Selector is 1-based index.
+    // Full list: AutoPan(1) BitCrusher(2) Compressor(3) Distortion(4) Echo(5)
+    // Filter(6) Flanger(7) Glitch(8) MoogFilter(9) Phaser(10) PitchShift(11)
+    // Reverb(12) Tremolo(13) WhiteNoise(14)
+    var fxSetup = [
+        // Unit 1: Echo, Reverb, Filter
+        {unit: 1, slot: 1, sel: 5},   // Echo
+        {unit: 1, slot: 2, sel: 12},  // Reverb
+        {unit: 1, slot: 3, sel: 6},   // Filter
+        // Unit 2: Flanger, Phaser, Distortion
+        {unit: 2, slot: 1, sel: 7},   // Flanger
+        {unit: 2, slot: 2, sel: 10},  // Phaser
+        {unit: 2, slot: 3, sel: 4},   // Distortion
+        // Unit 3: AutoPan, Glitch, PitchShift
+        {unit: 3, slot: 1, sel: 1},   // AutoPan
+        {unit: 3, slot: 2, sel: 8},   // Glitch
+        {unit: 3, slot: 3, sel: 11},  // PitchShift
+        // Unit 4: MoogFilter, Compressor, WhiteNoise
+        {unit: 4, slot: 1, sel: 9},   // MoogFilter
+        {unit: 4, slot: 2, sel: 3},   // Compressor
+        {unit: 4, slot: 3, sel: 14}   // WhiteNoise
     ];
-    for (var fx = 0; fx < defaultFx.length; fx++) {
-        var fxGroup = "[EffectRack1_EffectUnit" + defaultFx[fx].unit +
-                      "_Effect" + defaultFx[fx].slot + "]";
-        // Reset to none first, then select
+    for (var fx = 0; fx < fxSetup.length; fx++) {
+        var fxGroup = "[EffectRack1_EffectUnit" + fxSetup[fx].unit +
+                      "_Effect" + fxSetup[fx].slot + "]";
         engine.setValue(fxGroup, "clear", 1);
-        engine.setValue(fxGroup, "effect_selector", defaultFx[fx].selector);
+        engine.setValue(fxGroup, "effect_selector", fxSetup[fx].sel);
     }
-    // Assign effect units to channels
-    engine.setValue("[EffectRack1_EffectUnit1]", "group_[Channel1]_enable", 1);
-    engine.setValue("[EffectRack1_EffectUnit2]", "group_[Channel2]_enable", 1);
-    // Start with dry mix (effects off by default)
-    engine.setValue("[EffectRack1_EffectUnit1]", "mix", 0);
-    engine.setValue("[EffectRack1_EffectUnit2]", "mix", 0);
+    // Route all 4 units to both channels, start dry
+    for (var u = 1; u <= 4; u++) {
+        var unitGroup = "[EffectRack1_EffectUnit" + u + "]";
+        engine.setValue(unitGroup, "group_[Channel1]_enable", 1);
+        engine.setValue(unitGroup, "group_[Channel2]_enable", 1);
+        engine.setValue(unitGroup, "mix", 0);
+    }
 
     // Set initial LED state
     MaschineMK3.updatePadLEDs();
