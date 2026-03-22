@@ -686,66 +686,60 @@ MaschineMK3.onButtonRelease = function(name) {
 // onKnobChange — called when an absolute knob value changes.
 // value: raw 12-bit unsigned (0-4095).
 // ---------------------------------------------------------------------------
-MaschineMK3.onKnobChange = function(name, value) {
-    var norm = value / 4095.0;
+// Helper: adjust a Mixxx control by delta, clamped to [min, max]
+MaschineMK3.adjustValue = function(group, key, delta, sensitivity, min, max) {
+    var current = engine.getValue(group, key);
+    var newVal = Math.max(min, Math.min(max, current + (delta * sensitivity)));
+    engine.setValue(group, key, newVal);
+};
 
-    // Delta tracking for relative controls
+MaschineMK3.onKnobChange = function(name, value) {
+    // K1-K8 are endless encoders — compute delta from last value
     var delta = 0;
     if (MaschineMK3.lastKnobValue[name] !== undefined) {
         delta = value - MaschineMK3.lastKnobValue[name];
-        // Handle wraparound (shouldn't happen with pots, but be safe)
+        // Handle 16-bit wraparound
         if (delta > 2048) { delta -= 4096; }
         if (delta < -2048) { delta += 4096; }
     }
     MaschineMK3.lastKnobValue[name] = value;
+    if (delta === 0) { return; }
 
     switch (name) {
-    // --- K1-K4: Deck A controls ---
-    // K1: Tempo rate (delta-based, ~0.05% per tick)
-    case "k1":
-        if (delta !== 0) {
-            var rateA = engine.getValue("[Channel1]", "rate");
-            engine.setValue("[Channel1]", "rate", rateA + (delta * 0.0002));
-        }
+    // --- K1-K4: Deck A ---
+    case "k1": // Tempo rate (-1 to 1, 0 = normal)
+        MaschineMK3.adjustValue("[Channel1]", "rate", delta, 0.0005, -1, 1);
         break;
-    // K2: Scrub/jog (delta-based)
-    case "k2":
-        if (delta !== 0) {
-            engine.setValue("[Channel1]", "jog", delta * 0.1);
-        }
+    case "k2": // Scrub/jog
+        engine.setValue("[Channel1]", "jog", delta * 0.1);
         break;
-    // K3: Channel volume (absolute)
-    case "k3":
-        engine.setValue("[Channel1]", "volume", norm);
+    case "k3": // Volume (0 to 1)
+        MaschineMK3.adjustValue("[Channel1]", "volume", delta, 0.002, 0, 1);
+        break;
+    case "k4": // Gain/pregain (0 to 4, 1 = unity)
+        MaschineMK3.adjustValue("[Channel1]", "pregain", delta, 0.005, 0, 4);
         break;
 
-    // --- K5-K8: Deck B controls ---
-    // K5: Tempo rate
-    case "k5":
-        if (delta !== 0) {
-            var rateB = engine.getValue("[Channel2]", "rate");
-            engine.setValue("[Channel2]", "rate", rateB + (delta * 0.0002));
-        }
+    // --- K5-K8: Deck B ---
+    case "k5": // Tempo rate
+        MaschineMK3.adjustValue("[Channel2]", "rate", delta, 0.0005, -1, 1);
         break;
-    // K6: Scrub/jog
-    case "k6":
-        if (delta !== 0) {
-            engine.setValue("[Channel2]", "jog", delta * 0.1);
-        }
+    case "k6": // Scrub/jog
+        engine.setValue("[Channel2]", "jog", delta * 0.1);
         break;
-    // K7: Channel volume (absolute)
-    case "k7":
-        engine.setValue("[Channel2]", "volume", norm);
+    case "k7": // Volume (0 to 1)
+        MaschineMK3.adjustValue("[Channel2]", "volume", delta, 0.002, 0, 1);
+        break;
+    case "k8": // Gain/pregain (0 to 4, 1 = unity)
+        MaschineMK3.adjustValue("[Channel2]", "pregain", delta, 0.005, 0, 4);
         break;
 
-    // K4/K8: available
-
-    // Master / headphone
+    // --- Physical pots (absolute, 0-4095) ---
     case "masterVolume":
-        engine.setValue("[Master]", "gain", norm);
+        engine.setValue("[Master]", "gain", value / 4095.0);
         break;
     case "headphoneVolume":
-        engine.setValue("[Master]", "headGain", norm);
+        engine.setValue("[Master]", "headGain", value / 4095.0);
         break;
     }
 };
