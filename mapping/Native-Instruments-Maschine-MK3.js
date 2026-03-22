@@ -769,6 +769,10 @@ MaschineMK3.onKnobChange = function(name, value) {
     MaschineMK3.lastKnobValue[name] = value;
     if (delta === 0) { return; }
 
+    // Cap delta to prevent jumps (encoder should only move a few ticks at a time)
+    if (delta > 50) { delta = 50; }
+    if (delta < -50) { delta = -50; }
+
     switch (name) {
     // --- K1-K4: Deck A ---
     case "k1": // Tempo rate (-1 to 1, 0 = normal)
