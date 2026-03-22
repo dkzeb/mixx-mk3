@@ -655,6 +655,7 @@ MaschineMK3.onButtonPress = function(name) {
     case "shift":
         MaschineMK3.shiftPressed = true;
         MaschineMK3.setLed("shift", 63);
+        engine.setValue("[Skin]", "shift_held", 1);
         break;
 
     // --- G1-G8: Hotcues (G1-G4 = Deck A cues 1-4, G5-G8 = Deck B cues 1-4) ---
@@ -784,7 +785,8 @@ MaschineMK3.onButtonRelease = function(name) {
     switch (name) {
     case "shift":
         MaschineMK3.shiftPressed = false;
-        MaschineMK3.setLed("shift", 0);
+        MaschineMK3.setLed("shift", 8);
+        engine.setValue("[Skin]", "shift_held", 0);
         break;
     case "browserPlugin":
         break;
@@ -1215,6 +1217,9 @@ MaschineMK3.init = function(/* id, debugging */) {
 
     // --- Pad mode LED ---
     MaschineMK3.updatePadModeLED();
+
+    // --- Shift LED (dim = available) ---
+    MaschineMK3.setLed("shift", 8);
 
     // --- Browser + Mixer + Settings LEDs (dim = available) ---
     MaschineMK3.setLed("browserPlugin", 16);

@@ -178,6 +178,12 @@
     qproperty-alignment: AlignCenter;
 }
 
+#KnobLabelShift {
+    font-size: 9px;
+    color: #16a085;
+    qproperty-alignment: AlignCenter;
+}
+
 #WaveformOverviewA, #WaveformOverviewB {
     border-top: 1px solid #333333;
     border-bottom: 1px solid #333333;

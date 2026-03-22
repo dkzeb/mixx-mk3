@@ -15,6 +15,7 @@
       <attribute config_key="[Skin],hide_deck_a">0</attribute>
       <attribute config_key="[Skin],hide_deck_b">0</attribute>
       <attribute config_key="[Skin],show_mixer">0</attribute>
+      <attribute config_key="[Skin],shift_held">0</attribute>
       <attribute config_key="[Skin],show_pads_loops">0</attribute>
       <attribute config_key="[Skin],show_pads_fx">0</attribute>
       <attribute config_key="[Skin],show_pads_cues">0</attribute>
@@ -190,37 +191,45 @@
         </WidgetGroup>
 
         <!-- Knob labels (bottom, aligned with K1-K4) -->
+        <!-- Shift held: show shift labels -->
         <WidgetGroup>
-          <ObjectName>KnobLabels</ObjectName>
-          <Size>480,12</Size>
-          <SizePolicy>me,f</SizePolicy>
+          <ObjectName>KnobLabels</ObjectName><Size>480,12</Size><SizePolicy>me,f</SizePolicy>
           <Layout>horizontal</Layout>
-          <Connection>
-            <ConfigKey>[Skin],show_mixer</ConfigKey>
-            <BindProperty>visible</BindProperty>
-            <Transform><Not/></Transform>
-          </Connection>
+          <Connection><ConfigKey>[Skin],shift_held</ConfigKey><BindProperty>visible</BindProperty></Connection>
           <Children>
-            <Label><ObjectName>KnobLabel</ObjectName><Size>120,12</Size><Text>TEMPO</Text></Label>
-            <Label><ObjectName>KnobLabel</ObjectName><Size>120,12</Size><Text>JOG</Text></Label>
-            <Label><ObjectName>KnobLabel</ObjectName><Size>120,12</Size><Text>VOL</Text></Label>
-            <Label><ObjectName>KnobLabel</ObjectName><Size>120,12</Size><Text>FILTER</Text></Label>
+            <Label><ObjectName>KnobLabelShift</ObjectName><Size>120,12</Size><Text>TEMPO</Text></Label>
+            <Label><ObjectName>KnobLabelShift</ObjectName><Size>120,12</Size><Text>ZOOM</Text></Label>
+            <Label><ObjectName>KnobLabelShift</ObjectName><Size>120,12</Size><Text>VOL</Text></Label>
+            <Label><ObjectName>KnobLabelShift</ObjectName><Size>120,12</Size><Text>FILTER</Text></Label>
           </Children>
         </WidgetGroup>
+        <!-- No shift, no mixer: normal labels -->
         <WidgetGroup>
-          <ObjectName>KnobLabels</ObjectName>
-          <Size>480,12</Size>
-          <SizePolicy>me,f</SizePolicy>
+          <ObjectName>KnobLabels</ObjectName><Size>480,12</Size><SizePolicy>me,f</SizePolicy>
           <Layout>horizontal</Layout>
-          <Connection>
-            <ConfigKey>[Skin],show_mixer</ConfigKey>
-            <BindProperty>visible</BindProperty>
-          </Connection>
+          <Connection><ConfigKey>[Skin],shift_held</ConfigKey><BindProperty>visible</BindProperty><Transform><Not/></Transform></Connection>
           <Children>
-            <Label><ObjectName>KnobLabel</ObjectName><Size>120,12</Size><Text>HI</Text></Label>
-            <Label><ObjectName>KnobLabel</ObjectName><Size>120,12</Size><Text>MID</Text></Label>
-            <Label><ObjectName>KnobLabel</ObjectName><Size>120,12</Size><Text>LO</Text></Label>
-            <Label><ObjectName>KnobLabel</ObjectName><Size>120,12</Size><Text>VOL</Text></Label>
+            <!-- Nested: show normal or mixer based on show_mixer -->
+            <WidgetGroup>
+              <SizePolicy>me,f</SizePolicy><Layout>horizontal</Layout>
+              <Connection><ConfigKey>[Skin],show_mixer</ConfigKey><BindProperty>visible</BindProperty><Transform><Not/></Transform></Connection>
+              <Children>
+                <Label><ObjectName>KnobLabel</ObjectName><Size>120,12</Size><Text>TEMPO</Text></Label>
+                <Label><ObjectName>KnobLabel</ObjectName><Size>120,12</Size><Text>JOG</Text></Label>
+                <Label><ObjectName>KnobLabel</ObjectName><Size>120,12</Size><Text>VOL</Text></Label>
+                <Label><ObjectName>KnobLabel</ObjectName><Size>120,12</Size><Text>FILTER</Text></Label>
+              </Children>
+            </WidgetGroup>
+            <WidgetGroup>
+              <SizePolicy>me,f</SizePolicy><Layout>horizontal</Layout>
+              <Connection><ConfigKey>[Skin],show_mixer</ConfigKey><BindProperty>visible</BindProperty></Connection>
+              <Children>
+                <Label><ObjectName>KnobLabel</ObjectName><Size>120,12</Size><Text>HI</Text></Label>
+                <Label><ObjectName>KnobLabel</ObjectName><Size>120,12</Size><Text>MID</Text></Label>
+                <Label><ObjectName>KnobLabel</ObjectName><Size>120,12</Size><Text>LO</Text></Label>
+                <Label><ObjectName>KnobLabel</ObjectName><Size>120,12</Size><Text>VOL</Text></Label>
+              </Children>
+            </WidgetGroup>
           </Children>
         </WidgetGroup>
 
@@ -753,36 +762,41 @@
 
         <!-- Knob labels (bottom, aligned with K5-K8) -->
         <WidgetGroup>
-          <ObjectName>KnobLabels</ObjectName>
-          <Size>480,12</Size>
-          <SizePolicy>me,f</SizePolicy>
+          <ObjectName>KnobLabels</ObjectName><Size>480,12</Size><SizePolicy>me,f</SizePolicy>
           <Layout>horizontal</Layout>
-          <Connection>
-            <ConfigKey>[Skin],show_mixer</ConfigKey>
-            <BindProperty>visible</BindProperty>
-            <Transform><Not/></Transform>
-          </Connection>
+          <Connection><ConfigKey>[Skin],shift_held</ConfigKey><BindProperty>visible</BindProperty></Connection>
           <Children>
-            <Label><ObjectName>KnobLabel</ObjectName><Size>120,12</Size><Text>TEMPO</Text></Label>
-            <Label><ObjectName>KnobLabel</ObjectName><Size>120,12</Size><Text>JOG</Text></Label>
-            <Label><ObjectName>KnobLabel</ObjectName><Size>120,12</Size><Text>VOL</Text></Label>
-            <Label><ObjectName>KnobLabel</ObjectName><Size>120,12</Size><Text>FILTER</Text></Label>
+            <Label><ObjectName>KnobLabelShift</ObjectName><Size>120,12</Size><Text>TEMPO</Text></Label>
+            <Label><ObjectName>KnobLabelShift</ObjectName><Size>120,12</Size><Text>ZOOM</Text></Label>
+            <Label><ObjectName>KnobLabelShift</ObjectName><Size>120,12</Size><Text>VOL</Text></Label>
+            <Label><ObjectName>KnobLabelShift</ObjectName><Size>120,12</Size><Text>FILTER</Text></Label>
           </Children>
         </WidgetGroup>
         <WidgetGroup>
-          <ObjectName>KnobLabels</ObjectName>
-          <Size>480,12</Size>
-          <SizePolicy>me,f</SizePolicy>
+          <ObjectName>KnobLabels</ObjectName><Size>480,12</Size><SizePolicy>me,f</SizePolicy>
           <Layout>horizontal</Layout>
-          <Connection>
-            <ConfigKey>[Skin],show_mixer</ConfigKey>
-            <BindProperty>visible</BindProperty>
-          </Connection>
+          <Connection><ConfigKey>[Skin],shift_held</ConfigKey><BindProperty>visible</BindProperty><Transform><Not/></Transform></Connection>
           <Children>
-            <Label><ObjectName>KnobLabel</ObjectName><Size>120,12</Size><Text>HI</Text></Label>
-            <Label><ObjectName>KnobLabel</ObjectName><Size>120,12</Size><Text>MID</Text></Label>
-            <Label><ObjectName>KnobLabel</ObjectName><Size>120,12</Size><Text>LO</Text></Label>
-            <Label><ObjectName>KnobLabel</ObjectName><Size>120,12</Size><Text>VOL</Text></Label>
+            <WidgetGroup>
+              <SizePolicy>me,f</SizePolicy><Layout>horizontal</Layout>
+              <Connection><ConfigKey>[Skin],show_mixer</ConfigKey><BindProperty>visible</BindProperty><Transform><Not/></Transform></Connection>
+              <Children>
+                <Label><ObjectName>KnobLabel</ObjectName><Size>120,12</Size><Text>TEMPO</Text></Label>
+                <Label><ObjectName>KnobLabel</ObjectName><Size>120,12</Size><Text>JOG</Text></Label>
+                <Label><ObjectName>KnobLabel</ObjectName><Size>120,12</Size><Text>VOL</Text></Label>
+                <Label><ObjectName>KnobLabel</ObjectName><Size>120,12</Size><Text>FILTER</Text></Label>
+              </Children>
+            </WidgetGroup>
+            <WidgetGroup>
+              <SizePolicy>me,f</SizePolicy><Layout>horizontal</Layout>
+              <Connection><ConfigKey>[Skin],show_mixer</ConfigKey><BindProperty>visible</BindProperty></Connection>
+              <Children>
+                <Label><ObjectName>KnobLabel</ObjectName><Size>120,12</Size><Text>HI</Text></Label>
+                <Label><ObjectName>KnobLabel</ObjectName><Size>120,12</Size><Text>MID</Text></Label>
+                <Label><ObjectName>KnobLabel</ObjectName><Size>120,12</Size><Text>LO</Text></Label>
+                <Label><ObjectName>KnobLabel</ObjectName><Size>120,12</Size><Text>VOL</Text></Label>
+              </Children>
+            </WidgetGroup>
           </Children>
         </WidgetGroup>
 
