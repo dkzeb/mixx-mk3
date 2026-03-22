@@ -101,6 +101,10 @@
     padding: 1px;
 }
 
+#VuMeterA, #VuMeterB {
+    margin: 4px 20px;
+}
+
 #MixerCrossfader {
     margin: 0px 20px;
 }

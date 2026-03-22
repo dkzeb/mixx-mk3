@@ -848,34 +848,65 @@ MaschineMK3.onKnobChange = function(name, value) {
     if (delta > 50) { delta = 50; }
     if (delta < -50) { delta = -50; }
 
-    switch (name) {
-    // --- K1-K4: Deck A ---
-    case "k1": // Tempo rate (-1 to 1, 0 = normal)
-        MaschineMK3.adjustValue("[Channel1]", "rate", delta, 0.002, -1, 1);
-        break;
-    case "k2": // Scrub/jog
-        engine.setValue("[Channel1]", "jog", delta * 0.1);
-        break;
-    case "k3": // Volume (0 to 1)
-        MaschineMK3.adjustValue("[Channel1]", "volume", delta, 0.002, 0, 1);
-        break;
-    case "k4": // Gain/pregain (0 to 4, 1 = unity)
-        MaschineMK3.adjustValue("[Channel1]", "pregain", delta, 0.005, 0, 4);
-        break;
+    if (MaschineMK3.mixerVisible) {
+        // --- Mixer mode: K1-K4 = Deck A EQ+Vol, K5-K8 = Deck B EQ+Vol ---
+        switch (name) {
+        case "k1": // HI EQ
+            MaschineMK3.adjustValue("[EqualizerRack1_[Channel1]_Effect1]", "parameter3", delta, 0.005, 0, 4);
+            break;
+        case "k2": // MID EQ
+            MaschineMK3.adjustValue("[EqualizerRack1_[Channel1]_Effect1]", "parameter2", delta, 0.005, 0, 4);
+            break;
+        case "k3": // LO EQ
+            MaschineMK3.adjustValue("[EqualizerRack1_[Channel1]_Effect1]", "parameter1", delta, 0.005, 0, 4);
+            break;
+        case "k4": // Volume
+            MaschineMK3.adjustValue("[Channel1]", "volume", delta, 0.002, 0, 1);
+            break;
+        case "k5": // HI EQ
+            MaschineMK3.adjustValue("[EqualizerRack1_[Channel2]_Effect1]", "parameter3", delta, 0.005, 0, 4);
+            break;
+        case "k6": // MID EQ
+            MaschineMK3.adjustValue("[EqualizerRack1_[Channel2]_Effect1]", "parameter2", delta, 0.005, 0, 4);
+            break;
+        case "k7": // LO EQ
+            MaschineMK3.adjustValue("[EqualizerRack1_[Channel2]_Effect1]", "parameter1", delta, 0.005, 0, 4);
+            break;
+        case "k8": // Volume
+            MaschineMK3.adjustValue("[Channel2]", "volume", delta, 0.002, 0, 1);
+            break;
+        }
+    } else {
+        // --- Normal mode: K1-K4 = Deck A, K5-K8 = Deck B ---
+        switch (name) {
+        case "k1": // Tempo rate
+            MaschineMK3.adjustValue("[Channel1]", "rate", delta, 0.002, -1, 1);
+            break;
+        case "k2": // Scrub/jog
+            engine.setValue("[Channel1]", "jog", delta * 0.1);
+            break;
+        case "k3": // Volume
+            MaschineMK3.adjustValue("[Channel1]", "volume", delta, 0.002, 0, 1);
+            break;
+        case "k4": // Filter
+            MaschineMK3.adjustValue("[QuickEffectRack1_[Channel1]]", "super1", delta, 0.003, 0, 1);
+            break;
+        case "k5": // Tempo rate
+            MaschineMK3.adjustValue("[Channel2]", "rate", delta, 0.002, -1, 1);
+            break;
+        case "k6": // Scrub/jog
+            engine.setValue("[Channel2]", "jog", delta * 0.1);
+            break;
+        case "k7": // Volume
+            MaschineMK3.adjustValue("[Channel2]", "volume", delta, 0.002, 0, 1);
+            break;
+        case "k8": // Filter
+            MaschineMK3.adjustValue("[QuickEffectRack1_[Channel2]]", "super1", delta, 0.003, 0, 1);
+            break;
+        }
+    }
 
-    // --- K5-K8: Deck B ---
-    case "k5": // Tempo rate
-        MaschineMK3.adjustValue("[Channel2]", "rate", delta, 0.002, -1, 1);
-        break;
-    case "k6": // Scrub/jog
-        engine.setValue("[Channel2]", "jog", delta * 0.1);
-        break;
-    case "k7": // Volume (0 to 1)
-        MaschineMK3.adjustValue("[Channel2]", "volume", delta, 0.002, 0, 1);
-        break;
-    case "k8": // Gain/pregain (0 to 4, 1 = unity)
-        MaschineMK3.adjustValue("[Channel2]", "pregain", delta, 0.005, 0, 4);
-        break;
+    switch (name) {
 
     // --- Physical pots (absolute, 0-4095) ---
     case "masterVolume":
