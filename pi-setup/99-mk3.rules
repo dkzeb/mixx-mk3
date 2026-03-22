@@ -1,3 +1,5 @@
 # Native Instruments Maschine MK3
-# Set permissions and start/stop screen daemon on plug/unplug
-SUBSYSTEM=="usb", ATTR{idVendor}=="17cc", ATTR{idProduct}=="1600", MODE="0660", GROUP="audio", TAG+="systemd", ENV{SYSTEMD_WANTS}="mk3-screen-daemon.service"
+# USB device access (for libusb / screen daemon)
+SUBSYSTEM=="usb", ATTR{idVendor}=="17cc", ATTR{idProduct}=="1600", MODE="0660", GROUP="audio"
+# HID raw device access (for Mixxx hidapi controller mapping)
+KERNEL=="hidraw*", ATTRS{idVendor}=="17cc", ATTRS{idProduct}=="1600", MODE="0660", GROUP="audio"

@@ -1,17 +1,16 @@
 [Unit]
 Description=Mixxx DJ Software
-After=sound.target mk3-screen-daemon.service
+After=sound.target openbox.service wireplumber.service
+Requires=openbox.service wireplumber.service
 
 [Service]
 Type=simple
 User=pi
-# linuxfb renders to /dev/fb0 so the screen daemon can capture it.
-# The console and boot messages also go to /dev/fb0, giving a seamless
-# boot → Mixxx transition on the MK3 screens.
-Environment=QT_QPA_PLATFORM=linuxfb
-Environment=QT_QPA_FB_SIZE=960x544
+Environment=DISPLAY=:99
 Environment=HOME=/home/pi
-ExecStart=/usr/bin/mixxx --fullScreen
+Environment=XDG_RUNTIME_DIR=/run/user/1000
+ExecStartPre=/bin/sleep 5
+ExecStart=/usr/bin/pw-jack /usr/bin/mixxx --fullScreen
 Restart=on-failure
 RestartSec=5
 

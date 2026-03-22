@@ -1,0 +1,93 @@
+/* MK3 Skin - optimized for 480x272 per screen */
+
+#Mixxx {
+    background-color: #0d0d1a;
+    color: #ffffff;
+}
+
+#DeckA, #DeckB {
+    background-color: #0d0d1a;
+    border: none;
+}
+
+#TrackInfoA, #TrackInfoB {
+    background-color: #1a1a2e;
+    padding: 4px 8px;
+}
+
+#TrackTitle {
+    font-size: 20px;
+    font-weight: bold;
+    color: #ffffff;
+    padding: 2px 0px;
+}
+
+#TrackArtist {
+    font-size: 14px;
+    color: #aaaaaa;
+    padding: 0px 0px 2px 0px;
+}
+
+#BPMDisplay {
+    font-size: 28px;
+    font-weight: bold;
+    color: #ffffff;
+    background-color: #1a1a2e;
+    padding: 4px 8px;
+    qproperty-alignment: AlignLeft;
+}
+
+#PositionDisplay {
+    font-size: 22px;
+    color: #cccccc;
+    background-color: #1a1a2e;
+    padding: 4px 8px;
+    qproperty-alignment: AlignRight;
+}
+
+#DeckStatusA, #DeckStatusB {
+    background-color: #1a1a2e;
+}
+
+#DeckAHighlight {
+    background-color: #16a085;
+}
+
+#DeckBHighlight {
+    background-color: #e67e22;
+}
+
+#WaveformOverviewA, #WaveformOverviewB {
+    border-top: 1px solid #333333;
+    border-bottom: 1px solid #333333;
+}
+
+#LibraryPanel {
+    background-color: #111122;
+    border-left: 2px solid #16a085;
+}
+
+#LibrarySearch {
+    font-size: 14px;
+    color: #ffffff;
+    background-color: #1a1a2e;
+    border: 1px solid #333333;
+    padding: 4px 8px;
+}
+
+#LibraryView {
+    font-size: 13px;
+    color: #ffffff;
+    background-color: #0d0d1a;
+    selection-background-color: #16a085;
+    selection-color: #ffffff;
+}
+
+#LibraryView QHeaderView::section {
+    background-color: #1a1a2e;
+    color: #aaaaaa;
+    font-size: 12px;
+    padding: 2px 4px;
+    border: none;
+    border-bottom: 1px solid #333333;
+}

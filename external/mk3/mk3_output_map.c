@@ -10,8 +10,8 @@ const mk3_led_definition_t mk3_leds[] = {
     {"channelMidi",     0x80,  1, MK3_LED_TYPE_MONO},
     {"plugin",          0x80,  2, MK3_LED_TYPE_MONO},
     {"arranger",        0x80,  3, MK3_LED_TYPE_MONO},
-    {"browserPlugin",   0x80,  4, MK3_LED_TYPE_MONO},
-    {"mixer",           0x80,  5, MK3_LED_TYPE_MONO},
+    {"browserPlugin",   0x80,  5, MK3_LED_TYPE_MONO},
+    {"mixer",           0x80,  4, MK3_LED_TYPE_MONO},
     {"arrowLeft",       0x80,  7, MK3_LED_TYPE_MONO}, // Note: also an indexed LED navLeft
     {"arrowRight",      0x80,  8, MK3_LED_TYPE_MONO}, // Note: also an indexed LED navRight
     {"fileSave",        0x80,  9, MK3_LED_TYPE_MONO},

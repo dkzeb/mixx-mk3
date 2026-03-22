@@ -1,0 +1,15 @@
+[Unit]
+Description=WirePlumber Session Manager
+After=pipewire.service
+Requires=pipewire.service
+
+[Service]
+Type=simple
+User=pi
+Environment=XDG_RUNTIME_DIR=/run/user/1000
+ExecStart=/usr/bin/wireplumber
+Restart=on-failure
+RestartSec=2
+
+[Install]
+WantedBy=multi-user.target

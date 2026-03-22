@@ -191,11 +191,9 @@ int main(int argc, char* argv[]) {
     }
 
     int bpp = capture_bpp(cap);
-    /* Stride = virtual width * bpp.  For LinuxFB xres_virtual may be wider
-       than xres; for DRM we just use src_w as a reasonable default (the
-       DRM backend exposes a contiguous DMA-BUF with no padding in common
-       cases).  If you need accurate stride, extend the capture API. */
-    int src_stride = src_w * bpp;
+    int src_stride = capture_stride(cap);
+    if (src_stride <= 0) src_stride = src_w * bpp;
+    fprintf(stderr, "mk3-screen-daemon: capture bpp=%d stride=%d\n", bpp, src_stride);
 
     /* Allocate per-screen RGB565 buffer */
     uint16_t* screen_buf = malloc((size_t)MK3_SCREEN_W * MK3_SCREEN_H * sizeof(uint16_t));
@@ -209,6 +207,7 @@ int main(int argc, char* argv[]) {
     /* ── Main loop ───────────────────────────────────────────────────── */
     int consecutive_failures = 0;
     const int MAX_FAILURES    = 10;
+    int frame_count = 0;
 
     while (g_running) {
         struct timespec t_start;
@@ -222,12 +221,30 @@ int main(int argc, char* argv[]) {
             goto check_reconnect;
         }
 
+        /* Debug: log first few pixels of first frame */
+        if (frame_count == 0) {
+            fprintf(stderr, "mk3-screen-daemon: first frame pixels: "
+                    "%02x %02x %02x %02x | %02x %02x %02x %02x | %02x %02x %02x %02x\n",
+                    frame[0], frame[1], frame[2], frame[3],
+                    frame[4], frame[5], frame[6], frame[7],
+                    frame[8], frame[9], frame[10], frame[11]);
+        }
+
         /* Left half: x=0 .. src_w/2 */
         scale_region_to_screen(frame,
                                 0, 0,
                                 src_w / 2, src_h,
                                 src_stride, bpp,
                                 screen_buf);
+
+        /* Debug: log first few output pixels of first frame */
+        if (frame_count == 0) {
+            fprintf(stderr, "mk3-screen-daemon: first output RGB565: "
+                    "%04x %04x %04x %04x\n",
+                    screen_buf[0], screen_buf[1], screen_buf[2], screen_buf[3]);
+            frame_count = 1;
+        }
+
         if (mk3_display_draw(dev, 0, screen_buf) < 0) {
             consecutive_failures++;
             goto check_reconnect;

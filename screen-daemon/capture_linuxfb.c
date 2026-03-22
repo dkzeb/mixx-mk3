@@ -67,6 +67,11 @@ int capture_bpp(capture_ctx_t* ctx) {
     return (int)(ctx->vinfo.bits_per_pixel / 8);
 }
 
+int capture_stride(capture_ctx_t* ctx) {
+    if (!ctx) return 0;
+    return (int)(ctx->vinfo.xres * ctx->vinfo.bits_per_pixel / 8);
+}
+
 void capture_close(capture_ctx_t* ctx) {
     if (!ctx) return;
     if (ctx->fb_ptr && ctx->fb_ptr != MAP_FAILED)

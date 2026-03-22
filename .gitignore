@@ -1,1 +1,10 @@
 build/
+mk3-pi-bundle.zip
+*.png
+firebase-debug.log
+.firebase/
+.vscode/
+.idea/
+*.swp
+*~
+.DS_Store

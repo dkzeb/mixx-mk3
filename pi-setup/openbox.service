@@ -1,0 +1,14 @@
+[Unit]
+Description=Openbox Window Manager
+After=xvfb.service
+Requires=xvfb.service
+
+[Service]
+Type=simple
+Environment=DISPLAY=:99
+ExecStart=/usr/bin/openbox
+Restart=on-failure
+RestartSec=2
+
+[Install]
+WantedBy=multi-user.target

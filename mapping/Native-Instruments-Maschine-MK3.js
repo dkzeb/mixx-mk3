@@ -148,8 +148,8 @@ MaschineMK3.leds = {
     "channelMidi":      [0x80,  1],
     "plugin":           [0x80,  2],
     "arranger":         [0x80,  3],
-    "browserPlugin":    [0x80,  4],
-    "mixer":            [0x80,  5],
+    "browserPlugin":    [0x80,  5],
+    "mixer":            [0x80,  4],
     "arrowLeft":        [0x80,  7],
     "arrowRight":       [0x80,  8],
     "fileSave":         [0x80,  9],
@@ -255,8 +255,11 @@ MaschineMK3.report81 = new Array(43).fill(0);   // [0]=0x81, [1..42]=data
 // ---------------------------------------------------------------------------
 // State
 // ---------------------------------------------------------------------------
-MaschineMK3.shiftPressed = false;
-MaschineMK3.padMode      = "hotcues";  // "hotcues" | "loops" | "sampler" | "effects"
+MaschineMK3.shiftPressed  = false;
+MaschineMK3.selectPressed = false;     // "select" button held = modifier for deck switching
+MaschineMK3.activeDeck    = 1;         // 1 or 2 — which deck the browser loads to
+MaschineMK3.libraryVisible = false;    // whether the library panel is shown
+MaschineMK3.padMode       = "hotcues"; // "hotcues" | "loops" | "sampler" | "effects"
 MaschineMK3.lastButtonState = {};      // name -> pressed bool, for edge detection
 MaschineMK3.lastStepperPos  = -1;
 
@@ -303,6 +306,84 @@ MaschineMK3.updateModeLEDs = function() {
                 ? MaschineMK3.Color.WHITE
                 : MaschineMK3.Color.OFF);
     }
+};
+
+// ---------------------------------------------------------------------------
+// updateDeckLEDs — show active deck via select/arrowLeft/arrowRight LEDs.
+// ---------------------------------------------------------------------------
+MaschineMK3.updateDeckLEDs = function() {
+    // arrowLeft = Deck A, arrowRight = Deck B
+    // Use mono LEDs: brightness 63 = active, 0 = inactive
+    MaschineMK3.setLed("arrowLeft",  MaschineMK3.activeDeck === 1 ? 63 : 0);
+    MaschineMK3.setLed("arrowRight", MaschineMK3.activeDeck === 2 ? 63 : 0);
+    MaschineMK3.setLed("select", 63);  // select always lit as a "deck" indicator
+
+    // Update on-screen deck highlight bars
+    engine.setValue("[Skin]", "active_deck_a", MaschineMK3.activeDeck === 1 ? 1 : 0);
+    engine.setValue("[Skin]", "active_deck_b", MaschineMK3.activeDeck === 2 ? 1 : 0);
+
+    // If library is open, move it to the new non-active side
+    if (MaschineMK3.libraryVisible) {
+        MaschineMK3.updateLibrary();
+    }
+
+    // Reconnect transport LEDs to follow new active deck
+    MaschineMK3.connectTransportLEDs();
+};
+
+// ---------------------------------------------------------------------------
+// updateLibrary — show/hide library on the non-active deck's screen.
+// Library sits between Deck A and Deck B in the layout. When shown, the
+// non-active deck hides and the library takes its 480x544 slot.
+// ---------------------------------------------------------------------------
+MaschineMK3.updateLibrary = function() {
+    var show = MaschineMK3.libraryVisible;
+    engine.setValue("[Skin]", "show_library", show ? 1 : 0);
+    // Hide the non-active deck to make room for the library
+    engine.setValue("[Skin]", "hide_deck_a", (show && MaschineMK3.activeDeck === 2) ? 1 : 0);
+    engine.setValue("[Skin]", "hide_deck_b", (show && MaschineMK3.activeDeck === 1) ? 1 : 0);
+    MaschineMK3.setLed("browserPlugin", show ? 63 : 16);
+    if (show) {
+        engine.setValue("[Library]", "MoveFocusForward", 1);
+        engine.setValue("[Library]", "MoveFocusForward", 0);
+    }
+};
+
+// ---------------------------------------------------------------------------
+// connectTransportLEDs — connect/reconnect transport LED feedback to the
+// active deck. Called on init and when switching decks.
+// ---------------------------------------------------------------------------
+MaschineMK3.transportConnections = [];
+
+MaschineMK3.connectTransportLEDs = function() {
+    // Disconnect previous connections
+    for (var i = 0; i < MaschineMK3.transportConnections.length; i++) {
+        MaschineMK3.transportConnections[i].disconnect();
+    }
+    MaschineMK3.transportConnections = [];
+
+    var ch = "[Channel" + MaschineMK3.activeDeck + "]";
+
+    MaschineMK3.transportConnections.push(
+        engine.makeConnection(ch, "play_indicator", function(value) {
+            MaschineMK3.setLed("play", value ? 63 : 0);
+        })
+    );
+    MaschineMK3.transportConnections.push(
+        engine.makeConnection(ch, "sync_enabled", function(value) {
+            MaschineMK3.setLed("restartLoop", value ? 63 : 0);
+        })
+    );
+    MaschineMK3.transportConnections.push(
+        engine.makeConnection(ch, "cue_indicator", function(value) {
+            MaschineMK3.setLed("recCountIn", value ? 63 : 0);
+        })
+    );
+
+    // Trigger immediate update
+    MaschineMK3.setLed("play", engine.getValue(ch, "play_indicator") ? 63 : 0);
+    MaschineMK3.setLed("restartLoop", engine.getValue(ch, "sync_enabled") ? 63 : 0);
+    MaschineMK3.setLed("recCountIn", engine.getValue(ch, "cue_indicator") ? 63 : 0);
 };
 
 // ---------------------------------------------------------------------------
@@ -359,36 +440,22 @@ MaschineMK3.updatePadLEDs = function() {
 // onButtonPress — called for each detected button press edge.
 // ---------------------------------------------------------------------------
 MaschineMK3.onButtonPress = function(name) {
+    var ch = "[Channel" + MaschineMK3.activeDeck + "]";
+
     switch (name) {
-    // --- Transport: Deck A ---
+    // --- Transport: follows active deck ---
     case "play":
-        engine.setValue("[Channel1]", "play", !engine.getValue("[Channel1]", "play"));
+        engine.setValue(ch, "play", !engine.getValue(ch, "play"));
         break;
     case "stop":
-        // Mapped as "Play B" — toggles Deck B playback
-        engine.setValue("[Channel2]", "play", !engine.getValue("[Channel2]", "play"));
+        engine.setValue(ch, "stop", 1);
         break;
     case "recCountIn":
-        engine.setValue("[Channel1]", "cue_default", 1);
-        break;
-    case "tapMetro":
-        engine.setValue("[Channel2]", "cue_default", 1);
+        engine.setValue(ch, "cue_default", 1);
         break;
     case "restartLoop":
-        engine.setValue("[Channel1]", "sync_enabled",
-            engine.getValue("[Channel1]", "sync_enabled") ? 0 : 1);
-        break;
-    case "eraseReplace":
-        engine.setValue("[Channel2]", "sync_enabled",
-            engine.getValue("[Channel2]", "sync_enabled") ? 0 : 1);
-        break;
-
-    // --- Load selected track ---
-    case "d1":
-        engine.setValue("[Channel1]", "LoadSelectedTrack", 1);
-        break;
-    case "d5":
-        engine.setValue("[Channel2]", "LoadSelectedTrack", 1);
+        engine.setValue(ch, "sync_enabled",
+            engine.getValue(ch, "sync_enabled") ? 0 : 1);
         break;
 
     // --- Modifier ---
@@ -410,7 +477,32 @@ MaschineMK3.onButtonPress = function(name) {
         MaschineMK3.setMode("effects");
         break;
 
-    // --- Library navigation ---
+    // --- Deck select: select + arrow left/right ---
+    case "select":
+        MaschineMK3.selectPressed = true;
+        break;
+    case "arrowLeft":
+        if (MaschineMK3.selectPressed) {
+            MaschineMK3.activeDeck = 1;
+            MaschineMK3.updateDeckLEDs();
+            print("MK3: Active deck = A");
+        }
+        break;
+    case "arrowRight":
+        if (MaschineMK3.selectPressed) {
+            MaschineMK3.activeDeck = 2;
+            MaschineMK3.updateDeckLEDs();
+            print("MK3: Active deck = B");
+        }
+        break;
+
+    // --- Browser: toggle library panel on the non-active deck's screen ---
+    case "browserPlugin":
+        MaschineMK3.libraryVisible = !MaschineMK3.libraryVisible;
+        MaschineMK3.updateLibrary();
+        break;
+
+    // --- Library navigation (4D encoder) ---
     case "navUp":
         engine.setValue("[Library]", "MoveUp", 1);
         break;
@@ -424,7 +516,12 @@ MaschineMK3.onButtonPress = function(name) {
         engine.setValue("[Library]", "MoveFocusForward", 1);
         break;
     case "navPush":
-        engine.setValue("[Library]", "GoToItem", 1);
+        if (MaschineMK3.libraryVisible) {
+            // Load selected track to the active deck and close library
+            engine.setValue("[Channel" + MaschineMK3.activeDeck + "]", "LoadSelectedTrack", 1);
+            MaschineMK3.libraryVisible = false;
+            MaschineMK3.updateLibrary();
+        }
         break;
     }
 };
@@ -437,12 +534,14 @@ MaschineMK3.onButtonRelease = function(name) {
     case "shift":
         MaschineMK3.shiftPressed = false;
         break;
-    // Cue buttons are momentary — release resets the control
-    case "recCountIn":
-        engine.setValue("[Channel1]", "cue_default", 0);
+    case "select":
+        MaschineMK3.selectPressed = false;
         break;
-    case "tapMetro":
-        engine.setValue("[Channel2]", "cue_default", 0);
+    case "browserPlugin":
+        break;
+    // Cue is momentary — release resets the control
+    case "recCountIn":
+        engine.setValue("[Channel" + MaschineMK3.activeDeck + "]", "cue_default", 0);
         break;
     // Library nav pulses
     case "navUp":
@@ -471,32 +570,7 @@ MaschineMK3.onKnobChange = function(name, value) {
     var norm = value / 4095.0;
 
     switch (name) {
-    // Deck A EQ (k1=Hi, k2=Mid, k3=Lo) + filter (k4)
-    case "k1":
-        engine.setValue("[EqualizerRack1_[Channel1]_Effect1]", "parameter3", norm);
-        break;
-    case "k2":
-        engine.setValue("[EqualizerRack1_[Channel1]_Effect1]", "parameter2", norm);
-        break;
-    case "k3":
-        engine.setValue("[EqualizerRack1_[Channel1]_Effect1]", "parameter1", norm);
-        break;
-    case "k4":
-        engine.setValue("[QuickEffectRack1_[Channel1]]", "super1", norm);
-        break;
-    // Deck B EQ (k5=Hi, k6=Mid, k7=Lo) + filter (k8)
-    case "k5":
-        engine.setValue("[EqualizerRack1_[Channel2]_Effect1]", "parameter3", norm);
-        break;
-    case "k6":
-        engine.setValue("[EqualizerRack1_[Channel2]_Effect1]", "parameter2", norm);
-        break;
-    case "k7":
-        engine.setValue("[EqualizerRack1_[Channel2]_Effect1]", "parameter1", norm);
-        break;
-    case "k8":
-        engine.setValue("[QuickEffectRack1_[Channel2]]", "super1", norm);
-        break;
+    // k1-k8: unmapped for now
     // Master / headphone
     case "masterVolume":
         engine.setValue("[Master]", "gain", norm);
@@ -704,19 +778,8 @@ MaschineMK3.init = function(/* id, debugging */) {
     controller.send(MaschineMK3.report80.slice(1), 63, 0x80);
     controller.send(MaschineMK3.report81.slice(1), 42, 0x81);
 
-    // --- Transport LED feedback ---
-    engine.connectControl("[Channel1]", "play_indicator", function(value) {
-        MaschineMK3.setLed("play", value ? 63 : 0);
-    });
-    engine.connectControl("[Channel2]", "play_indicator", function(value) {
-        MaschineMK3.setLed("stop", value ? 63 : 0);
-    });
-    engine.connectControl("[Channel1]", "sync_enabled", function(value) {
-        MaschineMK3.setLed("restartLoop", value ? 63 : 0);
-    });
-    engine.connectControl("[Channel2]", "sync_enabled", function(value) {
-        MaschineMK3.setLed("eraseReplace", value ? 63 : 0);
-    });
+    // --- Transport LED feedback (follows active deck) ---
+    MaschineMK3.connectTransportLEDs();
 
     // --- Hotcue LED feedback (refresh pad LEDs when hotcues change) ---
     for (var i = 1; i <= 8; i++) {
@@ -728,9 +791,32 @@ MaschineMK3.init = function(/* id, debugging */) {
         })(i);
     }
 
+    // --- Browser LED (dim = available, bright = library open) ---
+    MaschineMK3.setLed("browserPlugin", 16);
+
+    // --- Nav encoder LEDs (always dimly lit for navigation) ---
+    MaschineMK3.setLed("navUp",    MaschineMK3.Color.WHITE);
+    MaschineMK3.setLed("navDown",  MaschineMK3.Color.WHITE);
+    MaschineMK3.setLed("navLeft",  MaschineMK3.Color.WHITE);
+    MaschineMK3.setLed("navRight", MaschineMK3.Color.WHITE);
+
+    // --- Reset EQs and filters to defaults (knobs send absolute values on init) ---
+    for (var ch = 1; ch <= 2; ch++) {
+        var chStr = "[Channel" + ch + "]";
+        engine.setValue("[EqualizerRack1_" + chStr + "_Effect1]", "parameter1", 0.5);
+        engine.setValue("[EqualizerRack1_" + chStr + "_Effect1]", "parameter2", 0.5);
+        engine.setValue("[EqualizerRack1_" + chStr + "_Effect1]", "parameter3", 0.5);
+        engine.setValue("[QuickEffectRack1_" + chStr + "]", "super1", 0.5);
+        engine.setValue(chStr, "volume", 1.0);
+        engine.setValue(chStr, "pregain", 1.0);
+    }
+    engine.setValue("[Master]", "gain", 1.0);
+    engine.setValue("[Master]", "headGain", 1.0);
+
     // Set initial LED state
     MaschineMK3.updateModeLEDs();
     MaschineMK3.updatePadLEDs();
+    MaschineMK3.updateDeckLEDs();
 };
 
 // ---------------------------------------------------------------------------

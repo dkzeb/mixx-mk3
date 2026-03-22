@@ -1,0 +1,275 @@
+<!DOCTYPE skin>
+<skin>
+  <manifest>
+    <title>MK3</title>
+    <author>mixx-mk3</author>
+    <version>1.2</version>
+    <description>Minimal skin for NI Maschine MK3 dual 480x272 screens (960x544 total)</description>
+    <language>en</language>
+    <license>MIT</license>
+    <attributes>
+      <attribute config_key="[App],num_decks">2</attribute>
+      <attribute persist="true" config_key="[Skin],active_deck_a">1</attribute>
+      <attribute persist="true" config_key="[Skin],active_deck_b">0</attribute>
+      <attribute persist="true" config_key="[Skin],show_library">0</attribute>
+      <attribute persist="true" config_key="[Skin],hide_deck_a">0</attribute>
+      <attribute persist="true" config_key="[Skin],hide_deck_b">0</attribute>
+    </attributes>
+  </manifest>
+
+  <ObjectName>Mixxx</ObjectName>
+  <MinimumSize>960,544</MinimumSize>
+  <MaximumSize>960,544</MaximumSize>
+  <SizePolicy>f,f</SizePolicy>
+  <Layout>horizontal</Layout>
+  <Style src="skin:style.qss"/>
+
+  <Children>
+
+    <!-- ═══════ LEFT SCREEN: DECK A ═══════ -->
+    <!-- Hidden when browsing with Deck B active (library takes this slot) -->
+    <WidgetGroup>
+      <ObjectName>DeckA</ObjectName>
+      <Size>480,544</Size>
+      <SizePolicy>f,f</SizePolicy>
+      <Layout>vertical</Layout>
+      <Connection>
+        <ConfigKey>[Skin],hide_deck_a</ConfigKey>
+        <BindProperty>visible</BindProperty>
+        <Transform><Not/></Transform>
+      </Connection>
+      <Children>
+
+        <!-- Active deck indicator -->
+        <WidgetGroup>
+          <ObjectName>DeckAHighlight</ObjectName>
+          <Size>480,4</Size>
+          <SizePolicy>me,f</SizePolicy>
+          <Connection>
+            <ConfigKey>[Skin],active_deck_a</ConfigKey>
+            <BindProperty>visible</BindProperty>
+          </Connection>
+        </WidgetGroup>
+
+        <!-- Track info -->
+        <WidgetGroup>
+          <ObjectName>TrackInfoA</ObjectName>
+          <SizePolicy>me,min</SizePolicy>
+          <Layout>vertical</Layout>
+          <Children>
+            <TrackProperty>
+              <ObjectName>TrackTitle</ObjectName>
+              <Property>title</Property>
+              <Channel>1</Channel>
+              <SizePolicy>me,min</SizePolicy>
+              <Elide>right</Elide>
+            </TrackProperty>
+            <TrackProperty>
+              <ObjectName>TrackArtist</ObjectName>
+              <Property>artist</Property>
+              <Channel>1</Channel>
+              <SizePolicy>me,min</SizePolicy>
+              <Elide>right</Elide>
+            </TrackProperty>
+          </Children>
+        </WidgetGroup>
+
+        <!-- Waveform overview -->
+        <Overview>
+          <ObjectName>WaveformOverviewA</ObjectName>
+          <Channel>1</Channel>
+          <Size>480,40</Size>
+          <SizePolicy>me,f</SizePolicy>
+          <BgColor>#1a1a2e</BgColor>
+          <SignalColor>#16a085</SignalColor>
+          <SignalLowColor>#e74c3c</SignalLowColor>
+          <SignalMidColor>#f39c12</SignalMidColor>
+          <SignalHighColor>#3498db</SignalHighColor>
+          <PlayPosColor>#ffffff</PlayPosColor>
+          <EndOfTrackColor>#ff0000</EndOfTrackColor>
+          <PlayedOverlayColor>#40000000</PlayedOverlayColor>
+          <Connection>
+            <ConfigKey>[Channel1],playposition</ConfigKey>
+          </Connection>
+        </Overview>
+
+        <!-- Scrolling waveform -->
+        <Visual>
+          <ObjectName>WaveformA</ObjectName>
+          <Channel>1</Channel>
+          <SizePolicy>me,me</SizePolicy>
+          <BgColor>#0d0d1a</BgColor>
+          <SignalColor>#16a085</SignalColor>
+          <SignalLowColor>#e74c3c</SignalLowColor>
+          <SignalMidColor>#f39c12</SignalMidColor>
+          <SignalHighColor>#3498db</SignalHighColor>
+          <PlayPosColor>#ffffff</PlayPosColor>
+          <EndOfTrackColor>#ff0000</EndOfTrackColor>
+          <BeatColor>#40ffffff</BeatColor>
+          <AxesColor>#40ffffff</AxesColor>
+        </Visual>
+
+        <!-- BPM and position -->
+        <WidgetGroup>
+          <ObjectName>DeckStatusA</ObjectName>
+          <SizePolicy>me,min</SizePolicy>
+          <Layout>horizontal</Layout>
+          <Children>
+            <NumberBpm>
+              <ObjectName>BPMDisplay</ObjectName>
+              <Channel>1</Channel>
+              <SizePolicy>me,min</SizePolicy>
+              <Connection>
+                <ConfigKey>[Channel1],visual_bpm</ConfigKey>
+              </Connection>
+            </NumberBpm>
+            <NumberPos>
+              <ObjectName>PositionDisplay</ObjectName>
+              <Channel>1</Channel>
+              <SizePolicy>me,min</SizePolicy>
+              <Connection>
+                <ConfigKey>[Channel1],playposition</ConfigKey>
+              </Connection>
+            </NumberPos>
+          </Children>
+        </WidgetGroup>
+
+      </Children>
+    </WidgetGroup>
+
+    <!-- ═══════ LIBRARY PANEL (replaces the non-active deck, full height) ═══════ -->
+    <WidgetGroup>
+      <ObjectName>LibraryPanel</ObjectName>
+      <Size>480,544</Size>
+      <SizePolicy>f,f</SizePolicy>
+      <Layout>vertical</Layout>
+      <Connection>
+        <ConfigKey>[Skin],show_library</ConfigKey>
+        <BindProperty>visible</BindProperty>
+      </Connection>
+      <Children>
+        <SearchBox>
+          <ObjectName>LibrarySearch</ObjectName>
+          <Size>480,28</Size>
+          <SizePolicy>me,f</SizePolicy>
+        </SearchBox>
+        <Library>
+          <ObjectName>LibraryView</ObjectName>
+          <SizePolicy>me,me</SizePolicy>
+        </Library>
+      </Children>
+    </WidgetGroup>
+
+    <!-- ═══════ RIGHT SCREEN: DECK B ═══════ -->
+    <!-- Hidden when browsing with Deck A active (library takes this slot) -->
+    <WidgetGroup>
+      <ObjectName>DeckB</ObjectName>
+      <Size>480,544</Size>
+      <SizePolicy>f,f</SizePolicy>
+      <Layout>vertical</Layout>
+      <Connection>
+        <ConfigKey>[Skin],hide_deck_b</ConfigKey>
+        <BindProperty>visible</BindProperty>
+        <Transform><Not/></Transform>
+      </Connection>
+      <Children>
+
+        <!-- Active deck indicator -->
+        <WidgetGroup>
+          <ObjectName>DeckBHighlight</ObjectName>
+          <Size>480,4</Size>
+          <SizePolicy>me,f</SizePolicy>
+          <Connection>
+            <ConfigKey>[Skin],active_deck_b</ConfigKey>
+            <BindProperty>visible</BindProperty>
+          </Connection>
+        </WidgetGroup>
+
+        <!-- Track info -->
+        <WidgetGroup>
+          <ObjectName>TrackInfoB</ObjectName>
+          <SizePolicy>me,min</SizePolicy>
+          <Layout>vertical</Layout>
+          <Children>
+            <TrackProperty>
+              <ObjectName>TrackTitle</ObjectName>
+              <Property>title</Property>
+              <Channel>2</Channel>
+              <SizePolicy>me,min</SizePolicy>
+              <Elide>right</Elide>
+            </TrackProperty>
+            <TrackProperty>
+              <ObjectName>TrackArtist</ObjectName>
+              <Property>artist</Property>
+              <Channel>2</Channel>
+              <SizePolicy>me,min</SizePolicy>
+              <Elide>right</Elide>
+            </TrackProperty>
+          </Children>
+        </WidgetGroup>
+
+        <!-- Waveform overview -->
+        <Overview>
+          <ObjectName>WaveformOverviewB</ObjectName>
+          <Channel>2</Channel>
+          <Size>480,40</Size>
+          <SizePolicy>me,f</SizePolicy>
+          <BgColor>#1a1a2e</BgColor>
+          <SignalColor>#e67e22</SignalColor>
+          <SignalLowColor>#e74c3c</SignalLowColor>
+          <SignalMidColor>#f39c12</SignalMidColor>
+          <SignalHighColor>#3498db</SignalHighColor>
+          <PlayPosColor>#ffffff</PlayPosColor>
+          <EndOfTrackColor>#ff0000</EndOfTrackColor>
+          <PlayedOverlayColor>#40000000</PlayedOverlayColor>
+          <Connection>
+            <ConfigKey>[Channel2],playposition</ConfigKey>
+          </Connection>
+        </Overview>
+
+        <!-- Scrolling waveform -->
+        <Visual>
+          <ObjectName>WaveformB</ObjectName>
+          <Channel>2</Channel>
+          <SizePolicy>me,me</SizePolicy>
+          <BgColor>#0d0d1a</BgColor>
+          <SignalColor>#e67e22</SignalColor>
+          <SignalLowColor>#e74c3c</SignalLowColor>
+          <SignalMidColor>#f39c12</SignalMidColor>
+          <SignalHighColor>#3498db</SignalHighColor>
+          <PlayPosColor>#ffffff</PlayPosColor>
+          <EndOfTrackColor>#ff0000</EndOfTrackColor>
+          <BeatColor>#40ffffff</BeatColor>
+          <AxesColor>#40ffffff</AxesColor>
+        </Visual>
+
+        <!-- BPM and position -->
+        <WidgetGroup>
+          <ObjectName>DeckStatusB</ObjectName>
+          <SizePolicy>me,min</SizePolicy>
+          <Layout>horizontal</Layout>
+          <Children>
+            <NumberBpm>
+              <ObjectName>BPMDisplay</ObjectName>
+              <Channel>2</Channel>
+              <SizePolicy>me,min</SizePolicy>
+              <Connection>
+                <ConfigKey>[Channel2],visual_bpm</ConfigKey>
+              </Connection>
+            </NumberBpm>
+            <NumberPos>
+              <ObjectName>PositionDisplay</ObjectName>
+              <Channel>2</Channel>
+              <SizePolicy>me,min</SizePolicy>
+              <Connection>
+                <ConfigKey>[Channel2],playposition</ConfigKey>
+              </Connection>
+            </NumberPos>
+          </Children>
+        </WidgetGroup>
+
+      </Children>
+    </WidgetGroup>
+
+  </Children>
+</skin>

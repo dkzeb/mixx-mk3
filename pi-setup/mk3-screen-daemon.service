@@ -1,10 +1,14 @@
 [Unit]
 Description=MK3 Screen Mirroring Daemon
-# Started by udev when MK3 is plugged in, stopped when removed
-StopWhenUnneeded=yes
+After=openbox.service
+Requires=openbox.service
 
 [Service]
 Type=simple
+Environment=DISPLAY=:99
 ExecStart=/usr/local/bin/mk3-screen-daemon --resolution 960x544 --fps 15 --no-partial
-Restart=on-failure
-RestartSec=2
+Restart=always
+RestartSec=3
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,12 @@
+[Unit]
+Description=Xvfb Virtual Framebuffer
+After=local-fs.target
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/Xvfb :99 -screen 0 960x544x24 -ac
+Restart=on-failure
+RestartSec=2
+
+[Install]
+WantedBy=multi-user.target
