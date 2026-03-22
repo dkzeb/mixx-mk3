@@ -439,47 +439,43 @@ MaschineMK3.updateTouchstripLEDs = function() {
 // Called from parseReport01. Bytes 28-29 are suspected position (16-bit LE).
 // ---------------------------------------------------------------------------
 MaschineMK3.processTouchstrip = function(data) {
-    // DEBUG: always log report length on first call
-    if (!MaschineMK3._tsDebugInit) {
-        MaschineMK3._tsDebugInit = true;
-        var dataLen = 0;
-        try { dataLen = data.length; } catch(e) { dataLen = -1; }
-        print("MK3-TS-DEBUG: first call, data.length=" + dataLen +
-              " type=" + typeof data);
-        // Try to read byte 30 directly
-        try {
-            print("MK3-TS-DEBUG: data[28]=" + data[28] + " data[29]=" + data[29] +
-                  " data[30]=" + data[30] + " data[31]=" + data[31] +
-                  " data[32]=" + data[32] + " data[33]=" + data[33]);
-        } catch(e) {
-            print("MK3-TS-DEBUG: error reading bytes: " + e);
+    // Touchstrip per ni config.json: dataLsb=30, dataMsb=31, range 0-1024, 0=released
+    var raw = ((data[31] || 0) << 8) | (data[30] || 0);
+    var touching = raw > 0;
+    var wasTouching = MaschineMK3.touchstripTouched;
+
+    // Visual debug: light up shift LED proportional to touchstrip value
+    if (touching) {
+        var brightness = Math.round((raw / 1024.0) * 63);
+        MaschineMK3.setLed("shift", brightness);
+    } else if (wasTouching && !touching) {
+        MaschineMK3.setLed("shift", 0);
+    }
+
+    // Triple-tap detection (3 touches within 800ms → reset crossfader)
+    if (touching && !wasTouching) {
+        var now = Date.now();
+        MaschineMK3.touchstripTapTimes.push(now);
+        while (MaschineMK3.touchstripTapTimes.length > 0 &&
+               now - MaschineMK3.touchstripTapTimes[0] > 800) {
+            MaschineMK3.touchstripTapTimes.shift();
+        }
+        if (MaschineMK3.touchstripTapTimes.length >= 3) {
+            engine.setValue("[Master]", "crossfader", 0);
+            MaschineMK3.updateTouchstripLEDs();
+            MaschineMK3.touchstripTapTimes = [];
         }
     }
 
-    // Log any changes at bytes 28-33 (touchstrip region per config.json)
-    if (!MaschineMK3._tsDebugPrev) {
-        MaschineMK3._tsDebugPrev = {};
-        for (var b = 28; b <= 33; b++) {
-            try { MaschineMK3._tsDebugPrev[b] = data[b]; } catch(e) {}
-        }
-        return;
+    // Map position to crossfader (-1 to +1)
+    if (touching && raw !== MaschineMK3.touchstripLastValue) {
+        var norm = Math.max(0, Math.min(1, raw / 1024.0));
+        var xfader = (norm * 2.0) - 1.0;
+        engine.setValue("[Master]", "crossfader", xfader);
     }
 
-    var changed = [];
-    for (var b = 28; b <= 33; b++) {
-        try {
-            var val = data[b];
-            if (val !== MaschineMK3._tsDebugPrev[b]) {
-                changed.push("b" + b + "=" + val + "(was " + MaschineMK3._tsDebugPrev[b] + ")");
-                MaschineMK3._tsDebugPrev[b] = val;
-            }
-        } catch(e) {}
-    }
-    if (changed.length > 0) {
-        var w30 = ((data[31] || 0) << 8) | (data[30] || 0);
-        var w32 = ((data[33] || 0) << 8) | (data[32] || 0);
-        print("MK3-TS: " + changed.join(" ") + " | pos1=" + w30 + " pos2=" + w32);
-    }
+    MaschineMK3.touchstripTouched = touching;
+    MaschineMK3.touchstripLastValue = raw;
 };
 
 // ---------------------------------------------------------------------------
@@ -874,11 +870,6 @@ MaschineMK3.parseReport01 = function(data) {
     }
 
     // --- Touchstrip ---
-    if (!MaschineMK3._tsReached) {
-        MaschineMK3._tsReached = true;
-        print("MK3-TS-REACHED: parseReport01 reached touchstrip call, data type=" +
-              typeof data + " keys=" + (data.length !== undefined ? "has length=" + data.length : "no length"));
-    }
     MaschineMK3.processTouchstrip(data);
 };
 
