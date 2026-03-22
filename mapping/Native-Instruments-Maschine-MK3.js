@@ -255,6 +255,13 @@ MaschineMK3.report81 = new Array(43).fill(0);   // [0]=0x81, [1..42]=data
 // ---------------------------------------------------------------------------
 // State
 // ---------------------------------------------------------------------------
+// Touchstrip constants
+MaschineMK3.TOUCHSTRIP_LEDS = 25;          // ts1-ts25
+MaschineMK3.TOUCHSTRIP_ADDR = 28;          // suspected byte address in report 0x01
+MaschineMK3.touchstripTapTimes = [];        // timestamps for triple-tap detection
+MaschineMK3.touchstripLastValue = -1;       // last raw touchstrip value
+MaschineMK3.touchstripTouched = false;      // whether strip is being touched
+
 MaschineMK3.shiftPressed  = false;
 MaschineMK3.selectPressed = false;     // "select" button held = modifier for deck switching
 MaschineMK3.activeDeck    = 1;         // 1 or 2 — which deck the browser loads to
@@ -385,6 +392,76 @@ MaschineMK3.connectTransportLEDs = function() {
     MaschineMK3.setLed("play", engine.getValue(ch, "play_indicator") ? 63 : 0);
     MaschineMK3.setLed("restartLoop", engine.getValue(ch, "sync_enabled") ? 63 : 0);
     MaschineMK3.setLed("recCountIn", engine.getValue(ch, "cue_indicator") ? 63 : 0);
+};
+
+// ---------------------------------------------------------------------------
+// updateTouchstripLEDs — visualize crossfader position on the 25-segment strip.
+// Crossfader value: -1 (full left) to +1 (full right). Center = 0.
+// ---------------------------------------------------------------------------
+MaschineMK3.updateTouchstripLEDs = function() {
+    var xfader = engine.getValue("[Master]", "crossfader"); // -1 to 1
+    // Map to 0-24 (LED index)
+    var pos = Math.round(((xfader + 1.0) / 2.0) * 24);
+    var C = MaschineMK3.Color;
+
+    for (var i = 0; i < 25; i++) {
+        var ledName = "ts" + (i + 1);
+        if (i === pos) {
+            MaschineMK3.setLed(ledName, C.WHITE);
+        } else if (i === 12) {
+            // Dim center marker
+            MaschineMK3.setLed(ledName, C.BLUE);
+        } else {
+            MaschineMK3.setLed(ledName, C.OFF);
+        }
+    }
+};
+
+// ---------------------------------------------------------------------------
+// processTouchstrip — parse touchstrip from HID report and map to crossfader.
+// Called from parseReport01. Bytes 28-29 are suspected position (16-bit LE).
+// ---------------------------------------------------------------------------
+MaschineMK3.processTouchstrip = function(data) {
+    // Read suspected touchstrip position (16-bit LE at bytes 28-29)
+    var raw = (data[29] << 8) | data[28];
+
+    // Debug: log raw value when it changes significantly
+    if (Math.abs(raw - (MaschineMK3.touchstripLastValue || 0)) > 10) {
+        print("MK3 touchstrip: raw=" + raw + " byte28=" + data[28] + " byte29=" + data[29] +
+              " byte30=" + data[30] + " byte31=" + data[31]);
+    }
+
+    // Detect touch (raw > 0 means touching, 0 = released)
+    var touching = raw > 0;
+    var wasTouching = MaschineMK3.touchstripTouched;
+
+    if (touching && !wasTouching) {
+        // Touch started — check for triple-tap
+        var now = Date.now();
+        MaschineMK3.touchstripTapTimes.push(now);
+        // Keep only taps within last 800ms
+        while (MaschineMK3.touchstripTapTimes.length > 0 &&
+               now - MaschineMK3.touchstripTapTimes[0] > 800) {
+            MaschineMK3.touchstripTapTimes.shift();
+        }
+        if (MaschineMK3.touchstripTapTimes.length >= 3) {
+            // Triple-tap: reset crossfader to center
+            engine.setValue("[Master]", "crossfader", 0);
+            MaschineMK3.touchstripTapTimes = [];
+            print("MK3: Crossfader reset to center (triple-tap)");
+        }
+    }
+
+    if (touching && raw !== MaschineMK3.touchstripLastValue) {
+        // Map raw position to crossfader (-1 to 1)
+        // Assumed range: ~100-900 or 0-1023 — will need calibration
+        var norm = Math.max(0, Math.min(1, raw / 1023.0));
+        var xfader = (norm * 2.0) - 1.0;
+        engine.setValue("[Master]", "crossfader", xfader);
+    }
+
+    MaschineMK3.touchstripTouched = touching;
+    MaschineMK3.touchstripLastValue = raw;
 };
 
 // ---------------------------------------------------------------------------
@@ -658,11 +735,7 @@ MaschineMK3.onKnobChange = function(name, value) {
         engine.setValue("[Channel2]", "volume", norm);
         break;
 
-    // K4/K8: Crossfader (both map to same control)
-    case "k4":
-    case "k8":
-        engine.setValue("[Master]", "crossfader", (norm * 2.0) - 1.0);
-        break;
+    // K4/K8: available
 
     // Master / headphone
     case "masterVolume":
@@ -791,6 +864,9 @@ MaschineMK3.parseReport01 = function(data) {
         if (rawVal > 4095) { rawVal = 4095; }
         MaschineMK3.onKnobChange(kName, rawVal);
     }
+
+    // --- Touchstrip ---
+    MaschineMK3.processTouchstrip(data);
 };
 
 // ---------------------------------------------------------------------------
@@ -900,6 +976,12 @@ MaschineMK3.init = function(/* id, debugging */) {
     MaschineMK3.setLed("d6", 16);
     MaschineMK3.setLed("d7", 16);
     MaschineMK3.setLed("d8", 16);
+
+    // --- Crossfader → touchstrip LED feedback ---
+    engine.makeConnection("[Master]", "crossfader", function() {
+        MaschineMK3.updateTouchstripLEDs();
+    });
+    MaschineMK3.updateTouchstripLEDs();
 
     // --- Browser LED (dim = available, bright = library open) ---
     MaschineMK3.setLed("browserPlugin", 16);
