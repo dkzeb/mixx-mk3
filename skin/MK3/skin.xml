@@ -65,7 +65,7 @@
             <Label><ObjectName>DLabel</ObjectName><Size>120,12</Size><Text>SYNC</Text></Label>
             <Label><ObjectName>DLabel</ObjectName><Size>120,12</Size><Text>TEMPO-</Text></Label>
             <Label><ObjectName>DLabel</ObjectName><Size>120,12</Size><Text>TEMPO+</Text></Label>
-            <Label><ObjectName>DLabel</ObjectName><Size>120,12</Size><Text></Text></Label>
+            <Label><ObjectName>DLabel</ObjectName><Size>120,12</Size><Text>CUE</Text></Label>
           </Children>
         </WidgetGroup>
 
@@ -635,7 +635,7 @@
             <Label><ObjectName>DLabel</ObjectName><Size>120,12</Size><Text>SYNC</Text></Label>
             <Label><ObjectName>DLabel</ObjectName><Size>120,12</Size><Text>TEMPO-</Text></Label>
             <Label><ObjectName>DLabel</ObjectName><Size>120,12</Size><Text>TEMPO+</Text></Label>
-            <Label><ObjectName>DLabel</ObjectName><Size>120,12</Size><Text></Text></Label>
+            <Label><ObjectName>DLabel</ObjectName><Size>120,12</Size><Text>CUE</Text></Label>
           </Children>
         </WidgetGroup>
 

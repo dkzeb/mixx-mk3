@@ -728,7 +728,13 @@ MaschineMK3.onButtonPress = function(name) {
     case "d7":
         engine.setValue("[Channel2]", "rate_temp_up", 1);
         break;
-    // D4/D8: available
+    // D4/D8: headphone cue (PFL) toggle
+    case "d4":
+        engine.setValue("[Channel1]", "pfl", engine.getValue("[Channel1]", "pfl") ? 0 : 1);
+        break;
+    case "d8":
+        engine.setValue("[Channel2]", "pfl", engine.getValue("[Channel2]", "pfl") ? 0 : 1);
+        break;
 
     // --- Deck select: arrow left/right ---
     case "arrowLeft":
@@ -1199,7 +1205,15 @@ MaschineMK3.init = function(/* id, debugging */) {
     engine.makeConnection("[Channel2]", "sync_enabled", function(value) {
         MaschineMK3.setLed("d5", value ? 63 : 16);
     });
-    // Dim the nudge buttons (always available)
+    // PFL (headphone cue) LED feedback
+    engine.makeConnection("[Channel1]", "pfl", function(value) {
+        MaschineMK3.setLed("d4", value ? 63 : 16);
+    });
+    engine.makeConnection("[Channel2]", "pfl", function(value) {
+        MaschineMK3.setLed("d8", value ? 63 : 16);
+    });
+
+    // Dim the D buttons (always available)
     MaschineMK3.setLed("d1", 16);
     MaschineMK3.setLed("d2", 16);
     MaschineMK3.setLed("d3", 16);
