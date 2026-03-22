@@ -576,6 +576,7 @@ MaschineMK3.onButtonPress = function(name) {
     // --- Modifier ---
     case "shift":
         MaschineMK3.shiftPressed = true;
+        MaschineMK3.setLed("shift", 63);
         break;
 
     // g1-g4: available for future use
@@ -661,6 +662,7 @@ MaschineMK3.onButtonRelease = function(name) {
     switch (name) {
     case "shift":
         MaschineMK3.shiftPressed = false;
+        MaschineMK3.setLed("shift", 0);
         break;
     case "browserPlugin":
         break;
@@ -783,6 +785,9 @@ MaschineMK3.onStepperChange = function(direction) {
 MaschineMK3.onPadPress = function(padNumber) {
     var ch = "[Channel" + MaschineMK3.activeDeck + "]";
     var size = MaschineMK3.loopSizes[padNumber];
+
+    // Quantize to beat unless shift is held
+    engine.setValue(ch, "quantize", MaschineMK3.shiftPressed ? 0 : 1);
 
     if (size > 0) {
         // Beat loop — toggle loop at this size
