@@ -893,8 +893,12 @@ MaschineMK3.onKnobChange = function(name, value) {
         case "k1": // Tempo rate
             MaschineMK3.adjustValue("[Channel1]", "rate", delta, 0.002, -1, 1);
             break;
-        case "k2": // Scrub/jog
-            engine.setValue("[Channel1]", "jog", delta * 0.1);
+        case "k2": // Scrub/jog or Shift=zoom
+            if (MaschineMK3.shiftPressed) {
+                MaschineMK3.adjustValue("[Channel1]", "waveform_zoom", delta, -0.1, 1, 10);
+            } else {
+                engine.setValue("[Channel1]", "jog", delta * 0.1);
+            }
             break;
         case "k3": // Volume
             MaschineMK3.adjustValue("[Channel1]", "volume", delta, 0.002, 0, 1);
@@ -905,8 +909,12 @@ MaschineMK3.onKnobChange = function(name, value) {
         case "k5": // Tempo rate
             MaschineMK3.adjustValue("[Channel2]", "rate", delta, 0.002, -1, 1);
             break;
-        case "k6": // Scrub/jog
-            engine.setValue("[Channel2]", "jog", delta * 0.1);
+        case "k6": // Scrub/jog or Shift=zoom
+            if (MaschineMK3.shiftPressed) {
+                MaschineMK3.adjustValue("[Channel2]", "waveform_zoom", delta, -0.1, 1, 10);
+            } else {
+                engine.setValue("[Channel2]", "jog", delta * 0.1);
+            }
             break;
         case "k7": // Volume
             MaschineMK3.adjustValue("[Channel2]", "volume", delta, 0.002, 0, 1);
