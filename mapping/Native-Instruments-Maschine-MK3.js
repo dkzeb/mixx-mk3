@@ -502,13 +502,7 @@ MaschineMK3.onButtonPress = function(name) {
     case "d7":
         engine.setValue("[Channel2]", "rate_temp_up", 1);
         break;
-    // D4/D8: Play/Pause (per-deck, independent of active deck)
-    case "d4":
-        engine.setValue("[Channel1]", "play", !engine.getValue("[Channel1]", "play"));
-        break;
-    case "d8":
-        engine.setValue("[Channel2]", "play", !engine.getValue("[Channel2]", "play"));
-        break;
+    // D4/D8: available
 
     // --- Deck select: select + arrow left/right ---
     case "select":
@@ -896,12 +890,6 @@ MaschineMK3.init = function(/* id, debugging */) {
     });
     engine.makeConnection("[Channel2]", "sync_enabled", function(value) {
         MaschineMK3.setLed("d5", value ? 63 : 16);
-    });
-    engine.makeConnection("[Channel1]", "play_indicator", function(value) {
-        MaschineMK3.setLed("d4", value ? 63 : 16);
-    });
-    engine.makeConnection("[Channel2]", "play_indicator", function(value) {
-        MaschineMK3.setLed("d8", value ? 63 : 16);
     });
     // Dim the nudge buttons (always available)
     MaschineMK3.setLed("d1", 16);
