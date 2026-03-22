@@ -874,6 +874,11 @@ MaschineMK3.parseReport01 = function(data) {
     }
 
     // --- Touchstrip ---
+    if (!MaschineMK3._tsReached) {
+        MaschineMK3._tsReached = true;
+        print("MK3-TS-REACHED: parseReport01 reached touchstrip call, data type=" +
+              typeof data + " keys=" + (data.length !== undefined ? "has length=" + data.length : "no length"));
+    }
     MaschineMK3.processTouchstrip(data);
 };
 
