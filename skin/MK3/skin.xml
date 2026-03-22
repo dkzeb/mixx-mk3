@@ -3,8 +3,8 @@
   <manifest>
     <title>MK3</title>
     <author>mixx-mk3</author>
-    <version>1.2</version>
-    <description>Minimal skin for NI Maschine MK3 dual 480x272 screens (960x544 total)</description>
+    <version>2.0</version>
+    <description>Native resolution skin for NI Maschine MK3 dual 480x272 screens (960x272)</description>
     <language>en</language>
     <license>MIT</license>
     <attributes>
@@ -19,19 +19,18 @@
   </manifest>
 
   <ObjectName>Mixxx</ObjectName>
-  <MinimumSize>960,544</MinimumSize>
-  <MaximumSize>960,544</MaximumSize>
+  <MinimumSize>960,272</MinimumSize>
+  <MaximumSize>960,272</MaximumSize>
   <SizePolicy>f,f</SizePolicy>
   <Layout>horizontal</Layout>
   <Style src="skin:style.qss"/>
 
   <Children>
 
-    <!-- ═══════ LEFT SCREEN: DECK A ═══════ -->
-    <!-- Hidden when browsing with Deck B active (library takes this slot) -->
+    <!-- ═══════ LEFT SCREEN: DECK A (480x272) ═══════ -->
     <WidgetGroup>
       <ObjectName>DeckA</ObjectName>
-      <Size>480,544</Size>
+      <Size>480,272</Size>
       <SizePolicy>f,f</SizePolicy>
       <Layout>vertical</Layout>
       <Connection>
@@ -44,7 +43,7 @@
         <!-- Active deck indicator -->
         <WidgetGroup>
           <ObjectName>DeckAHighlight</ObjectName>
-          <Size>480,4</Size>
+          <Size>480,3</Size>
           <SizePolicy>me,f</SizePolicy>
           <Connection>
             <ConfigKey>[Skin],active_deck_a</ConfigKey>
@@ -52,25 +51,11 @@
           </Connection>
         </WidgetGroup>
 
-        <!-- Control labels (aligned with D1-D4 buttons above screen) -->
-        <WidgetGroup>
-          <ObjectName>ControlLabels</ObjectName>
-          <Size>480,16</Size>
-          <SizePolicy>me,f</SizePolicy>
-          <Layout>horizontal</Layout>
-          <Children>
-            <Label><ObjectName>CtrlLabel</ObjectName><Size>120,16</Size><Text>SYNC</Text></Label>
-            <Label><ObjectName>CtrlLabel</ObjectName><Size>120,16</Size><Text>TEMPO-</Text></Label>
-            <Label><ObjectName>CtrlLabel</ObjectName><Size>120,16</Size><Text>TEMPO+</Text></Label>
-            <Label><ObjectName>CtrlLabel</ObjectName><Size>120,16</Size><Text></Text></Label>
-          </Children>
-        </WidgetGroup>
-
-        <!-- Track info -->
+        <!-- Track info (single row: title — artist) -->
         <WidgetGroup>
           <ObjectName>TrackInfoA</ObjectName>
           <SizePolicy>me,min</SizePolicy>
-          <Layout>vertical</Layout>
+          <Layout>horizontal</Layout>
           <Children>
             <TrackProperty>
               <ObjectName>TrackTitle</ObjectName>
@@ -93,7 +78,7 @@
         <Overview>
           <ObjectName>WaveformOverviewA</ObjectName>
           <Channel>1</Channel>
-          <Size>480,40</Size>
+          <Size>480,24</Size>
           <SizePolicy>me,f</SizePolicy>
           <BgColor>#1a1a2e</BgColor>
           <SignalColor>#16a085</SignalColor>
@@ -152,10 +137,10 @@
       </Children>
     </WidgetGroup>
 
-    <!-- ═══════ LIBRARY PANEL (replaces the non-active deck, full height) ═══════ -->
+    <!-- ═══════ LIBRARY PANEL (480x272) ═══════ -->
     <WidgetGroup>
       <ObjectName>LibraryPanel</ObjectName>
-      <Size>480,544</Size>
+      <Size>480,272</Size>
       <SizePolicy>f,f</SizePolicy>
       <Layout>vertical</Layout>
       <Connection>
@@ -165,7 +150,7 @@
       <Children>
         <SearchBox>
           <ObjectName>LibrarySearch</ObjectName>
-          <Size>480,28</Size>
+          <Size>480,22</Size>
           <SizePolicy>me,f</SizePolicy>
         </SearchBox>
         <Library>
@@ -175,10 +160,10 @@
       </Children>
     </WidgetGroup>
 
-    <!-- ═══════ MIXER PANEL (replaces the non-active deck, full height) ═══════ -->
+    <!-- ═══════ MIXER PANEL (480x272) ═══════ -->
     <WidgetGroup>
       <ObjectName>MixerPanel</ObjectName>
-      <Size>480,544</Size>
+      <Size>480,272</Size>
       <SizePolicy>f,f</SizePolicy>
       <Layout>vertical</Layout>
       <Connection>
@@ -186,9 +171,7 @@
         <BindProperty>visible</BindProperty>
       </Connection>
       <Children>
-        <Label><ObjectName>MixerTitle</ObjectName><Size>480,28</Size><Text>MIXER</Text></Label>
-
-        <!-- Both decks side by side -->
+        <Label><ObjectName>MixerTitle</ObjectName><Size>480,20</Size><Text>MIXER</Text></Label>
         <WidgetGroup>
           <SizePolicy>me,me</SizePolicy>
           <Layout>horizontal</Layout>
@@ -201,29 +184,29 @@
               <SizePolicy>f,me</SizePolicy>
               <Layout>vertical</Layout>
               <Children>
-                <Label><ObjectName>MixerChLabel</ObjectName><Size>240,24</Size><Text>DECK A</Text></Label>
-                <Label><ObjectName>MixerKnobLabel</ObjectName><Size>240,18</Size><Text>GAIN</Text></Label>
-                <Number><ObjectName>MixerValue</ObjectName><Size>240,28</Size><SizePolicy>me,f</SizePolicy>
+                <Label><ObjectName>MixerChLabel</ObjectName><Size>240,18</Size><Text>DECK A</Text></Label>
+                <Label><ObjectName>MixerKnobLabel</ObjectName><Size>240,12</Size><Text>GAIN</Text></Label>
+                <Number><ObjectName>MixerValue</ObjectName><Size>240,22</Size><SizePolicy>me,f</SizePolicy>
                   <NumberOfDigits>4</NumberOfDigits>
                   <Connection><ConfigKey>[Channel1],pregain</ConfigKey></Connection>
                 </Number>
-                <Label><ObjectName>MixerKnobLabel</ObjectName><Size>240,18</Size><Text>HI</Text></Label>
-                <Number><ObjectName>MixerValue</ObjectName><Size>240,28</Size><SizePolicy>me,f</SizePolicy>
+                <Label><ObjectName>MixerKnobLabel</ObjectName><Size>240,12</Size><Text>HI</Text></Label>
+                <Number><ObjectName>MixerValue</ObjectName><Size>240,22</Size><SizePolicy>me,f</SizePolicy>
                   <NumberOfDigits>4</NumberOfDigits>
                   <Connection><ConfigKey>[EqualizerRack1_[Channel1]_Effect1],parameter3</ConfigKey></Connection>
                 </Number>
-                <Label><ObjectName>MixerKnobLabel</ObjectName><Size>240,18</Size><Text>MID</Text></Label>
-                <Number><ObjectName>MixerValue</ObjectName><Size>240,28</Size><SizePolicy>me,f</SizePolicy>
+                <Label><ObjectName>MixerKnobLabel</ObjectName><Size>240,12</Size><Text>MID</Text></Label>
+                <Number><ObjectName>MixerValue</ObjectName><Size>240,22</Size><SizePolicy>me,f</SizePolicy>
                   <NumberOfDigits>4</NumberOfDigits>
                   <Connection><ConfigKey>[EqualizerRack1_[Channel1]_Effect1],parameter2</ConfigKey></Connection>
                 </Number>
-                <Label><ObjectName>MixerKnobLabel</ObjectName><Size>240,18</Size><Text>LO</Text></Label>
-                <Number><ObjectName>MixerValue</ObjectName><Size>240,28</Size><SizePolicy>me,f</SizePolicy>
+                <Label><ObjectName>MixerKnobLabel</ObjectName><Size>240,12</Size><Text>LO</Text></Label>
+                <Number><ObjectName>MixerValue</ObjectName><Size>240,22</Size><SizePolicy>me,f</SizePolicy>
                   <NumberOfDigits>4</NumberOfDigits>
                   <Connection><ConfigKey>[EqualizerRack1_[Channel1]_Effect1],parameter1</ConfigKey></Connection>
                 </Number>
-                <Label><ObjectName>MixerKnobLabel</ObjectName><Size>240,18</Size><Text>VOLUME</Text></Label>
-                <Number><ObjectName>MixerValue</ObjectName><Size>240,28</Size><SizePolicy>me,f</SizePolicy>
+                <Label><ObjectName>MixerKnobLabel</ObjectName><Size>240,12</Size><Text>VOL</Text></Label>
+                <Number><ObjectName>MixerValue</ObjectName><Size>240,22</Size><SizePolicy>me,f</SizePolicy>
                   <NumberOfDigits>4</NumberOfDigits>
                   <Connection><ConfigKey>[Channel1],volume</ConfigKey></Connection>
                 </Number>
@@ -237,29 +220,29 @@
               <SizePolicy>f,me</SizePolicy>
               <Layout>vertical</Layout>
               <Children>
-                <Label><ObjectName>MixerChLabel</ObjectName><Size>240,24</Size><Text>DECK B</Text></Label>
-                <Label><ObjectName>MixerKnobLabel</ObjectName><Size>240,18</Size><Text>GAIN</Text></Label>
-                <Number><ObjectName>MixerValue</ObjectName><Size>240,28</Size><SizePolicy>me,f</SizePolicy>
+                <Label><ObjectName>MixerChLabel</ObjectName><Size>240,18</Size><Text>DECK B</Text></Label>
+                <Label><ObjectName>MixerKnobLabel</ObjectName><Size>240,12</Size><Text>GAIN</Text></Label>
+                <Number><ObjectName>MixerValue</ObjectName><Size>240,22</Size><SizePolicy>me,f</SizePolicy>
                   <NumberOfDigits>4</NumberOfDigits>
                   <Connection><ConfigKey>[Channel2],pregain</ConfigKey></Connection>
                 </Number>
-                <Label><ObjectName>MixerKnobLabel</ObjectName><Size>240,18</Size><Text>HI</Text></Label>
-                <Number><ObjectName>MixerValue</ObjectName><Size>240,28</Size><SizePolicy>me,f</SizePolicy>
+                <Label><ObjectName>MixerKnobLabel</ObjectName><Size>240,12</Size><Text>HI</Text></Label>
+                <Number><ObjectName>MixerValue</ObjectName><Size>240,22</Size><SizePolicy>me,f</SizePolicy>
                   <NumberOfDigits>4</NumberOfDigits>
                   <Connection><ConfigKey>[EqualizerRack1_[Channel2]_Effect1],parameter3</ConfigKey></Connection>
                 </Number>
-                <Label><ObjectName>MixerKnobLabel</ObjectName><Size>240,18</Size><Text>MID</Text></Label>
-                <Number><ObjectName>MixerValue</ObjectName><Size>240,28</Size><SizePolicy>me,f</SizePolicy>
+                <Label><ObjectName>MixerKnobLabel</ObjectName><Size>240,12</Size><Text>MID</Text></Label>
+                <Number><ObjectName>MixerValue</ObjectName><Size>240,22</Size><SizePolicy>me,f</SizePolicy>
                   <NumberOfDigits>4</NumberOfDigits>
                   <Connection><ConfigKey>[EqualizerRack1_[Channel2]_Effect1],parameter2</ConfigKey></Connection>
                 </Number>
-                <Label><ObjectName>MixerKnobLabel</ObjectName><Size>240,18</Size><Text>LO</Text></Label>
-                <Number><ObjectName>MixerValue</ObjectName><Size>240,28</Size><SizePolicy>me,f</SizePolicy>
+                <Label><ObjectName>MixerKnobLabel</ObjectName><Size>240,12</Size><Text>LO</Text></Label>
+                <Number><ObjectName>MixerValue</ObjectName><Size>240,22</Size><SizePolicy>me,f</SizePolicy>
                   <NumberOfDigits>4</NumberOfDigits>
                   <Connection><ConfigKey>[EqualizerRack1_[Channel2]_Effect1],parameter1</ConfigKey></Connection>
                 </Number>
-                <Label><ObjectName>MixerKnobLabel</ObjectName><Size>240,18</Size><Text>VOLUME</Text></Label>
-                <Number><ObjectName>MixerValue</ObjectName><Size>240,28</Size><SizePolicy>me,f</SizePolicy>
+                <Label><ObjectName>MixerKnobLabel</ObjectName><Size>240,12</Size><Text>VOL</Text></Label>
+                <Number><ObjectName>MixerValue</ObjectName><Size>240,22</Size><SizePolicy>me,f</SizePolicy>
                   <NumberOfDigits>4</NumberOfDigits>
                   <Connection><ConfigKey>[Channel2],volume</ConfigKey></Connection>
                 </Number>
@@ -271,11 +254,10 @@
       </Children>
     </WidgetGroup>
 
-    <!-- ═══════ RIGHT SCREEN: DECK B ═══════ -->
-    <!-- Hidden when browsing with Deck A active (library takes this slot) -->
+    <!-- ═══════ RIGHT SCREEN: DECK B (480x272) ═══════ -->
     <WidgetGroup>
       <ObjectName>DeckB</ObjectName>
-      <Size>480,544</Size>
+      <Size>480,272</Size>
       <SizePolicy>f,f</SizePolicy>
       <Layout>vertical</Layout>
       <Connection>
@@ -288,7 +270,7 @@
         <!-- Active deck indicator -->
         <WidgetGroup>
           <ObjectName>DeckBHighlight</ObjectName>
-          <Size>480,4</Size>
+          <Size>480,3</Size>
           <SizePolicy>me,f</SizePolicy>
           <Connection>
             <ConfigKey>[Skin],active_deck_b</ConfigKey>
@@ -296,25 +278,11 @@
           </Connection>
         </WidgetGroup>
 
-        <!-- Control labels (aligned with D5-D8 buttons above screen) -->
-        <WidgetGroup>
-          <ObjectName>ControlLabels</ObjectName>
-          <Size>480,16</Size>
-          <SizePolicy>me,f</SizePolicy>
-          <Layout>horizontal</Layout>
-          <Children>
-            <Label><ObjectName>CtrlLabel</ObjectName><Size>120,16</Size><Text>SYNC</Text></Label>
-            <Label><ObjectName>CtrlLabel</ObjectName><Size>120,16</Size><Text>TEMPO-</Text></Label>
-            <Label><ObjectName>CtrlLabel</ObjectName><Size>120,16</Size><Text>TEMPO+</Text></Label>
-            <Label><ObjectName>CtrlLabel</ObjectName><Size>120,16</Size><Text></Text></Label>
-          </Children>
-        </WidgetGroup>
-
-        <!-- Track info -->
+        <!-- Track info (single row) -->
         <WidgetGroup>
           <ObjectName>TrackInfoB</ObjectName>
           <SizePolicy>me,min</SizePolicy>
-          <Layout>vertical</Layout>
+          <Layout>horizontal</Layout>
           <Children>
             <TrackProperty>
               <ObjectName>TrackTitle</ObjectName>
@@ -337,7 +305,7 @@
         <Overview>
           <ObjectName>WaveformOverviewB</ObjectName>
           <Channel>2</Channel>
-          <Size>480,40</Size>
+          <Size>480,24</Size>
           <SizePolicy>me,f</SizePolicy>
           <BgColor>#1a1a2e</BgColor>
           <SignalColor>#e67e22</SignalColor>
