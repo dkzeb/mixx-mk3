@@ -417,11 +417,6 @@ MaschineMK3.connectTransportLEDs = function() {
         })
     );
     MaschineMK3.transportConnections.push(
-        engine.makeConnection(ch, "sync_enabled", function(value) {
-            MaschineMK3.setLed("restartLoop", value ? 63 : 0);
-        })
-    );
-    MaschineMK3.transportConnections.push(
         engine.makeConnection(ch, "cue_indicator", function(value) {
             MaschineMK3.setLed("recCountIn", value ? 63 : 0);
         })
@@ -429,7 +424,7 @@ MaschineMK3.connectTransportLEDs = function() {
 
     // Trigger immediate update
     MaschineMK3.setLed("play", engine.getValue(ch, "play_indicator") ? 63 : 0);
-    MaschineMK3.setLed("restartLoop", engine.getValue(ch, "sync_enabled") ? 63 : 0);
+    MaschineMK3.setLed("restartLoop", 16);
     MaschineMK3.setLed("recCountIn", engine.getValue(ch, "cue_indicator") ? 63 : 0);
 };
 
@@ -566,8 +561,7 @@ MaschineMK3.onButtonPress = function(name) {
         engine.setValue(ch, "cue_default", 1);
         break;
     case "restartLoop":
-        engine.setValue(ch, "sync_enabled",
-            engine.getValue(ch, "sync_enabled") ? 0 : 1);
+        engine.setValue(ch, "playposition", 0);
         break;
 
     // --- Modifier ---
