@@ -439,26 +439,47 @@ MaschineMK3.updateTouchstripLEDs = function() {
 // Called from parseReport01. Bytes 28-29 are suspected position (16-bit LE).
 // ---------------------------------------------------------------------------
 MaschineMK3.processTouchstrip = function(data) {
-    // DEBUG: scan ALL bytes in the report for changes (find touchstrip)
-    var len = data.length;
+    // DEBUG: always log report length on first call
+    if (!MaschineMK3._tsDebugInit) {
+        MaschineMK3._tsDebugInit = true;
+        var dataLen = 0;
+        try { dataLen = data.length; } catch(e) { dataLen = -1; }
+        print("MK3-TS-DEBUG: first call, data.length=" + dataLen +
+              " type=" + typeof data);
+        // Try to read byte 30 directly
+        try {
+            print("MK3-TS-DEBUG: data[28]=" + data[28] + " data[29]=" + data[29] +
+                  " data[30]=" + data[30] + " data[31]=" + data[31] +
+                  " data[32]=" + data[32] + " data[33]=" + data[33]);
+        } catch(e) {
+            print("MK3-TS-DEBUG: error reading bytes: " + e);
+        }
+    }
+
+    // Log any changes at bytes 28-33 (touchstrip region per config.json)
     if (!MaschineMK3._tsDebugPrev) {
-        MaschineMK3._tsDebugPrev = [];
-        for (var b = 0; b < len; b++) { MaschineMK3._tsDebugPrev[b] = data[b]; }
-        print("MK3-TS: init, report length=" + len);
+        MaschineMK3._tsDebugPrev = {};
+        for (var b = 28; b <= 33; b++) {
+            try { MaschineMK3._tsDebugPrev[b] = data[b]; } catch(e) {}
+        }
         return;
     }
 
     var changed = [];
-    // Skip bytes 1-11 (buttons/stepper) and 12-27 (k1-k8) — we know those
-    for (var b = 28; b < len; b++) {
-        if (b < MaschineMK3._tsDebugPrev.length && data[b] !== MaschineMK3._tsDebugPrev[b]) {
-            changed.push("b" + b + "=" + data[b]);
-        }
+    for (var b = 28; b <= 33; b++) {
+        try {
+            var val = data[b];
+            if (val !== MaschineMK3._tsDebugPrev[b]) {
+                changed.push("b" + b + "=" + val + "(was " + MaschineMK3._tsDebugPrev[b] + ")");
+                MaschineMK3._tsDebugPrev[b] = val;
+            }
+        } catch(e) {}
     }
     if (changed.length > 0) {
-        print("MK3-TS: " + changed.join(" ") + " (len=" + len + ")");
+        var w30 = ((data[31] || 0) << 8) | (data[30] || 0);
+        var w32 = ((data[33] || 0) << 8) | (data[32] || 0);
+        print("MK3-TS: " + changed.join(" ") + " | pos1=" + w30 + " pos2=" + w32);
     }
-    for (var b = 0; b < len; b++) { MaschineMK3._tsDebugPrev[b] = data[b]; }
 };
 
 // ---------------------------------------------------------------------------
