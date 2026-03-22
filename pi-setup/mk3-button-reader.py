@@ -16,7 +16,7 @@ import time
 BUTTONS = {
     "play":     (0x06, 0x20, "Return"),
     "stop":     (0x06, 0x80, "Escape"),
-    "navPush":  (0x01, 0x01, "Return"),
+    "navPush":  (0x01, 0x01, "space"),
     "navUp":    (0x01, 0x04, "Up"),
     "navDown":  (0x01, 0x10, "Down"),
     "navLeft":  (0x01, 0x20, "Left"),

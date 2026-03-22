@@ -208,6 +208,32 @@ MaschineMK3.leds = {
     "navLeft":          [0x80, 60],
     "navRight":         [0x80, 61],
     "navDown":          [0x80, 62],
+    // Report 0x81 — indexed color, touchstrip LEDs
+    "ts1":              [0x81,  1],
+    "ts2":              [0x81,  2],
+    "ts3":              [0x81,  3],
+    "ts4":              [0x81,  4],
+    "ts5":              [0x81,  5],
+    "ts6":              [0x81,  6],
+    "ts7":              [0x81,  7],
+    "ts8":              [0x81,  8],
+    "ts9":              [0x81,  9],
+    "ts10":             [0x81, 10],
+    "ts11":             [0x81, 11],
+    "ts12":             [0x81, 12],
+    "ts13":             [0x81, 13],
+    "ts14":             [0x81, 14],
+    "ts15":             [0x81, 15],
+    "ts16":             [0x81, 16],
+    "ts17":             [0x81, 17],
+    "ts18":             [0x81, 18],
+    "ts19":             [0x81, 19],
+    "ts20":             [0x81, 20],
+    "ts21":             [0x81, 21],
+    "ts22":             [0x81, 22],
+    "ts23":             [0x81, 23],
+    "ts24":             [0x81, 24],
+    "ts25":             [0x81, 25],
     // Report 0x81 — indexed color, pad LEDs
     "p1":               [0x81, 26],
     "p2":               [0x81, 27],
@@ -512,7 +538,7 @@ MaschineMK3.updatePadLEDs = function() {
 
         if (mode === "hotcues") {
             // Lit if hotcue is set
-            var hcActive = engine.getValue(ch, "hotcue_" + padIdx + "_enabled");
+            var hcActive = engine.getValue(ch, "hotcue_" + padIdx + "_status");
             color = hcActive ? C.YELLOW : C.OFF;
         } else if (mode === "loops") {
             color = C.GREEN;
@@ -944,14 +970,6 @@ MaschineMK3.incomingData = function(data, length) {
         MaschineMK3.parseReport01(data);
     } else if (reportId === MaschineMK3.PAD_REPORT_ID) {
         MaschineMK3.parseReport02(data);
-    } else {
-        // Log unknown report IDs — touchstrip might be on a different report
-        var hex = "";
-        for (var i = 0; i < Math.min(length, 16); i++) {
-            hex += ("0" + data[i].toString(16)).slice(-2) + " ";
-        }
-        print("MK3-UNKNOWN-REPORT: id=0x" + ("0" + reportId.toString(16)).slice(-2) +
-              " len=" + length + " data=" + hex);
     }
 };
 
@@ -973,9 +991,9 @@ MaschineMK3.init = function(/* id, debugging */) {
     // --- Hotcue LED feedback (refresh pad LEDs when hotcues change) ---
     for (var i = 1; i <= 8; i++) {
         (function(padIdx) {
-            engine.connectControl("[Channel1]", "hotcue_" + padIdx + "_enabled",
+            engine.makeConnection("[Channel1]", "hotcue_" + padIdx + "_status",
                 function() { MaschineMK3.updatePadLEDs(); });
-            engine.connectControl("[Channel2]", "hotcue_" + padIdx + "_enabled",
+            engine.makeConnection("[Channel2]", "hotcue_" + padIdx + "_status",
                 function() { MaschineMK3.updatePadLEDs(); });
         })(i);
     }
