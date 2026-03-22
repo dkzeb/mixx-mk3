@@ -107,6 +107,36 @@
           <EndOfTrackColor>#ff0000</EndOfTrackColor>
           <BeatColor>#40ffffff</BeatColor>
           <AxesColor>#40ffffff</AxesColor>
+          <MarkRange>
+            <StartControl>loop_start_position</StartControl>
+            <EndControl>loop_end_position</EndControl>
+            <EnabledControl>loop_enabled</EnabledControl>
+            <Color>#00FF00</Color>
+            <Opacity>0.5</Opacity>
+            <DisabledColor>#16a085</DisabledColor>
+            <DisabledOpacity>0.2</DisabledOpacity>
+          </MarkRange>
+          <Mark>
+            <Control>loop_start_position</Control>
+            <Text>IN</Text>
+            <Align>top</Align>
+            <Color>#00FF00</Color>
+            <TextColor>#FFFFFF</TextColor>
+          </Mark>
+          <Mark>
+            <Control>loop_end_position</Control>
+            <Text>OUT</Text>
+            <Align>top</Align>
+            <Color>#00FF00</Color>
+            <TextColor>#FFFFFF</TextColor>
+          </Mark>
+          <Mark>
+            <Control>cue_point</Control>
+            <Text>CUE</Text>
+            <Align>bottom</Align>
+            <Color>#FF001C</Color>
+            <TextColor>#FFFFFF</TextColor>
+          </Mark>
         </Visual>
 
         <!-- BPM and position -->
@@ -368,6 +398,36 @@
           <EndOfTrackColor>#ff0000</EndOfTrackColor>
           <BeatColor>#40ffffff</BeatColor>
           <AxesColor>#40ffffff</AxesColor>
+          <MarkRange>
+            <StartControl>loop_start_position</StartControl>
+            <EndControl>loop_end_position</EndControl>
+            <EnabledControl>loop_enabled</EnabledControl>
+            <Color>#00FF00</Color>
+            <Opacity>0.5</Opacity>
+            <DisabledColor>#e67e22</DisabledColor>
+            <DisabledOpacity>0.2</DisabledOpacity>
+          </MarkRange>
+          <Mark>
+            <Control>loop_start_position</Control>
+            <Text>IN</Text>
+            <Align>top</Align>
+            <Color>#00FF00</Color>
+            <TextColor>#FFFFFF</TextColor>
+          </Mark>
+          <Mark>
+            <Control>loop_end_position</Control>
+            <Text>OUT</Text>
+            <Align>top</Align>
+            <Color>#00FF00</Color>
+            <TextColor>#FFFFFF</TextColor>
+          </Mark>
+          <Mark>
+            <Control>cue_point</Control>
+            <Text>CUE</Text>
+            <Align>bottom</Align>
+            <Color>#FF001C</Color>
+            <TextColor>#FFFFFF</TextColor>
+          </Mark>
         </Visual>
 
         <!-- BPM and position -->
