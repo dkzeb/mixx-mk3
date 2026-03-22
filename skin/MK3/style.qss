@@ -101,6 +101,10 @@
     padding: 1px;
 }
 
+#MixerCrossfader {
+    margin: 0px 20px;
+}
+
 #WaveformOverviewA, #WaveformOverviewB {
     border-top: 1px solid #333333;
     border-bottom: 1px solid #333333;

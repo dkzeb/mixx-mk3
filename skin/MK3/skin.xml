@@ -271,6 +271,20 @@
 
           </Children>
         </WidgetGroup>
+
+        <!-- Crossfader -->
+        <Label><ObjectName>MixerKnobLabel</ObjectName><Size>480,12</Size><Text>CROSSFADER</Text></Label>
+        <SliderComposed>
+          <ObjectName>MixerCrossfader</ObjectName>
+          <Size>440,16</Size>
+          <SizePolicy>me,f</SizePolicy>
+          <Horizontal>true</Horizontal>
+          <Handle>skin:slider_handle.png</Handle>
+          <Slider>skin:slider_bg.png</Slider>
+          <Connection>
+            <ConfigKey>[Master],crossfader</ConfigKey>
+          </Connection>
+        </SliderComposed>
       </Children>
     </WidgetGroup>
 
