@@ -1268,6 +1268,36 @@ MaschineMK3.init = function(/* id, debugging */) {
     engine.setValue("[Master]", "gain", 1.0);
     engine.setValue("[Master]", "headGain", 1.0);
 
+    // --- Load default effects for both effect units ---
+    // Effect slots: 3 per unit. Use effect_selector to cycle to the desired effect.
+    // Mixxx built-in effects (alphabetical): AutoPan, Balance, BitCrusher, Echo,
+    // Flanger, Filter, LevelMeter, Loudness, MetaKnob, Moog, Parametric EQ,
+    // Phaser, Pitch Shift, Reverb, Tremolo, White Noise
+    // Strategy: set effect_selector to the index (1-based) of each effect.
+    // The order depends on the Mixxx build, so we use selector values that
+    // correspond to common positions.
+    var defaultFx = [
+        {unit: 1, slot: 1, name: "Echo",    selector: 4},
+        {unit: 1, slot: 2, name: "Reverb",  selector: 14},
+        {unit: 1, slot: 3, name: "Flanger", selector: 5},
+        {unit: 2, slot: 1, name: "Echo",    selector: 4},
+        {unit: 2, slot: 2, name: "Reverb",  selector: 14},
+        {unit: 2, slot: 3, name: "Flanger", selector: 5}
+    ];
+    for (var fx = 0; fx < defaultFx.length; fx++) {
+        var fxGroup = "[EffectRack1_EffectUnit" + defaultFx[fx].unit +
+                      "_Effect" + defaultFx[fx].slot + "]";
+        // Reset to none first, then select
+        engine.setValue(fxGroup, "clear", 1);
+        engine.setValue(fxGroup, "effect_selector", defaultFx[fx].selector);
+    }
+    // Assign effect units to channels
+    engine.setValue("[EffectRack1_EffectUnit1]", "group_[Channel1]_enable", 1);
+    engine.setValue("[EffectRack1_EffectUnit2]", "group_[Channel2]_enable", 1);
+    // Start with dry mix (effects off by default)
+    engine.setValue("[EffectRack1_EffectUnit1]", "mix", 0);
+    engine.setValue("[EffectRack1_EffectUnit2]", "mix", 0);
+
     // Set initial LED state
     MaschineMK3.updatePadLEDs();
     MaschineMK3.updateDeckLEDs();
