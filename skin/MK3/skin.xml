@@ -54,40 +54,17 @@
           </Connection>
         </WidgetGroup>
 
-        <!-- Knob labels: normal mode (shown when mixer closed) -->
+        <!-- D-button labels (top, aligned with D1-D4) -->
         <WidgetGroup>
-          <ObjectName>KnobLabels</ObjectName>
+          <ObjectName>DButtonLabels</ObjectName>
           <Size>480,12</Size>
           <SizePolicy>me,f</SizePolicy>
           <Layout>horizontal</Layout>
-          <Connection>
-            <ConfigKey>[Skin],show_mixer</ConfigKey>
-            <BindProperty>visible</BindProperty>
-            <Transform><Not/></Transform>
-          </Connection>
           <Children>
-            <Label><ObjectName>KnobLabel</ObjectName><Size>120,12</Size><Text>TEMPO</Text></Label>
-            <Label><ObjectName>KnobLabel</ObjectName><Size>120,12</Size><Text>JOG</Text></Label>
-            <Label><ObjectName>KnobLabel</ObjectName><Size>120,12</Size><Text>VOL</Text></Label>
-            <Label><ObjectName>KnobLabel</ObjectName><Size>120,12</Size><Text>FILTER</Text></Label>
-          </Children>
-        </WidgetGroup>
-
-        <!-- Knob labels: mixer mode (shown when mixer open) -->
-        <WidgetGroup>
-          <ObjectName>KnobLabels</ObjectName>
-          <Size>480,12</Size>
-          <SizePolicy>me,f</SizePolicy>
-          <Layout>horizontal</Layout>
-          <Connection>
-            <ConfigKey>[Skin],show_mixer</ConfigKey>
-            <BindProperty>visible</BindProperty>
-          </Connection>
-          <Children>
-            <Label><ObjectName>KnobLabel</ObjectName><Size>120,12</Size><Text>HI</Text></Label>
-            <Label><ObjectName>KnobLabel</ObjectName><Size>120,12</Size><Text>MID</Text></Label>
-            <Label><ObjectName>KnobLabel</ObjectName><Size>120,12</Size><Text>LO</Text></Label>
-            <Label><ObjectName>KnobLabel</ObjectName><Size>120,12</Size><Text>VOL</Text></Label>
+            <Label><ObjectName>DLabel</ObjectName><Size>120,12</Size><Text>SYNC</Text></Label>
+            <Label><ObjectName>DLabel</ObjectName><Size>120,12</Size><Text>TEMPO-</Text></Label>
+            <Label><ObjectName>DLabel</ObjectName><Size>120,12</Size><Text>TEMPO+</Text></Label>
+            <Label><ObjectName>DLabel</ObjectName><Size>120,12</Size><Text></Text></Label>
           </Children>
         </WidgetGroup>
 
@@ -209,6 +186,41 @@
                 <ConfigKey>[Channel1],playposition</ConfigKey>
               </Connection>
             </NumberPos>
+          </Children>
+        </WidgetGroup>
+
+        <!-- Knob labels (bottom, aligned with K1-K4) -->
+        <WidgetGroup>
+          <ObjectName>KnobLabels</ObjectName>
+          <Size>480,12</Size>
+          <SizePolicy>me,f</SizePolicy>
+          <Layout>horizontal</Layout>
+          <Connection>
+            <ConfigKey>[Skin],show_mixer</ConfigKey>
+            <BindProperty>visible</BindProperty>
+            <Transform><Not/></Transform>
+          </Connection>
+          <Children>
+            <Label><ObjectName>KnobLabel</ObjectName><Size>120,12</Size><Text>TEMPO</Text></Label>
+            <Label><ObjectName>KnobLabel</ObjectName><Size>120,12</Size><Text>JOG</Text></Label>
+            <Label><ObjectName>KnobLabel</ObjectName><Size>120,12</Size><Text>VOL</Text></Label>
+            <Label><ObjectName>KnobLabel</ObjectName><Size>120,12</Size><Text>FILTER</Text></Label>
+          </Children>
+        </WidgetGroup>
+        <WidgetGroup>
+          <ObjectName>KnobLabels</ObjectName>
+          <Size>480,12</Size>
+          <SizePolicy>me,f</SizePolicy>
+          <Layout>horizontal</Layout>
+          <Connection>
+            <ConfigKey>[Skin],show_mixer</ConfigKey>
+            <BindProperty>visible</BindProperty>
+          </Connection>
+          <Children>
+            <Label><ObjectName>KnobLabel</ObjectName><Size>120,12</Size><Text>HI</Text></Label>
+            <Label><ObjectName>KnobLabel</ObjectName><Size>120,12</Size><Text>MID</Text></Label>
+            <Label><ObjectName>KnobLabel</ObjectName><Size>120,12</Size><Text>LO</Text></Label>
+            <Label><ObjectName>KnobLabel</ObjectName><Size>120,12</Size><Text>VOL</Text></Label>
           </Children>
         </WidgetGroup>
 
@@ -609,40 +621,17 @@
           </Connection>
         </WidgetGroup>
 
-        <!-- Knob labels: normal mode -->
+        <!-- D-button labels (top, aligned with D5-D8) -->
         <WidgetGroup>
-          <ObjectName>KnobLabels</ObjectName>
+          <ObjectName>DButtonLabels</ObjectName>
           <Size>480,12</Size>
           <SizePolicy>me,f</SizePolicy>
           <Layout>horizontal</Layout>
-          <Connection>
-            <ConfigKey>[Skin],show_mixer</ConfigKey>
-            <BindProperty>visible</BindProperty>
-            <Transform><Not/></Transform>
-          </Connection>
           <Children>
-            <Label><ObjectName>KnobLabel</ObjectName><Size>120,12</Size><Text>TEMPO</Text></Label>
-            <Label><ObjectName>KnobLabel</ObjectName><Size>120,12</Size><Text>JOG</Text></Label>
-            <Label><ObjectName>KnobLabel</ObjectName><Size>120,12</Size><Text>VOL</Text></Label>
-            <Label><ObjectName>KnobLabel</ObjectName><Size>120,12</Size><Text>FILTER</Text></Label>
-          </Children>
-        </WidgetGroup>
-
-        <!-- Knob labels: mixer mode -->
-        <WidgetGroup>
-          <ObjectName>KnobLabels</ObjectName>
-          <Size>480,12</Size>
-          <SizePolicy>me,f</SizePolicy>
-          <Layout>horizontal</Layout>
-          <Connection>
-            <ConfigKey>[Skin],show_mixer</ConfigKey>
-            <BindProperty>visible</BindProperty>
-          </Connection>
-          <Children>
-            <Label><ObjectName>KnobLabel</ObjectName><Size>120,12</Size><Text>HI</Text></Label>
-            <Label><ObjectName>KnobLabel</ObjectName><Size>120,12</Size><Text>MID</Text></Label>
-            <Label><ObjectName>KnobLabel</ObjectName><Size>120,12</Size><Text>LO</Text></Label>
-            <Label><ObjectName>KnobLabel</ObjectName><Size>120,12</Size><Text>VOL</Text></Label>
+            <Label><ObjectName>DLabel</ObjectName><Size>120,12</Size><Text>SYNC</Text></Label>
+            <Label><ObjectName>DLabel</ObjectName><Size>120,12</Size><Text>TEMPO-</Text></Label>
+            <Label><ObjectName>DLabel</ObjectName><Size>120,12</Size><Text>TEMPO+</Text></Label>
+            <Label><ObjectName>DLabel</ObjectName><Size>120,12</Size><Text></Text></Label>
           </Children>
         </WidgetGroup>
 
@@ -764,6 +753,41 @@
                 <ConfigKey>[Channel2],playposition</ConfigKey>
               </Connection>
             </NumberPos>
+          </Children>
+        </WidgetGroup>
+
+        <!-- Knob labels (bottom, aligned with K5-K8) -->
+        <WidgetGroup>
+          <ObjectName>KnobLabels</ObjectName>
+          <Size>480,12</Size>
+          <SizePolicy>me,f</SizePolicy>
+          <Layout>horizontal</Layout>
+          <Connection>
+            <ConfigKey>[Skin],show_mixer</ConfigKey>
+            <BindProperty>visible</BindProperty>
+            <Transform><Not/></Transform>
+          </Connection>
+          <Children>
+            <Label><ObjectName>KnobLabel</ObjectName><Size>120,12</Size><Text>TEMPO</Text></Label>
+            <Label><ObjectName>KnobLabel</ObjectName><Size>120,12</Size><Text>JOG</Text></Label>
+            <Label><ObjectName>KnobLabel</ObjectName><Size>120,12</Size><Text>VOL</Text></Label>
+            <Label><ObjectName>KnobLabel</ObjectName><Size>120,12</Size><Text>FILTER</Text></Label>
+          </Children>
+        </WidgetGroup>
+        <WidgetGroup>
+          <ObjectName>KnobLabels</ObjectName>
+          <Size>480,12</Size>
+          <SizePolicy>me,f</SizePolicy>
+          <Layout>horizontal</Layout>
+          <Connection>
+            <ConfigKey>[Skin],show_mixer</ConfigKey>
+            <BindProperty>visible</BindProperty>
+          </Connection>
+          <Children>
+            <Label><ObjectName>KnobLabel</ObjectName><Size>120,12</Size><Text>HI</Text></Label>
+            <Label><ObjectName>KnobLabel</ObjectName><Size>120,12</Size><Text>MID</Text></Label>
+            <Label><ObjectName>KnobLabel</ObjectName><Size>120,12</Size><Text>LO</Text></Label>
+            <Label><ObjectName>KnobLabel</ObjectName><Size>120,12</Size><Text>VOL</Text></Label>
           </Children>
         </WidgetGroup>
 

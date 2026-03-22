@@ -158,6 +158,16 @@
     margin: 2px;
 }
 
+#DButtonLabels {
+    background-color: #0d0d1a;
+}
+
+#DLabel {
+    font-size: 9px;
+    color: #555555;
+    qproperty-alignment: AlignCenter;
+}
+
 #KnobLabels {
     background-color: #0d0d1a;
 }
