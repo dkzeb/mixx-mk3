@@ -1283,36 +1283,38 @@ MaschineMK3.init = function(/* id, debugging */) {
     engine.setValue("[Master]", "headGain", 1.0);
 
     // --- Load default effects into 4 units (3 effects each = 12 effects) ---
-    // Effects are sorted alphabetically in Mixxx. Selector is 1-based index.
-    // Full list: AutoPan(1) BitCrusher(2) Compressor(3) Distortion(4) Echo(5)
-    // Filter(6) Flanger(7) Glitch(8) MoogFilter(9) Phaser(10) PitchShift(11)
-    // Reverb(12) Tremolo(13) WhiteNoise(14)
+    // effect_selector is relative: +1 cycles forward through the alphabetical list.
+    // After clear (=None), stepping +N lands on the Nth effect.
+    // Alphabetical order of DJ effects in Mixxx 2.5:
+    //  1:AutoPan 2:BitCrusher 3:Compressor 4:Distortion 5:Echo
+    //  6:Filter 7:Flanger 8:Glitch 9:MoogLadder4Filter 10:Phaser
+    //  11:PitchShift 12:Reverb 13:Tremolo 14:WhiteNoise
     var fxSetup = [
-        // Unit 1: Echo, Reverb, Filter
-        {unit: 1, slot: 1, sel: 5},   // Echo
-        {unit: 1, slot: 2, sel: 12},  // Reverb
-        {unit: 1, slot: 3, sel: 6},   // Filter
-        // Unit 2: Flanger, Phaser, Distortion
-        {unit: 2, slot: 1, sel: 7},   // Flanger
-        {unit: 2, slot: 2, sel: 10},  // Phaser
-        {unit: 2, slot: 3, sel: 4},   // Distortion
-        // Unit 3: AutoPan, Glitch, PitchShift
-        {unit: 3, slot: 1, sel: 1},   // AutoPan
-        {unit: 3, slot: 2, sel: 8},   // Glitch
-        {unit: 3, slot: 3, sel: 11},  // PitchShift
-        // Unit 4: MoogFilter, Compressor, WhiteNoise
-        {unit: 4, slot: 1, sel: 9},   // MoogFilter
-        {unit: 4, slot: 2, sel: 3},   // Compressor
-        {unit: 4, slot: 3, sel: 14}   // WhiteNoise
+        {unit: 1, slot: 1, steps: 5},   // Echo
+        {unit: 1, slot: 2, steps: 12},  // Reverb
+        {unit: 1, slot: 3, steps: 6},   // Filter
+        {unit: 2, slot: 1, steps: 7},   // Flanger
+        {unit: 2, slot: 2, steps: 10},  // Phaser
+        {unit: 2, slot: 3, steps: 4},   // Distortion
+        {unit: 3, slot: 1, steps: 1},   // AutoPan
+        {unit: 3, slot: 2, steps: 8},   // Glitch
+        {unit: 3, slot: 3, steps: 11},  // PitchShift
+        {unit: 4, slot: 1, steps: 9},   // MoogLadder4Filter
+        {unit: 4, slot: 2, steps: 3},   // Compressor
+        {unit: 4, slot: 3, steps: 14}   // WhiteNoise
     ];
     for (var fx = 0; fx < fxSetup.length; fx++) {
         var fxGroup = "[EffectRack1_EffectUnit" + fxSetup[fx].unit +
                       "_Effect" + fxSetup[fx].slot + "]";
+        // Clear to None, then step forward one at a time
         engine.setValue(fxGroup, "clear", 1);
-        engine.setValue(fxGroup, "effect_selector", fxSetup[fx].sel);
+        for (var s = 0; s < fxSetup[fx].steps; s++) {
+            engine.setValue(fxGroup, "effect_selector", 1);
+        }
+        // Start with effect disabled (user toggles via pads)
+        engine.setValue(fxGroup, "enabled", 0);
     }
-    // Route all 4 units to both channels
-    // mix=1 so effects are audible when individual slots are toggled on
+    // Route all 4 units to both channels, mix=1, units enabled
     for (var u = 1; u <= 4; u++) {
         var unitGroup = "[EffectRack1_EffectUnit" + u + "]";
         engine.setValue(unitGroup, "group_[Channel1]_enable", 1);
