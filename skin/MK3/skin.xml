@@ -334,7 +334,7 @@
                 <!-- VU Meter (right side of Deck A) -->
                 <VuMeter>
                   <ObjectName>VuMeterA</ObjectName>
-                  <Size>10,0</Size>
+                  <Size>18,0</Size>
                   <SizePolicy>f,me</SizePolicy>
                   <PathVu>skin:vu_fill_v.png</PathVu>
                   <PathBack>skin:vu_bg_v.png</PathBack>
@@ -358,7 +358,7 @@
                 <!-- VU Meter (left side of Deck B) -->
                 <VuMeter>
                   <ObjectName>VuMeterB</ObjectName>
-                  <Size>10,0</Size>
+                  <Size>18,0</Size>
                   <SizePolicy>f,me</SizePolicy>
                   <PathVu>skin:vu_fill_v.png</PathVu>
                   <PathBack>skin:vu_bg_v.png</PathBack>
