@@ -1015,8 +1015,13 @@ MaschineMK3.onPadPress = function(padNumber) {
             var unitGroup = "[EffectRack1_EffectUnit" + fxDef.unit + "]";
             var enabled = engine.getValue(unitGroup, "enabled");
             engine.setValue(unitGroup, "enabled", enabled ? 0 : 1);
+        } else if (MaschineMK3.shiftPressed) {
+            // Shift + pad: cycle to next effect in this slot
+            var slotGroup = "[EffectRack1_EffectUnit" + fxDef.unit +
+                            "_Effect" + fxDef.slot + "]";
+            engine.setValue(slotGroup, "effect_selector", 1);
         } else {
-            // Toggle individual effect slot
+            // Toggle individual effect slot on/off
             var slotGroup = "[EffectRack1_EffectUnit" + fxDef.unit +
                             "_Effect" + fxDef.slot + "]";
             var slotEnabled = engine.getValue(slotGroup, "enabled");
@@ -1282,45 +1287,33 @@ MaschineMK3.init = function(/* id, debugging */) {
     engine.setValue("[Master]", "gain", 1.0);
     engine.setValue("[Master]", "headGain", 1.0);
 
-    // --- Load default effects into 4 units (3 effects each = 12 effects) ---
-    // effect_selector is relative: +1 cycles forward through the alphabetical list.
-    // After clear (=None), stepping +N lands on the Nth effect.
-    // Alphabetical order of DJ effects in Mixxx 2.5:
-    //  1:AutoPan 2:BitCrusher 3:Compressor 4:Distortion 5:Echo
-    //  6:Filter 7:Flanger 8:Glitch 9:MoogLadder4Filter 10:Phaser
-    //  11:PitchShift 12:Reverb 13:Tremolo 14:WhiteNoise
-    var fxSetup = [
-        {unit: 1, slot: 1, steps: 5},   // Echo
-        {unit: 1, slot: 2, steps: 12},  // Reverb
-        {unit: 1, slot: 3, steps: 6},   // Filter
-        {unit: 2, slot: 1, steps: 7},   // Flanger
-        {unit: 2, slot: 2, steps: 10},  // Phaser
-        {unit: 2, slot: 3, steps: 4},   // Distortion
-        {unit: 3, slot: 1, steps: 1},   // AutoPan
-        {unit: 3, slot: 2, steps: 8},   // Glitch
-        {unit: 3, slot: 3, steps: 11},  // PitchShift
-        {unit: 4, slot: 1, steps: 9},   // MoogLadder4Filter
-        {unit: 4, slot: 2, steps: 3},   // Compressor
-        {unit: 4, slot: 3, steps: 14}   // WhiteNoise
-    ];
-    for (var fx = 0; fx < fxSetup.length; fx++) {
-        var fxGroup = "[EffectRack1_EffectUnit" + fxSetup[fx].unit +
-                      "_Effect" + fxSetup[fx].slot + "]";
-        // Clear to None, then step forward one at a time
-        engine.setValue(fxGroup, "clear", 1);
-        for (var s = 0; s < fxSetup[fx].steps; s++) {
-            engine.setValue(fxGroup, "effect_selector", 1);
-        }
-        // Start with effect disabled (user toggles via pads)
-        engine.setValue(fxGroup, "enabled", 0);
-    }
-    // Route all 4 units to both channels, mix=1, units enabled
+    // --- Set up 4 effect units ---
+    // Each unit has 3 effect slots. Load one distinct effect per slot.
+    // Mixxx remembers loaded effects between sessions, so this only runs
+    // if slots are empty. Shift+pad cycles the effect in that slot.
+    //
+    // Route all 4 units to both channels, mix=1, units enabled.
+    // Individual effect slots start disabled (toggled via pads).
     for (var u = 1; u <= 4; u++) {
         var unitGroup = "[EffectRack1_EffectUnit" + u + "]";
         engine.setValue(unitGroup, "group_[Channel1]_enable", 1);
         engine.setValue(unitGroup, "group_[Channel2]_enable", 1);
         engine.setValue(unitGroup, "mix", 1);
         engine.setValue(unitGroup, "enabled", 1);
+
+        // Load a different effect in each empty slot
+        for (var s = 1; s <= 3; s++) {
+            var slotGroup = "[EffectRack1_EffectUnit" + u + "_Effect" + s + "]";
+            var loaded = engine.getValue(slotGroup, "loaded");
+            if (!loaded) {
+                // Step to a unique effect: (unit-1)*3 + slot steps from None
+                var steps = ((u - 1) * 3) + s;
+                for (var step = 0; step < steps; step++) {
+                    engine.setValue(slotGroup, "effect_selector", 1);
+                }
+            }
+            engine.setValue(slotGroup, "enabled", 0);
+        }
     }
 
     // Set initial LED state

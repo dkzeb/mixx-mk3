@@ -513,50 +513,98 @@
         <BindProperty>visible</BindProperty>
       </Connection>
       <Children>
-        <Label><ObjectName>PadTitle</ObjectName><Size>480,20</Size><Text>EFFECTS</Text></Label>
+        <Label><ObjectName>PadTitle</ObjectName><Size>480,20</Size><Text>EFFECTS (shift+pad to change)</Text></Label>
         <WidgetGroup>
           <ObjectName>PadGrid</ObjectName>
           <SizePolicy>me,me</SizePolicy>
           <Layout>vertical</Layout>
           <Children>
-            <!-- Top row: pads 13-16 (Unit 3) -->
+            <!-- Top row: pads 13-16 (Unit 3: slots 1-3 + enable) -->
             <WidgetGroup>
               <SizePolicy>me,me</SizePolicy><Layout>horizontal</Layout>
               <Children>
-                <Label><ObjectName>PadCell</ObjectName><SizePolicy>me,me</SizePolicy><Text>AUTOPAN</Text></Label>
-                <Label><ObjectName>PadCell</ObjectName><SizePolicy>me,me</SizePolicy><Text>GLITCH</Text></Label>
-                <Label><ObjectName>PadCell</ObjectName><SizePolicy>me,me</SizePolicy><Text>PITCH</Text></Label>
-                <Label><ObjectName>PadCellAction</ObjectName><SizePolicy>me,me</SizePolicy><Text>U3 ON</Text></Label>
+                <WidgetGroup><SizePolicy>me,me</SizePolicy><Children>
+                  <Label><ObjectName>PadCell</ObjectName><SizePolicy>me,me</SizePolicy><Text>U3:1</Text><Connection><ConfigKey>[EffectRack1_EffectUnit3_Effect1],enabled</ConfigKey><BindProperty>visible</BindProperty><Transform><Not/></Transform></Connection></Label>
+                  <Label><ObjectName>PadCellOn</ObjectName><SizePolicy>me,me</SizePolicy><Text>U3:1</Text><Connection><ConfigKey>[EffectRack1_EffectUnit3_Effect1],enabled</ConfigKey><BindProperty>visible</BindProperty></Connection></Label>
+                </Children></WidgetGroup>
+                <WidgetGroup><SizePolicy>me,me</SizePolicy><Children>
+                  <Label><ObjectName>PadCell</ObjectName><SizePolicy>me,me</SizePolicy><Text>U3:2</Text><Connection><ConfigKey>[EffectRack1_EffectUnit3_Effect2],enabled</ConfigKey><BindProperty>visible</BindProperty><Transform><Not/></Transform></Connection></Label>
+                  <Label><ObjectName>PadCellOn</ObjectName><SizePolicy>me,me</SizePolicy><Text>U3:2</Text><Connection><ConfigKey>[EffectRack1_EffectUnit3_Effect2],enabled</ConfigKey><BindProperty>visible</BindProperty></Connection></Label>
+                </Children></WidgetGroup>
+                <WidgetGroup><SizePolicy>me,me</SizePolicy><Children>
+                  <Label><ObjectName>PadCell</ObjectName><SizePolicy>me,me</SizePolicy><Text>U3:3</Text><Connection><ConfigKey>[EffectRack1_EffectUnit3_Effect3],enabled</ConfigKey><BindProperty>visible</BindProperty><Transform><Not/></Transform></Connection></Label>
+                  <Label><ObjectName>PadCellOn</ObjectName><SizePolicy>me,me</SizePolicy><Text>U3:3</Text><Connection><ConfigKey>[EffectRack1_EffectUnit3_Effect3],enabled</ConfigKey><BindProperty>visible</BindProperty></Connection></Label>
+                </Children></WidgetGroup>
+                <WidgetGroup><SizePolicy>me,me</SizePolicy><Children>
+                  <Label><ObjectName>PadCellAction</ObjectName><SizePolicy>me,me</SizePolicy><Text>U3 OFF</Text><Connection><ConfigKey>[EffectRack1_EffectUnit3],enabled</ConfigKey><BindProperty>visible</BindProperty><Transform><Not/></Transform></Connection></Label>
+                  <Label><ObjectName>PadCellActionOn</ObjectName><SizePolicy>me,me</SizePolicy><Text>U3 ON</Text><Connection><ConfigKey>[EffectRack1_EffectUnit3],enabled</ConfigKey><BindProperty>visible</BindProperty></Connection></Label>
+                </Children></WidgetGroup>
               </Children>
             </WidgetGroup>
             <!-- Row 2: pads 9-12 (Unit 2) -->
             <WidgetGroup>
               <SizePolicy>me,me</SizePolicy><Layout>horizontal</Layout>
               <Children>
-                <Label><ObjectName>PadCell</ObjectName><SizePolicy>me,me</SizePolicy><Text>FLANGER</Text></Label>
-                <Label><ObjectName>PadCell</ObjectName><SizePolicy>me,me</SizePolicy><Text>PHASER</Text></Label>
-                <Label><ObjectName>PadCell</ObjectName><SizePolicy>me,me</SizePolicy><Text>DISTORT</Text></Label>
-                <Label><ObjectName>PadCellAction</ObjectName><SizePolicy>me,me</SizePolicy><Text>U2 ON</Text></Label>
+                <WidgetGroup><SizePolicy>me,me</SizePolicy><Children>
+                  <Label><ObjectName>PadCell</ObjectName><SizePolicy>me,me</SizePolicy><Text>U2:1</Text><Connection><ConfigKey>[EffectRack1_EffectUnit2_Effect1],enabled</ConfigKey><BindProperty>visible</BindProperty><Transform><Not/></Transform></Connection></Label>
+                  <Label><ObjectName>PadCellOn</ObjectName><SizePolicy>me,me</SizePolicy><Text>U2:1</Text><Connection><ConfigKey>[EffectRack1_EffectUnit2_Effect1],enabled</ConfigKey><BindProperty>visible</BindProperty></Connection></Label>
+                </Children></WidgetGroup>
+                <WidgetGroup><SizePolicy>me,me</SizePolicy><Children>
+                  <Label><ObjectName>PadCell</ObjectName><SizePolicy>me,me</SizePolicy><Text>U2:2</Text><Connection><ConfigKey>[EffectRack1_EffectUnit2_Effect2],enabled</ConfigKey><BindProperty>visible</BindProperty><Transform><Not/></Transform></Connection></Label>
+                  <Label><ObjectName>PadCellOn</ObjectName><SizePolicy>me,me</SizePolicy><Text>U2:2</Text><Connection><ConfigKey>[EffectRack1_EffectUnit2_Effect2],enabled</ConfigKey><BindProperty>visible</BindProperty></Connection></Label>
+                </Children></WidgetGroup>
+                <WidgetGroup><SizePolicy>me,me</SizePolicy><Children>
+                  <Label><ObjectName>PadCell</ObjectName><SizePolicy>me,me</SizePolicy><Text>U2:3</Text><Connection><ConfigKey>[EffectRack1_EffectUnit2_Effect3],enabled</ConfigKey><BindProperty>visible</BindProperty><Transform><Not/></Transform></Connection></Label>
+                  <Label><ObjectName>PadCellOn</ObjectName><SizePolicy>me,me</SizePolicy><Text>U2:3</Text><Connection><ConfigKey>[EffectRack1_EffectUnit2_Effect3],enabled</ConfigKey><BindProperty>visible</BindProperty></Connection></Label>
+                </Children></WidgetGroup>
+                <WidgetGroup><SizePolicy>me,me</SizePolicy><Children>
+                  <Label><ObjectName>PadCellAction</ObjectName><SizePolicy>me,me</SizePolicy><Text>U2 OFF</Text><Connection><ConfigKey>[EffectRack1_EffectUnit2],enabled</ConfigKey><BindProperty>visible</BindProperty><Transform><Not/></Transform></Connection></Label>
+                  <Label><ObjectName>PadCellActionOn</ObjectName><SizePolicy>me,me</SizePolicy><Text>U2 ON</Text><Connection><ConfigKey>[EffectRack1_EffectUnit2],enabled</ConfigKey><BindProperty>visible</BindProperty></Connection></Label>
+                </Children></WidgetGroup>
               </Children>
             </WidgetGroup>
             <!-- Row 3: pads 5-8 (Unit 4) -->
             <WidgetGroup>
               <SizePolicy>me,me</SizePolicy><Layout>horizontal</Layout>
               <Children>
-                <Label><ObjectName>PadCell</ObjectName><SizePolicy>me,me</SizePolicy><Text>MOOG</Text></Label>
-                <Label><ObjectName>PadCell</ObjectName><SizePolicy>me,me</SizePolicy><Text>COMP</Text></Label>
-                <Label><ObjectName>PadCell</ObjectName><SizePolicy>me,me</SizePolicy><Text>NOISE</Text></Label>
-                <Label><ObjectName>PadCellAction</ObjectName><SizePolicy>me,me</SizePolicy><Text>U4 ON</Text></Label>
+                <WidgetGroup><SizePolicy>me,me</SizePolicy><Children>
+                  <Label><ObjectName>PadCell</ObjectName><SizePolicy>me,me</SizePolicy><Text>U4:1</Text><Connection><ConfigKey>[EffectRack1_EffectUnit4_Effect1],enabled</ConfigKey><BindProperty>visible</BindProperty><Transform><Not/></Transform></Connection></Label>
+                  <Label><ObjectName>PadCellOn</ObjectName><SizePolicy>me,me</SizePolicy><Text>U4:1</Text><Connection><ConfigKey>[EffectRack1_EffectUnit4_Effect1],enabled</ConfigKey><BindProperty>visible</BindProperty></Connection></Label>
+                </Children></WidgetGroup>
+                <WidgetGroup><SizePolicy>me,me</SizePolicy><Children>
+                  <Label><ObjectName>PadCell</ObjectName><SizePolicy>me,me</SizePolicy><Text>U4:2</Text><Connection><ConfigKey>[EffectRack1_EffectUnit4_Effect2],enabled</ConfigKey><BindProperty>visible</BindProperty><Transform><Not/></Transform></Connection></Label>
+                  <Label><ObjectName>PadCellOn</ObjectName><SizePolicy>me,me</SizePolicy><Text>U4:2</Text><Connection><ConfigKey>[EffectRack1_EffectUnit4_Effect2],enabled</ConfigKey><BindProperty>visible</BindProperty></Connection></Label>
+                </Children></WidgetGroup>
+                <WidgetGroup><SizePolicy>me,me</SizePolicy><Children>
+                  <Label><ObjectName>PadCell</ObjectName><SizePolicy>me,me</SizePolicy><Text>U4:3</Text><Connection><ConfigKey>[EffectRack1_EffectUnit4_Effect3],enabled</ConfigKey><BindProperty>visible</BindProperty><Transform><Not/></Transform></Connection></Label>
+                  <Label><ObjectName>PadCellOn</ObjectName><SizePolicy>me,me</SizePolicy><Text>U4:3</Text><Connection><ConfigKey>[EffectRack1_EffectUnit4_Effect3],enabled</ConfigKey><BindProperty>visible</BindProperty></Connection></Label>
+                </Children></WidgetGroup>
+                <WidgetGroup><SizePolicy>me,me</SizePolicy><Children>
+                  <Label><ObjectName>PadCellAction</ObjectName><SizePolicy>me,me</SizePolicy><Text>U4 OFF</Text><Connection><ConfigKey>[EffectRack1_EffectUnit4],enabled</ConfigKey><BindProperty>visible</BindProperty><Transform><Not/></Transform></Connection></Label>
+                  <Label><ObjectName>PadCellActionOn</ObjectName><SizePolicy>me,me</SizePolicy><Text>U4 ON</Text><Connection><ConfigKey>[EffectRack1_EffectUnit4],enabled</ConfigKey><BindProperty>visible</BindProperty></Connection></Label>
+                </Children></WidgetGroup>
               </Children>
             </WidgetGroup>
             <!-- Bottom row: pads 1-4 (Unit 1) -->
             <WidgetGroup>
               <SizePolicy>me,me</SizePolicy><Layout>horizontal</Layout>
               <Children>
-                <Label><ObjectName>PadCell</ObjectName><SizePolicy>me,me</SizePolicy><Text>ECHO</Text></Label>
-                <Label><ObjectName>PadCell</ObjectName><SizePolicy>me,me</SizePolicy><Text>REVERB</Text></Label>
-                <Label><ObjectName>PadCell</ObjectName><SizePolicy>me,me</SizePolicy><Text>FILTER</Text></Label>
-                <Label><ObjectName>PadCellAction</ObjectName><SizePolicy>me,me</SizePolicy><Text>U1 ON</Text></Label>
+                <WidgetGroup><SizePolicy>me,me</SizePolicy><Children>
+                  <Label><ObjectName>PadCell</ObjectName><SizePolicy>me,me</SizePolicy><Text>U1:1</Text><Connection><ConfigKey>[EffectRack1_EffectUnit1_Effect1],enabled</ConfigKey><BindProperty>visible</BindProperty><Transform><Not/></Transform></Connection></Label>
+                  <Label><ObjectName>PadCellOn</ObjectName><SizePolicy>me,me</SizePolicy><Text>U1:1</Text><Connection><ConfigKey>[EffectRack1_EffectUnit1_Effect1],enabled</ConfigKey><BindProperty>visible</BindProperty></Connection></Label>
+                </Children></WidgetGroup>
+                <WidgetGroup><SizePolicy>me,me</SizePolicy><Children>
+                  <Label><ObjectName>PadCell</ObjectName><SizePolicy>me,me</SizePolicy><Text>U1:2</Text><Connection><ConfigKey>[EffectRack1_EffectUnit1_Effect2],enabled</ConfigKey><BindProperty>visible</BindProperty><Transform><Not/></Transform></Connection></Label>
+                  <Label><ObjectName>PadCellOn</ObjectName><SizePolicy>me,me</SizePolicy><Text>U1:2</Text><Connection><ConfigKey>[EffectRack1_EffectUnit1_Effect2],enabled</ConfigKey><BindProperty>visible</BindProperty></Connection></Label>
+                </Children></WidgetGroup>
+                <WidgetGroup><SizePolicy>me,me</SizePolicy><Children>
+                  <Label><ObjectName>PadCell</ObjectName><SizePolicy>me,me</SizePolicy><Text>U1:3</Text><Connection><ConfigKey>[EffectRack1_EffectUnit1_Effect3],enabled</ConfigKey><BindProperty>visible</BindProperty><Transform><Not/></Transform></Connection></Label>
+                  <Label><ObjectName>PadCellOn</ObjectName><SizePolicy>me,me</SizePolicy><Text>U1:3</Text><Connection><ConfigKey>[EffectRack1_EffectUnit1_Effect3],enabled</ConfigKey><BindProperty>visible</BindProperty></Connection></Label>
+                </Children></WidgetGroup>
+                <WidgetGroup><SizePolicy>me,me</SizePolicy><Children>
+                  <Label><ObjectName>PadCellAction</ObjectName><SizePolicy>me,me</SizePolicy><Text>U1 OFF</Text><Connection><ConfigKey>[EffectRack1_EffectUnit1],enabled</ConfigKey><BindProperty>visible</BindProperty><Transform><Not/></Transform></Connection></Label>
+                  <Label><ObjectName>PadCellActionOn</ObjectName><SizePolicy>me,me</SizePolicy><Text>U1 ON</Text><Connection><ConfigKey>[EffectRack1_EffectUnit1],enabled</ConfigKey><BindProperty>visible</BindProperty></Connection></Label>
+                </Children></WidgetGroup>
               </Children>
             </WidgetGroup>
           </Children>
