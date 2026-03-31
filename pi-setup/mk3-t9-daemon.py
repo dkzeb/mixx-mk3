@@ -108,7 +108,7 @@ class LedWriter:
             elif phys == PAD_CANCEL:
                 self.set_pad(phys, COLOR_RED)
             elif phys == PAD_BACKSPACE:
-                self.set_pad(phys, 32)  # indexed value 32 (dim)
+                self.set_pad(phys, COLOR_WHITE)  # white (same palette, dimmed by pad)
             else:
                 self.set_pad(phys, COLOR_OFF)
 
@@ -129,13 +129,15 @@ class XdotoolSearchBridge:
     def __init__(self, display=":99"):
         self._env = {**os.environ, "DISPLAY": display}
 
-    def _run(self, *args):
-        subprocess.Popen(
+    def _run(self, *args, wait=False):
+        p = subprocess.Popen(
             list(args),
             env=self._env,
             stdout=subprocess.DEVNULL,
             stderr=subprocess.DEVNULL,
         )
+        if wait:
+            p.wait()
 
     def focus_search(self):
         """Ctrl+F to focus the search bar."""
@@ -143,9 +145,8 @@ class XdotoolSearchBridge:
 
     def type_text(self, text):
         """Select all then type the full text (replaces previous content)."""
-        self._run("xdotool", "key", "--clearmodifiers", "ctrl+a")
+        self._run("xdotool", "key", "--clearmodifiers", "ctrl+a", wait=True)
         if text:
-            # Small delay so ctrl+a completes before typing
             self._run("xdotool", "type", "--clearmodifiers", "--delay", "0", text)
         else:
             self._run("xdotool", "key", "--clearmodifiers", "Delete")
@@ -175,7 +176,7 @@ def find_mk3_hidraw():
                         return hidraw
         except (IOError, OSError):
             continue
-    return "/dev/hidraw0"
+    return None
 
 
 # ---------------------------------------------------------------------------
@@ -209,15 +210,19 @@ def parse_pad_report(data):
 # ---------------------------------------------------------------------------
 def main():
     display = os.environ.get("DISPLAY", ":99")
-    hidraw = find_mk3_hidraw()
     bridge = XdotoolSearchBridge(display)
 
     while True:
-        # Open hidraw for read+write
+        # Find and open hidraw device
+        hidraw = find_mk3_hidraw()
+        if hidraw is None:
+            print(f"{LOG_PREFIX}: waiting for MK3 HID device...", file=sys.stderr)
+            time.sleep(3)
+            continue
         try:
             fd = os.open(hidraw, os.O_RDWR)
         except OSError:
-            print(f"{LOG_PREFIX}: waiting for HID device...", file=sys.stderr)
+            print(f"{LOG_PREFIX}: cannot open {hidraw}, retrying...", file=sys.stderr)
             time.sleep(3)
             continue
 
@@ -230,6 +235,14 @@ def main():
 
         engine = None
 
+        def deactivate_t9():
+            nonlocal t9_active, engine
+            t9_active = False
+            engine = None
+            leds.all_off()
+            leds.send()
+            pad_was_pressed.clear()
+
         def make_engine():
             def on_change(text):
                 bridge.type_text(text)
@@ -238,9 +251,13 @@ def main():
 
             def on_submit(text):
                 bridge.confirm_search()
+                print(f"{LOG_PREFIX}: submitted '{text}'", file=sys.stderr)
+                deactivate_t9()
 
             def on_cancel():
                 bridge.cancel_search()
+                print(f"{LOG_PREFIX}: cancelled", file=sys.stderr)
+                deactivate_t9()
 
             return T9Engine(
                 on_change=on_change,
@@ -293,20 +310,16 @@ def main():
                         pressure = pads.get(phys, 0)
                         is_pressed = pressure >= PAD_PRESSURE_THRESHOLD
                         was_pressed = pad_was_pressed.get(phys, False)
-
-                        if is_pressed and not was_pressed:
-                            engine.press(phys)
-                            leds.set_t9_layout(
-                                active_pad=engine.get_pending_pad()
-                            )
-                            leds.send()
-                            print(
-                                f"{LOG_PREFIX}: pad {phys} -> "
-                                f"'{engine.get_text()}'",
-                                file=sys.stderr,
-                            )
-
                         pad_was_pressed[phys] = is_pressed
+
+                        if is_pressed and not was_pressed and engine:
+                            engine.press(phys)
+                            # engine may be None if press triggered submit/cancel
+                            if engine:
+                                leds.set_t9_layout(
+                                    active_pad=engine.get_pending_pad()
+                                )
+                                leds.send()
 
                 # --- Tick for timeout commits ---
                 if t9_active and engine:
