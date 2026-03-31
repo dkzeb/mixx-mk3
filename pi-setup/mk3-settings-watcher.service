@@ -1,5 +1,5 @@
 [Unit]
-Description=MK3 Settings Button Watcher
+Description=MK3 Settings Command Executor
 After=mixxx.service
 
 [Service]
