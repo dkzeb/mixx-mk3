@@ -434,8 +434,8 @@ MaschineMK3.updatePanels = function() {
     MaschineMK3.setLed("mixer", showMix ? 63 : 16);
 
     if (showLib) {
-        engine.setValue("[Library]", "MoveFocusForward", 1);
-        engine.setValue("[Library]", "MoveFocusForward", 0);
+        // focused_widget: 0=none, 1=search bar, 2=sidebar, 3=track table
+        engine.setValue("[Library]", "focused_widget", 1);
     }
 };
 
@@ -810,10 +810,20 @@ MaschineMK3.onButtonPress = function(name) {
         break;
     case "navPush":
         if (MaschineMK3.libraryVisible) {
-            // Load selected track to the active deck and close library
-            engine.setValue("[Channel" + MaschineMK3.activeDeck + "]", "LoadSelectedTrack", 1);
-            MaschineMK3.libraryVisible = false;
-            MaschineMK3.updateLibrary();
+            // Cycle focus: search bar (1) → track table (3) → load track
+            var focus = engine.getValue("[Library]", "focused_widget");
+            if (focus === 1) {
+                // Search bar focused → move to track table
+                engine.setValue("[Library]", "focused_widget", 3);
+            } else {
+                // Track table focused → load selected track and close library
+                engine.setValue("[Channel" + MaschineMK3.activeDeck + "]", "LoadSelectedTrack", 1);
+                MaschineMK3.libraryVisible = false;
+                MaschineMK3.padMode = null;
+                MaschineMK3.updatePadModeLED();
+                MaschineMK3.updatePadLEDs();
+                MaschineMK3.updatePanels();
+            }
         }
         break;
     }
