@@ -540,6 +540,68 @@ MaschineMK3.updateSettingsLEDs = function() {
 };
 
 // ---------------------------------------------------------------------------
+// settingsExecuteItem — execute the currently highlighted settings item.
+// Handles confirmation for destructive actions, toggles, and command dispatch.
+// ---------------------------------------------------------------------------
+MaschineMK3.settingsExecuteItem = function() {
+    var tab = MaschineMK3.settingsTabs[MaschineMK3.settingsTab];
+    var item = tab.items[MaschineMK3.settingsCursor];
+    if (!item || item.type === "info") { return; }
+
+    if (item.type === "toggle") {
+        // Toggle the state and update skin
+        MaschineMK3[item.stateKey] = !MaschineMK3[item.stateKey];
+        MaschineMK3.updateSettingsSkinCOs();
+        // Dispatch command to daemon
+        var cmd = item.action + (MaschineMK3[item.stateKey] ? "-on" : "-off");
+        MaschineMK3.settingsDispatchCommand(cmd);
+        return;
+    }
+
+    // Action type
+    if (item.confirm && !MaschineMK3.settingsConfirm) {
+        // Enter confirmation mode
+        MaschineMK3.settingsConfirm = true;
+        MaschineMK3.updateSettingsSkinCOs();
+        // Auto-cancel after 5 seconds
+        MaschineMK3.settingsConfirmTimer = engine.beginTimer(5000, function() {
+            MaschineMK3.settingsConfirm = false;
+            MaschineMK3.settingsConfirmTimer = 0;
+            MaschineMK3.updateSettingsSkinCOs();
+        }, true);
+        return;
+    }
+
+    // Execute (either confirmed destructive or non-destructive action)
+    if (MaschineMK3.settingsConfirmTimer) {
+        engine.stopTimer(MaschineMK3.settingsConfirmTimer);
+        MaschineMK3.settingsConfirmTimer = 0;
+    }
+    MaschineMK3.settingsConfirm = false;
+    MaschineMK3.updateSettingsSkinCOs();
+
+    // Special case: rescan uses Mixxx built-in CO
+    if (item.action === "rescan") {
+        engine.setValue("[Library]", "rescan", 1);
+        return;
+    }
+
+    MaschineMK3.settingsDispatchCommand(item.action);
+};
+
+// ---------------------------------------------------------------------------
+// settingsDispatchCommand — write a command for the background daemon.
+// ---------------------------------------------------------------------------
+MaschineMK3.settingsDispatchCommand = function(cmd) {
+    // TODO: Wire bridge to mk3-settings-watcher.py daemon.
+    // The daemon watches /tmp/mk3-settings-cmd but Mixxx JS cannot write
+    // files. Plan: extend T9 daemon to poll [Skin],settings_command CO
+    // and write the cmd file. For now, log + manual test:
+    //   echo "reboot" > /tmp/mk3-settings-cmd
+    print("MK3 Settings command: " + cmd);
+};
+
+// ---------------------------------------------------------------------------
 // connectTransportLEDs — connect/reconnect transport LED feedback to the
 // active deck. Called on init and when switching decks.
 // ---------------------------------------------------------------------------
@@ -926,28 +988,46 @@ MaschineMK3.onButtonPress = function(name) {
         MaschineMK3.updateSettingsSkinCOs();
         break;
 
-    // --- Library navigation (4D encoder) ---
+    // --- Navigation (4D encoder) ---
     case "navUp":
-        engine.setValue("[Library]", "MoveUp", 1);
+        if (MaschineMK3.settingsVisible) {
+            MaschineMK3.settingsConfirm = false;
+            MaschineMK3.settingsCursor = MaschineMK3.settingsNextSelectable(
+                MaschineMK3.settingsTab, MaschineMK3.settingsCursor, -1);
+            MaschineMK3.updateSettingsSkinCOs();
+        } else {
+            engine.setValue("[Library]", "MoveUp", 1);
+        }
         break;
     case "navDown":
-        engine.setValue("[Library]", "MoveDown", 1);
+        if (MaschineMK3.settingsVisible) {
+            MaschineMK3.settingsConfirm = false;
+            MaschineMK3.settingsCursor = MaschineMK3.settingsNextSelectable(
+                MaschineMK3.settingsTab, MaschineMK3.settingsCursor, 1);
+            MaschineMK3.updateSettingsSkinCOs();
+        } else {
+            engine.setValue("[Library]", "MoveDown", 1);
+        }
         break;
     case "navLeft":
-        engine.setValue("[Library]", "MoveFocusBackward", 1);
+        if (!MaschineMK3.settingsVisible) {
+            engine.setValue("[Library]", "MoveFocusBackward", 1);
+        }
         break;
     case "navRight":
-        engine.setValue("[Library]", "MoveFocusForward", 1);
+        if (!MaschineMK3.settingsVisible) {
+            engine.setValue("[Library]", "MoveFocusForward", 1);
+        }
         break;
     case "navPush":
-        if (MaschineMK3.libraryVisible) {
+        if (MaschineMK3.settingsVisible) {
+            MaschineMK3.settingsExecuteItem();
+        } else if (MaschineMK3.libraryVisible) {
             // Cycle focus: search bar (1) → track table (3) → load track
             var focus = engine.getValue("[Library]", "focused_widget");
             if (focus === 1) {
-                // Search bar focused → move to track table
                 engine.setValue("[Library]", "focused_widget", 3);
             } else {
-                // Track table focused → load selected track and close library
                 engine.setValue("[Channel" + MaschineMK3.activeDeck + "]", "LoadSelectedTrack", 1);
                 MaschineMK3.libraryVisible = false;
                 MaschineMK3.padMode = null;
