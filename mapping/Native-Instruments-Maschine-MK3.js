@@ -415,13 +415,20 @@ MaschineMK3.updatePanels = function() {
 
     engine.setValue("[Skin]", "show_library", showLib ? 1 : 0);
     engine.setValue("[Skin]", "show_mixer", showMix ? 1 : 0);
+    engine.setValue("[Skin]", "show_t9", showLib ? 1 : 0);
     engine.setValue("[Skin]", "show_pads_loops", showPadsLoops ? 1 : 0);
     engine.setValue("[Skin]", "show_pads_fx", showPadsFx ? 1 : 0);
     engine.setValue("[Skin]", "show_pads_cues", showPadsCues ? 1 : 0);
 
-    // Hide the non-active deck when any panel is open
-    engine.setValue("[Skin]", "hide_deck_a", (anyPanel && MaschineMK3.activeDeck === 2) ? 1 : 0);
-    engine.setValue("[Skin]", "hide_deck_b", (anyPanel && MaschineMK3.activeDeck === 1) ? 1 : 0);
+    if (showLib) {
+        // Library: always left screen, T9 pad overview: always right screen
+        engine.setValue("[Skin]", "hide_deck_a", 1);
+        engine.setValue("[Skin]", "hide_deck_b", 1);
+    } else {
+        // Other panels: replace non-active deck
+        engine.setValue("[Skin]", "hide_deck_a", (anyPanel && MaschineMK3.activeDeck === 2) ? 1 : 0);
+        engine.setValue("[Skin]", "hide_deck_b", (anyPanel && MaschineMK3.activeDeck === 1) ? 1 : 0);
+    }
 
     MaschineMK3.setLed("browserPlugin", showLib ? 63 : 16);
     MaschineMK3.setLed("mixer", showMix ? 63 : 16);

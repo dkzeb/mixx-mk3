@@ -139,12 +139,12 @@ class XdotoolSearchBridge:
         if wait:
             p.wait()
 
-    def focus_search(self):
-        """Ctrl+F to focus the search bar."""
-        self._run("xdotool", "key", "--clearmodifiers", "ctrl+f")
-
     def type_text(self, text):
-        """Select all then type the full text (replaces previous content)."""
+        """Select all then type the full text (replaces previous content).
+
+        The JS mapping focuses the search box via engine.setValue, so we
+        just need to clear and retype.
+        """
         self._run("xdotool", "key", "--clearmodifiers", "ctrl+a", wait=True)
         if text:
             self._run("xdotool", "type", "--clearmodifiers", "--delay", "0", text)
@@ -152,12 +152,13 @@ class XdotoolSearchBridge:
             self._run("xdotool", "key", "--clearmodifiers", "Delete")
 
     def confirm_search(self):
-        """Tab to move focus to results."""
-        self._run("xdotool", "key", "--clearmodifiers", "Tab")
+        """Move focus to results."""
+        self._run("xdotool", "key", "--clearmodifiers", "Return")
 
     def cancel_search(self):
-        """Escape to close search."""
-        self._run("xdotool", "key", "--clearmodifiers", "Escape")
+        """Clear search text."""
+        self._run("xdotool", "key", "--clearmodifiers", "ctrl+a", wait=True)
+        self._run("xdotool", "key", "--clearmodifiers", "Delete")
 
 
 # ---------------------------------------------------------------------------
@@ -290,7 +291,6 @@ def main():
                         if t9_active:
                             print(f"{LOG_PREFIX}: T9 mode ON", file=sys.stderr)
                             engine = make_engine()
-                            bridge.focus_search()
                             leds.set_t9_layout()
                             leds.send()
                         else:
