@@ -24,7 +24,8 @@ CHAR_MAP = {
 
 # Special pad constants
 PAD_ENTER = 4
-PAD_CANCEL = 12
+PAD_TAB = 8
+PAD_CLEAR = 12
 PAD_BACKSPACE = 16
 
 # Timeout in seconds before a pending character is auto-committed
@@ -38,10 +39,10 @@ class T9Engine:
     handle timeouts. Register callbacks to be notified of state changes.
     """
 
-    def __init__(self, on_change=None, on_submit=None, on_cancel=None):
+    def __init__(self, on_change=None, on_submit=None, on_tab=None):
         self.on_change = on_change
         self.on_submit = on_submit
-        self.on_cancel = on_cancel
+        self.on_tab = on_tab
 
         self._committed = []       # List of committed characters
         self._pending_pad = None   # Pad currently being cycled, or None
@@ -59,14 +60,18 @@ class T9Engine:
                 self.on_submit(text)
             return text
 
-        if pad == PAD_CANCEL:
+        if pad == PAD_CLEAR:
             self._committed.clear()
             self._pending_pad = None
             self._pending_index = 0
-            if self.on_cancel:
-                self.on_cancel()
             if self.on_change:
                 self.on_change(self.get_text())
+            return self.get_text()
+
+        if pad == PAD_TAB:
+            self._commit_pending()
+            if self.on_tab:
+                self.on_tab()
             return self.get_text()
 
         if pad == PAD_BACKSPACE:

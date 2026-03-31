@@ -734,7 +734,7 @@
                 <Label><ObjectName>PadCell</ObjectName><SizePolicy>me,me</SizePolicy><Text>4  ghi</Text></Label>
                 <Label><ObjectName>PadCell</ObjectName><SizePolicy>me,me</SizePolicy><Text>5  jkl</Text></Label>
                 <Label><ObjectName>PadCell</ObjectName><SizePolicy>me,me</SizePolicy><Text>6  mno</Text></Label>
-                <Label><ObjectName>T9Cancel</ObjectName><SizePolicy>me,me</SizePolicy><Text>✕</Text></Label>
+                <Label><ObjectName>T9Clear</ObjectName><SizePolicy>me,me</SizePolicy><Text>CLR</Text></Label>
               </Children>
             </WidgetGroup>
             <!-- Row 3: pads 5-8 -->
@@ -745,7 +745,7 @@
                 <Label><ObjectName>PadCell</ObjectName><SizePolicy>me,me</SizePolicy><Text>7  pqrs</Text></Label>
                 <Label><ObjectName>PadCell</ObjectName><SizePolicy>me,me</SizePolicy><Text>8  tuv</Text></Label>
                 <Label><ObjectName>PadCell</ObjectName><SizePolicy>me,me</SizePolicy><Text>9  wxyz</Text></Label>
-                <Label><ObjectName>PadCell</ObjectName><SizePolicy>me,me</SizePolicy><Text></Text></Label>
+                <Label><ObjectName>T9Tab</ObjectName><SizePolicy>me,me</SizePolicy><Text>TAB</Text></Label>
               </Children>
             </WidgetGroup>
             <!-- Bottom row: pads 1-4 -->

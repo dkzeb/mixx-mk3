@@ -18,7 +18,8 @@ _spec.loader.exec_module(mk3_t9_engine)
 T9Engine = mk3_t9_engine.T9Engine
 CHAR_MAP = mk3_t9_engine.CHAR_MAP
 PAD_ENTER = mk3_t9_engine.PAD_ENTER
-PAD_CANCEL = mk3_t9_engine.PAD_CANCEL
+PAD_TAB = mk3_t9_engine.PAD_TAB
+PAD_CLEAR = mk3_t9_engine.PAD_CLEAR
 PAD_BACKSPACE = mk3_t9_engine.PAD_BACKSPACE
 COMMIT_TIMEOUT = mk3_t9_engine.COMMIT_TIMEOUT
 
@@ -210,30 +211,44 @@ class TestEnter(unittest.TestCase):
         self.on_submit.assert_called_once_with("")
 
 
-class TestCancel(unittest.TestCase):
-    """Test cancel behavior."""
+class TestClear(unittest.TestCase):
+    """Test clear behavior."""
 
     def setUp(self):
-        self.on_cancel = MagicMock()
-        self.on_submit = MagicMock()
-        self.engine = T9Engine(on_submit=self.on_submit, on_cancel=self.on_cancel)
+        self.on_change = MagicMock()
+        self.engine = T9Engine(on_change=self.on_change)
 
-    def test_cancel_discards_all(self):
+    def test_clear_discards_all(self):
         self.engine.press(14)
         self.engine.press(15)
-        result = self.engine.press(PAD_CANCEL)
+        result = self.engine.press(PAD_CLEAR)
         self.assertEqual(result, "")
         self.assertIsNone(self.engine.get_pending_pad())
 
-    def test_cancel_fires_on_cancel(self):
+    def test_clear_fires_on_change(self):
         self.engine.press(14)
-        self.engine.press(PAD_CANCEL)
-        self.on_cancel.assert_called_once()
+        self.engine.press(PAD_CLEAR)
+        # on_change fires for the press and for the clear
+        self.assertEqual(self.on_change.call_count, 2)
+        self.on_change.assert_called_with("")
 
-    def test_cancel_does_not_fire_on_submit(self):
-        self.engine.press(14)
-        self.engine.press(PAD_CANCEL)
-        self.on_submit.assert_not_called()
+
+class TestTab(unittest.TestCase):
+    """Test tab (focus toggle) behavior."""
+
+    def setUp(self):
+        self.on_tab = MagicMock()
+        self.engine = T9Engine(on_tab=self.on_tab)
+
+    def test_tab_fires_callback(self):
+        self.engine.press(PAD_TAB)
+        self.on_tab.assert_called_once()
+
+    def test_tab_commits_pending(self):
+        self.engine.press(14)  # 'a' pending
+        self.engine.press(PAD_TAB)
+        self.assertEqual(self.engine.get_text(), "a")
+        self.assertIsNone(self.engine.get_pending_pad())
 
 
 class TestCallbacks(unittest.TestCase):
@@ -274,12 +289,12 @@ class TestCallbacks(unittest.TestCase):
         engine.press(15)
         on_change.assert_called_once_with("ad")
 
-    def test_on_change_fires_on_cancel(self):
+    def test_on_change_fires_on_clear(self):
         on_change = MagicMock()
         engine = T9Engine(on_change=on_change)
         engine.press(14)
         on_change.reset_mock()
-        engine.press(PAD_CANCEL)
+        engine.press(PAD_CLEAR)
         on_change.assert_called_once_with("")
 
 
@@ -370,20 +385,20 @@ class TestUnknownPads(unittest.TestCase):
 
     def test_unknown_pad_ignored(self):
         engine = T9Engine()
-        result = engine.press(8)
+        result = engine.press(99)
         self.assertEqual(result, "")
 
     def test_unknown_pad_does_not_affect_pending(self):
         engine = T9Engine()
         engine.press(14)  # "a" pending
-        engine.press(8)   # should be ignored
+        engine.press(99)   # should be ignored
         self.assertEqual(engine.get_text(), "a")
         self.assertEqual(engine.get_pending_pad(), 14)
 
     def test_unknown_pad_does_not_commit_pending(self):
         engine = T9Engine()
         engine.press(14)  # "a" pending
-        engine.press(8)   # should NOT commit "a"
+        engine.press(99)   # should NOT commit "a"
         # Still pending on pad 14
         self.assertEqual(engine.get_pending_pad(), 14)
 

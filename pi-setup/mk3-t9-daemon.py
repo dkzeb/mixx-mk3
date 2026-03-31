@@ -26,7 +26,8 @@ _spec.loader.exec_module(_mod)
 T9Engine = _mod.T9Engine
 CHAR_MAP = _mod.CHAR_MAP
 PAD_ENTER = _mod.PAD_ENTER
-PAD_CANCEL = _mod.PAD_CANCEL
+PAD_TAB = _mod.PAD_TAB
+PAD_CLEAR = _mod.PAD_CLEAR
 PAD_BACKSPACE = _mod.PAD_BACKSPACE
 
 # ---------------------------------------------------------------------------
@@ -105,10 +106,12 @@ class LedWriter:
                     self.set_pad(phys, COLOR_CYAN)
             elif phys == PAD_ENTER:
                 self.set_pad(phys, COLOR_GREEN)
-            elif phys == PAD_CANCEL:
+            elif phys == PAD_CLEAR:
                 self.set_pad(phys, COLOR_RED)
+            elif phys == PAD_TAB:
+                self.set_pad(phys, COLOR_BLUE)
             elif phys == PAD_BACKSPACE:
-                self.set_pad(phys, COLOR_WHITE)  # white (same palette, dimmed by pad)
+                self.set_pad(phys, COLOR_WHITE)
             else:
                 self.set_pad(phys, COLOR_OFF)
 
@@ -155,10 +158,9 @@ class XdotoolSearchBridge:
         """Move focus to results."""
         self._run("xdotool", "key", "--clearmodifiers", "Return")
 
-    def cancel_search(self):
-        """Clear search text."""
-        self._run("xdotool", "key", "--clearmodifiers", "ctrl+a", wait=True)
-        self._run("xdotool", "key", "--clearmodifiers", "Delete")
+    def tab_focus(self):
+        """Toggle focus between search bar and track list."""
+        self._run("xdotool", "key", "--clearmodifiers", "Tab")
 
 
 # ---------------------------------------------------------------------------
@@ -256,15 +258,14 @@ def main():
                 deactivate_t9()
                 bridge.confirm_search()
 
-            def on_cancel():
-                print(f"{LOG_PREFIX}: cancelled", file=sys.stderr)
-                deactivate_t9()
-                bridge.cancel_search()
+            def on_tab():
+                print(f"{LOG_PREFIX}: tab focus", file=sys.stderr)
+                bridge.tab_focus()
 
             return T9Engine(
                 on_change=on_change,
                 on_submit=on_submit,
-                on_cancel=on_cancel,
+                on_tab=on_tab,
             )
 
         try:
