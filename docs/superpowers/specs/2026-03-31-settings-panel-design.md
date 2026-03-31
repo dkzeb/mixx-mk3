@@ -62,8 +62,28 @@ The panel occupies the full 480x272 screen on the non-active deck's side.
 | Hostname | Info | System hostname |
 | WiFi Network | Info | Current SSID |
 | WiFi Select | Action | Future expansion — submenu for network selection |
-| VPN | Toggle | Enable/disable VPN connection |
+| Tailscale | Toggle | Enable/disable Tailscale VPN (only shown when Tailscale is set up) |
+| Setup VPN | Action | Shown instead of Tailscale toggle when not configured. Runs `tailscale up`, renders auth URL as QR code on the MK3 screen for phone scanning. |
 | Hotspot | Toggle | Enable/disable WiFi hotspot mode |
+
+### Tailscale Setup Flow
+
+Tailscale can be configured either during initial Pi setup (`mk3-pi-setup.sh` prompts for it) or later via the Settings > Network > "Setup VPN" action.
+
+**Setup flow (from settings):**
+1. User selects "Setup VPN" — triggers `tailscale up` via the command executor daemon.
+2. `tailscale up` returns an auth URL (e.g. `https://login.tailscale.com/a/...`).
+3. The daemon converts the URL to a QR code (via `qrencode`) and renders it on the MK3 screen.
+4. User scans QR code with their phone to authenticate.
+5. Once authenticated, `tailscale status` confirms connection. The "Setup VPN" item is replaced by the Tailscale toggle.
+
+**Setup flow (from Pi setup script):**
+1. `mk3-pi-setup.sh` installs Tailscale (`curl -fsSL https://tailscale.com/install.sh | sh`).
+2. Prompts: "Set up Tailscale VPN now? (y/n)".
+3. If yes, runs `tailscale up` and displays the auth URL in the terminal for the user to visit.
+4. If no, Tailscale is installed but not configured — the settings panel will show "Setup VPN" later.
+
+**Dependencies:** `tailscale` package, `qrencode` (for QR rendering on screen).
 
 ## Navigation
 
@@ -87,7 +107,7 @@ Mixxx JS cannot execute system commands directly. A background service handles t
 
 - The JS mapping writes a command identifier to a well-known file (e.g. `/tmp/mk3-settings-cmd`).
 - The existing `mk3-settings-watcher.py` daemon is repurposed: instead of watching for HID button presses, it watches the command file and executes the requested action.
-- Commands: `reboot`, `shutdown`, `update`, `rescan`, `mount-usb`, `unmount-usb`, `vpn-on`, `vpn-off`, `hotspot-on`, `hotspot-off`.
+- Commands: `reboot`, `shutdown`, `update`, `rescan`, `mount-usb`, `unmount-usb`, `tailscale-up`, `tailscale-down`, `tailscale-setup`, `hotspot-on`, `hotspot-off`.
 - The daemon writes results/status back to a response file that the JS mapping can poll or that the skin can read.
 
 Alternative: use Mixxx's `system()` if available in the JS engine, which would simplify this. To be determined during implementation.
