@@ -1,0 +1,15 @@
+[Unit]
+Description=MK3 T9 Text Input Daemon
+After=xvfb.service mixxx.service
+Wants=xvfb.service
+
+[Service]
+Type=simple
+User=pi
+Environment=DISPLAY=:99
+ExecStart=/usr/bin/python3 /home/pi/mixx-mk3/pi-setup/mk3-t9-daemon.py
+Restart=on-failure
+RestartSec=3
+
+[Install]
+WantedBy=multi-user.target

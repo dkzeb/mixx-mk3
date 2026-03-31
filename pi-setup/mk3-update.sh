@@ -56,7 +56,7 @@ for svc in mk3-screen-daemon.service openbox.service xvfb.service; do
             "$SCRIPT_DIR/$svc" | sudo tee /etc/systemd/system/$svc > /dev/null
     fi
 done
-for svc in mixxx.service mk3-settings-watcher.service; do
+for svc in mixxx.service mk3-settings-watcher.service mk3-t9-daemon.service; do
     if [ -f "$SCRIPT_DIR/$svc" ]; then
         sed -e "s/User=pi/User=$PI_USER/" \
             -e "s|HOME=/home/pi|HOME=$PI_HOME|" \

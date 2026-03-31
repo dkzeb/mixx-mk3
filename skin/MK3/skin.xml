@@ -19,6 +19,7 @@
       <attribute config_key="[Skin],show_pads_loops">0</attribute>
       <attribute config_key="[Skin],show_pads_fx">0</attribute>
       <attribute config_key="[Skin],show_pads_cues">0</attribute>
+      <attribute config_key="[Skin],show_t9">0</attribute>
     </attributes>
   </manifest>
 
@@ -257,6 +258,11 @@
         <BindProperty>visible</BindProperty>
       </Connection>
       <Children>
+        <SearchBox>
+          <ObjectName>LibrarySearch</ObjectName>
+          <Size>480,22</Size>
+          <SizePolicy>me,f</SizePolicy>
+        </SearchBox>
         <Library>
           <ObjectName>LibraryView</ObjectName>
           <SizePolicy>me,me</SizePolicy>
@@ -663,6 +669,94 @@
                 <Label><ObjectName>PadCellCue</ObjectName><SizePolicy>me,me</SizePolicy><Text>CUE 2</Text></Label>
                 <Label><ObjectName>PadCellCue</ObjectName><SizePolicy>me,me</SizePolicy><Text>CUE 3</Text></Label>
                 <Label><ObjectName>PadCellCue</ObjectName><SizePolicy>me,me</SizePolicy><Text>CUE 4</Text></Label>
+              </Children>
+            </WidgetGroup>
+          </Children>
+        </WidgetGroup>
+      </Children>
+    </WidgetGroup>
+
+    <!-- ═══════ T9 PAD OVERVIEW (480x272, right screen) ═══════ -->
+    <WidgetGroup>
+      <ObjectName>PadPanel</ObjectName>
+      <Size>480,272</Size>
+      <SizePolicy>f,f</SizePolicy>
+      <Layout>vertical</Layout>
+      <Connection>
+        <ConfigKey>[Skin],show_t9</ConfigKey>
+        <BindProperty>visible</BindProperty>
+      </Connection>
+      <Children>
+        <!-- Active deck indicator bar -->
+        <WidgetGroup>
+          <ObjectName>DeckAHighlight</ObjectName>
+          <Size>480,3</Size>
+          <SizePolicy>f,f</SizePolicy>
+          <Connection>
+            <ConfigKey>[Skin],active_deck_a</ConfigKey>
+            <BindProperty>visible</BindProperty>
+          </Connection>
+        </WidgetGroup>
+        <WidgetGroup>
+          <ObjectName>DeckBHighlight</ObjectName>
+          <Size>480,3</Size>
+          <SizePolicy>f,f</SizePolicy>
+          <Connection>
+            <ConfigKey>[Skin],active_deck_b</ConfigKey>
+            <BindProperty>visible</BindProperty>
+          </Connection>
+        </WidgetGroup>
+
+        <Label><ObjectName>PadTitle</ObjectName><Size>480,20</Size><Text>T9 INPUT</Text></Label>
+
+        <!-- 4x4 pad grid -->
+        <WidgetGroup>
+          <ObjectName>PadGrid</ObjectName>
+          <SizePolicy>me,me</SizePolicy>
+          <Layout>vertical</Layout>
+          <Children>
+            <!-- Top row: pads 13-16 -->
+            <WidgetGroup>
+              <SizePolicy>me,me</SizePolicy>
+              <Layout>horizontal</Layout>
+              <Children>
+                <Label><ObjectName>PadCell</ObjectName><SizePolicy>me,me</SizePolicy><Text>1  ␣</Text></Label>
+                <Label><ObjectName>PadCell</ObjectName><SizePolicy>me,me</SizePolicy><Text>2  abc</Text></Label>
+                <Label><ObjectName>PadCell</ObjectName><SizePolicy>me,me</SizePolicy><Text>3  def</Text></Label>
+                <Label><ObjectName>PadCellAction</ObjectName><SizePolicy>me,me</SizePolicy><Text>⌫</Text></Label>
+              </Children>
+            </WidgetGroup>
+            <!-- Row 2: pads 9-12 -->
+            <WidgetGroup>
+              <SizePolicy>me,me</SizePolicy>
+              <Layout>horizontal</Layout>
+              <Children>
+                <Label><ObjectName>PadCell</ObjectName><SizePolicy>me,me</SizePolicy><Text>4  ghi</Text></Label>
+                <Label><ObjectName>PadCell</ObjectName><SizePolicy>me,me</SizePolicy><Text>5  jkl</Text></Label>
+                <Label><ObjectName>PadCell</ObjectName><SizePolicy>me,me</SizePolicy><Text>6  mno</Text></Label>
+                <Label><ObjectName>T9Clear</ObjectName><SizePolicy>me,me</SizePolicy><Text>CLR</Text></Label>
+              </Children>
+            </WidgetGroup>
+            <!-- Row 3: pads 5-8 -->
+            <WidgetGroup>
+              <SizePolicy>me,me</SizePolicy>
+              <Layout>horizontal</Layout>
+              <Children>
+                <Label><ObjectName>PadCell</ObjectName><SizePolicy>me,me</SizePolicy><Text>7  pqrs</Text></Label>
+                <Label><ObjectName>PadCell</ObjectName><SizePolicy>me,me</SizePolicy><Text>8  tuv</Text></Label>
+                <Label><ObjectName>PadCell</ObjectName><SizePolicy>me,me</SizePolicy><Text>9  wxyz</Text></Label>
+                <Label><ObjectName>T9Tab</ObjectName><SizePolicy>me,me</SizePolicy><Text>TAB</Text></Label>
+              </Children>
+            </WidgetGroup>
+            <!-- Bottom row: pads 1-4 -->
+            <WidgetGroup>
+              <SizePolicy>me,me</SizePolicy>
+              <Layout>horizontal</Layout>
+              <Children>
+                <Label><ObjectName>PadCell</ObjectName><SizePolicy>me,me</SizePolicy><Text>#</Text></Label>
+                <Label><ObjectName>PadCell</ObjectName><SizePolicy>me,me</SizePolicy><Text>0  +</Text></Label>
+                <Label><ObjectName>PadCell</ObjectName><SizePolicy>me,me</SizePolicy><Text>*</Text></Label>
+                <Label><ObjectName>T9Enter</ObjectName><SizePolicy>me,me</SizePolicy><Text>✓</Text></Label>
               </Children>
             </WidgetGroup>
           </Children>

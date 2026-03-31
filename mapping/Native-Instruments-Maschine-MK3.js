@@ -302,7 +302,7 @@ MaschineMK3.selectPressed = false;     // "select" button held = modifier for de
 MaschineMK3.activeDeck    = 1;         // 1 or 2 — which deck the browser loads to
 MaschineMK3.libraryVisible = false;    // whether the library panel is shown
 MaschineMK3.mixerVisible   = false;    // whether the mixer panel is shown
-MaschineMK3.padMode       = null;      // null | "loops" | "effects" | "cuepoints" — null = pads inactive
+MaschineMK3.padMode       = null;      // null | "loops" | "effects" | "cuepoints" | "t9" — null = pads inactive
 
 // Effects pad mapping: pad number → {unit, slot} or {unit, "enable"}
 // Layout (physical, bottom to top):
@@ -415,20 +415,27 @@ MaschineMK3.updatePanels = function() {
 
     engine.setValue("[Skin]", "show_library", showLib ? 1 : 0);
     engine.setValue("[Skin]", "show_mixer", showMix ? 1 : 0);
+    engine.setValue("[Skin]", "show_t9", showLib ? 1 : 0);
     engine.setValue("[Skin]", "show_pads_loops", showPadsLoops ? 1 : 0);
     engine.setValue("[Skin]", "show_pads_fx", showPadsFx ? 1 : 0);
     engine.setValue("[Skin]", "show_pads_cues", showPadsCues ? 1 : 0);
 
-    // Hide the non-active deck when any panel is open
-    engine.setValue("[Skin]", "hide_deck_a", (anyPanel && MaschineMK3.activeDeck === 2) ? 1 : 0);
-    engine.setValue("[Skin]", "hide_deck_b", (anyPanel && MaschineMK3.activeDeck === 1) ? 1 : 0);
+    if (showLib) {
+        // Library: always left screen, T9 pad overview: always right screen
+        engine.setValue("[Skin]", "hide_deck_a", 1);
+        engine.setValue("[Skin]", "hide_deck_b", 1);
+    } else {
+        // Other panels: replace non-active deck
+        engine.setValue("[Skin]", "hide_deck_a", (anyPanel && MaschineMK3.activeDeck === 2) ? 1 : 0);
+        engine.setValue("[Skin]", "hide_deck_b", (anyPanel && MaschineMK3.activeDeck === 1) ? 1 : 0);
+    }
 
     MaschineMK3.setLed("browserPlugin", showLib ? 63 : 16);
     MaschineMK3.setLed("mixer", showMix ? 63 : 16);
 
     if (showLib) {
-        engine.setValue("[Library]", "MoveFocusForward", 1);
-        engine.setValue("[Library]", "MoveFocusForward", 0);
+        // focused_widget: 0=none, 1=search bar, 2=sidebar, 3=track table
+        engine.setValue("[Library]", "focused_widget", 1);
     }
 };
 
@@ -469,6 +476,7 @@ MaschineMK3.connectTransportLEDs = function() {
 // Crossfader value: -1 (full left) to +1 (full right). Center = 0.
 // ---------------------------------------------------------------------------
 MaschineMK3.updateTouchstripLEDs = function() {
+    if (MaschineMK3.padMode === "t9") { return; }
     var xfader = engine.getValue("[Master]", "crossfader"); // -1 to 1
     // Map to 0-24 (LED index)
     var pos = Math.round(((xfader + 1.0) / 2.0) * 24);
@@ -518,21 +526,23 @@ MaschineMK3.processTouchstrip = function(data) {
         var xfader = (norm * 2.0) - 1.0;
         engine.setValue("[Master]", "crossfader", xfader);
 
-        // Update strip LEDs directly (faster than going via crossfader connection)
-        var ledPos = Math.round(norm * 24);
-        var C = MaschineMK3.Color;
-        for (var i = 0; i < 25; i++) {
-            var ledName = "ts" + (i + 1);
-            if (i === ledPos) {
-                MaschineMK3.report81[MaschineMK3.leds[ledName][1]] = C.WHITE;
-            } else if (i === 12) {
-                MaschineMK3.report81[MaschineMK3.leds[ledName][1]] = C.BLUE;
-            } else {
-                MaschineMK3.report81[MaschineMK3.leds[ledName][1]] = C.OFF;
+        if (MaschineMK3.padMode !== "t9") {
+            // Update strip LEDs directly (faster than going via crossfader connection)
+            var ledPos = Math.round(norm * 24);
+            var C = MaschineMK3.Color;
+            for (var i = 0; i < 25; i++) {
+                var ledName = "ts" + (i + 1);
+                if (i === ledPos) {
+                    MaschineMK3.report81[MaschineMK3.leds[ledName][1]] = C.WHITE;
+                } else if (i === 12) {
+                    MaschineMK3.report81[MaschineMK3.leds[ledName][1]] = C.BLUE;
+                } else {
+                    MaschineMK3.report81[MaschineMK3.leds[ledName][1]] = C.OFF;
+                }
             }
+            // Single send for all strip LEDs
+            controller.send(MaschineMK3.report81.slice(1), 42, 0x81);
         }
-        // Single send for all strip LEDs
-        controller.send(MaschineMK3.report81.slice(1), 42, 0x81);
     }
 
     MaschineMK3.touchstripTouched = touching;
@@ -553,6 +563,8 @@ MaschineMK3.updatePadModeLED = function() {
     }
     // padMode LED
     MaschineMK3.setLed("padMode", MaschineMK3.padMode === "cuepoints" ? 63 : 8);
+    // keyboard LED — bright when T9 active
+    MaschineMK3.setLed("keyboard", MaschineMK3.padMode === "t9" ? 63 : 0);
 };
 
 // ---------------------------------------------------------------------------
@@ -562,6 +574,9 @@ MaschineMK3.updatePadModeLED = function() {
 MaschineMK3.updatePadLEDs = function() {
     var C = MaschineMK3.Color;
     var ch = "[Channel" + MaschineMK3.activeDeck + "]";
+
+    // T9 mode: Python daemon controls pad LEDs
+    if (MaschineMK3.padMode === "t9") { return; }
 
     if (MaschineMK3.padMode === null) {
         for (var pad = 1; pad <= 16; pad++) {
@@ -756,10 +771,17 @@ MaschineMK3.onButtonPress = function(name) {
         MaschineMK3.updateDeckLEDs();
         break;
 
-    // --- Browser: toggle library panel on the non-active deck's screen ---
+    // --- Browser: toggle library panel + T9 input on the non-active deck's screen ---
     case "browserPlugin":
         MaschineMK3.libraryVisible = !MaschineMK3.libraryVisible;
-        if (MaschineMK3.libraryVisible) { MaschineMK3.mixerVisible = false; }
+        if (MaschineMK3.libraryVisible) {
+            MaschineMK3.mixerVisible = false;
+            MaschineMK3.padMode = "t9";
+        } else {
+            MaschineMK3.padMode = null;
+        }
+        MaschineMK3.updatePadModeLED();
+        MaschineMK3.updatePadLEDs();
         MaschineMK3.updatePanels();
         break;
 
@@ -767,6 +789,9 @@ MaschineMK3.onButtonPress = function(name) {
     case "mixer":
         MaschineMK3.mixerVisible = !MaschineMK3.mixerVisible;
         if (MaschineMK3.mixerVisible) { MaschineMK3.libraryVisible = false; }
+        if (MaschineMK3.padMode === "t9") { MaschineMK3.padMode = null; }
+        MaschineMK3.updatePadModeLED();
+        MaschineMK3.updatePadLEDs();
         MaschineMK3.updatePanels();
         break;
 
@@ -785,10 +810,20 @@ MaschineMK3.onButtonPress = function(name) {
         break;
     case "navPush":
         if (MaschineMK3.libraryVisible) {
-            // Load selected track to the active deck and close library
-            engine.setValue("[Channel" + MaschineMK3.activeDeck + "]", "LoadSelectedTrack", 1);
-            MaschineMK3.libraryVisible = false;
-            MaschineMK3.updateLibrary();
+            // Cycle focus: search bar (1) → track table (3) → load track
+            var focus = engine.getValue("[Library]", "focused_widget");
+            if (focus === 1) {
+                // Search bar focused → move to track table
+                engine.setValue("[Library]", "focused_widget", 3);
+            } else {
+                // Track table focused → load selected track and close library
+                engine.setValue("[Channel" + MaschineMK3.activeDeck + "]", "LoadSelectedTrack", 1);
+                MaschineMK3.libraryVisible = false;
+                MaschineMK3.padMode = null;
+                MaschineMK3.updatePadModeLED();
+                MaschineMK3.updatePadLEDs();
+                MaschineMK3.updatePanels();
+            }
         }
         break;
     }
@@ -974,7 +1009,7 @@ MaschineMK3.onStepperChange = function(direction) {
 // padNumber: physical pad number (1-16).
 // ---------------------------------------------------------------------------
 MaschineMK3.onPadPress = function(padNumber) {
-    if (MaschineMK3.padMode === null) { return; }
+    if (MaschineMK3.padMode === null || MaschineMK3.padMode === "t9") { return; }
     var ch = "[Channel" + MaschineMK3.activeDeck + "]";
 
     if (MaschineMK3.padMode === "cuepoints") {
@@ -1037,6 +1072,7 @@ MaschineMK3.onPadPress = function(padNumber) {
 // padNumber: physical pad number (1-16).
 // ---------------------------------------------------------------------------
 MaschineMK3.onPadRelease = function(padNumber) {
+    if (MaschineMK3.padMode === "t9") { return; }
     if (MaschineMK3.padMode === "cuepoints") {
         var ch = "[Channel" + MaschineMK3.activeDeck + "]";
         engine.setValue(ch, "hotcue_" + padNumber + "_activate", 0);
@@ -1267,6 +1303,7 @@ MaschineMK3.init = function(/* id, debugging */) {
     MaschineMK3.setLed("browserPlugin", 16);
     MaschineMK3.setLed("mixer", 16);
     MaschineMK3.setLed("settings", 16);
+    MaschineMK3.setLed("keyboard", 0);
 
     // --- Nav encoder LEDs (always dimly lit for navigation) ---
     MaschineMK3.setLed("navUp",    MaschineMK3.Color.WHITE);
