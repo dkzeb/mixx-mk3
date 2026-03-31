@@ -165,6 +165,7 @@ def main():
         macro_was_pressed = False
         nav_push_was = False
         stepper_position = None
+        t9_was_pressed = False
 
         try:
             while True:
@@ -202,6 +203,18 @@ def main():
 
                 auto_was_pressed = auto_pressed
                 macro_was_pressed = macro_pressed
+
+                # --- T9 toggle: deactivate mouse if T9 activates ---
+                t9_pressed = (data[T9_TOGGLE_BYTE] & T9_TOGGLE_MASK) != 0
+                if t9_pressed and not t9_was_pressed and mouse_active:
+                    print(f"{LOG_PREFIX}: T9 toggled, deactivating mouse", file=sys.stderr)
+                    mouse_active = False
+                    speed = SPEED_DEFAULT
+                    stepper_position = None
+                    nav_push_was = False
+                    leds.set_mouse_leds(False)
+                    leds.send()
+                t9_was_pressed = t9_pressed
 
                 if not mouse_active:
                     continue
