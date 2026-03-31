@@ -245,19 +245,21 @@ def main():
 
         def make_engine():
             def on_change(text):
+                if not t9_active:
+                    return
                 bridge.type_text(text)
-                leds.set_t9_layout(active_pad=engine.get_pending_pad())
+                leds.set_t9_layout(active_pad=engine.get_pending_pad() if engine else None)
                 leds.send()
 
             def on_submit(text):
-                bridge.confirm_search()
                 print(f"{LOG_PREFIX}: submitted '{text}'", file=sys.stderr)
                 deactivate_t9()
+                bridge.confirm_search()
 
             def on_cancel():
-                bridge.cancel_search()
                 print(f"{LOG_PREFIX}: cancelled", file=sys.stderr)
                 deactivate_t9()
+                bridge.cancel_search()
 
             return T9Engine(
                 on_change=on_change,
