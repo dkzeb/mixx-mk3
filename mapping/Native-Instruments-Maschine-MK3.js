@@ -303,6 +303,66 @@ MaschineMK3.activeDeck    = 1;         // 1 or 2 — which deck the browser load
 MaschineMK3.libraryVisible  = false;    // whether the library panel is shown
 MaschineMK3.mixerVisible    = false;    // whether the mixer panel is shown
 MaschineMK3.settingsVisible = false;    // whether the settings panel is shown
+MaschineMK3.settingsTab     = 0;        // 0=General, 1=Library, 2=Network
+MaschineMK3.settingsCursor  = 0;        // index into current tab's selectable items
+MaschineMK3.settingsConfirm = false;    // true when awaiting destructive confirmation
+MaschineMK3.settingsConfirmTimer = 0;   // timer ID for auto-cancel
+
+// Settings tab definitions: each item has type, label, and action key.
+// type: "action" (chevron, NavPush executes), "toggle" (switch), "info" (read-only, cursor skips)
+// confirm: true for destructive actions requiring two-step confirmation
+MaschineMK3.settingsTabs = [
+    { name: "GENERAL", items: [
+        { type: "action",  label: "Reboot",              action: "reboot",    confirm: true },
+        { type: "action",  label: "Shutdown",            action: "shutdown",  confirm: true },
+        { type: "action",  label: "Check for Updates",   action: "update" },
+        { type: "toggle",  label: "Auto-update on boot", action: "autoupdate", stateKey: "settingsAutoUpdate" },
+        { type: "info",    label: "Version" },
+    ]},
+    { name: "LIBRARY", items: [
+        { type: "action",  label: "Rescan Library",      action: "rescan" },
+        { type: "action",  label: "Mount USB Drive",     action: "mount-usb" },
+        { type: "action",  label: "Unmount USB Drive",   action: "unmount-usb" },
+        { type: "info",    label: "Library Location" },
+    ]},
+    { name: "NETWORK", items: [
+        { type: "info",    label: "IP Address" },
+        { type: "info",    label: "Hostname" },
+        { type: "info",    label: "WiFi Network" },
+        { type: "action",  label: "WiFi Select",         action: "wifi-select" },
+        { type: "toggle",  label: "Tailscale",           action: "tailscale", stateKey: "settingsTailscale" },
+        { type: "toggle",  label: "Hotspot",             action: "hotspot",   stateKey: "settingsHotspot" },
+    ]},
+];
+
+// Toggle states (persisted via command daemon)
+MaschineMK3.settingsAutoUpdate = false;
+MaschineMK3.settingsTailscale  = false;
+MaschineMK3.settingsHotspot    = false;
+
+// Returns the index of the next selectable item in the given direction.
+// Wraps around. Returns current if no selectable items exist.
+MaschineMK3.settingsNextSelectable = function(tab, current, direction) {
+    var items = MaschineMK3.settingsTabs[tab].items;
+    var len = items.length;
+    if (len === 0) { return 0; }
+    var idx = current;
+    for (var i = 0; i < len; i++) {
+        idx = (idx + direction + len) % len;
+        if (items[idx].type !== "info") { return idx; }
+    }
+    return current;
+};
+
+// Returns the index of the first selectable item in a tab.
+MaschineMK3.settingsFirstSelectable = function(tab) {
+    var items = MaschineMK3.settingsTabs[tab].items;
+    for (var i = 0; i < items.length; i++) {
+        if (items[i].type !== "info") { return i; }
+    }
+    return 0;
+};
+
 MaschineMK3.padMode       = null;      // null | "loops" | "effects" | "cuepoints" | "t9" — null = pads inactive
 
 // Effects pad mapping: pad number → {unit, slot} or {unit, "enable"}
