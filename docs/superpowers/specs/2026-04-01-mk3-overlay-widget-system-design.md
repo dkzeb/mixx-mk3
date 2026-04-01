@@ -257,6 +257,12 @@ RestartSec=3
 WantedBy=multi-user.target
 ```
 
+## Backlog
+
+### Emulator support
+
+A homemade MK3 emulator exists (will be available as a git submodule in its own repo). The overlay daemon — and potentially Mixxx on Xvfb — could run against it on a dev machine with no physical hardware. This would enable a fully local development loop: the emulator provides a virtual hidraw device and renders screen output, so the overlay system can be developed and tested without the Pi + MK3 setup. Not in scope for initial implementation but the HID abstraction layer (`hid.py`) should avoid assumptions that would prevent this (e.g., don't hardcode `/dev/hidraw*` discovery — accept a device path override).
+
 ## Changes to Existing Code
 
 ### JS mapping (Native-Instruments-Maschine-MK3.js)
