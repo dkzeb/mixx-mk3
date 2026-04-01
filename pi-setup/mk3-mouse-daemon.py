@@ -167,6 +167,15 @@ def main():
         stepper_position = None
         t9_was_pressed = False
 
+        def deactivate_mouse():
+            nonlocal mouse_active, speed, stepper_position, nav_push_was
+            mouse_active = False
+            speed = SPEED_DEFAULT
+            stepper_position = None
+            nav_push_was = False
+            leds.set_mouse_leds(False)
+            leds.send()
+
         try:
             while True:
                 try:
@@ -192,14 +201,14 @@ def main():
 
                 # Toggle when second button press edge fires while first is held
                 if (auto_edge and macro_pressed) or (macro_edge and auto_pressed):
-                    mouse_active = not mouse_active
-                    speed = SPEED_DEFAULT
-                    stepper_position = None
-                    nav_push_was = False
-                    leds.set_mouse_leds(mouse_active)
-                    leds.send()
-                    state = "ON" if mouse_active else "OFF"
-                    print(f"{LOG_PREFIX}: mouse mode {state}", file=sys.stderr)
+                    if mouse_active:
+                        deactivate_mouse()
+                        print(f"{LOG_PREFIX}: mouse mode OFF", file=sys.stderr)
+                    else:
+                        mouse_active = True
+                        leds.set_mouse_leds(True)
+                        leds.send()
+                        print(f"{LOG_PREFIX}: mouse mode ON", file=sys.stderr)
 
                 auto_was_pressed = auto_pressed
                 macro_was_pressed = macro_pressed
@@ -208,12 +217,7 @@ def main():
                 t9_pressed = (data[T9_TOGGLE_BYTE] & T9_TOGGLE_MASK) != 0
                 if t9_pressed and not t9_was_pressed and mouse_active:
                     print(f"{LOG_PREFIX}: T9 toggled, deactivating mouse", file=sys.stderr)
-                    mouse_active = False
-                    speed = SPEED_DEFAULT
-                    stepper_position = None
-                    nav_push_was = False
-                    leds.set_mouse_leds(False)
-                    leds.send()
+                    deactivate_mouse()
                 t9_was_pressed = t9_pressed
 
                 if not mouse_active:
