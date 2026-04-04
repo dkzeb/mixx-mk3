@@ -64,12 +64,26 @@
           </Connection>
         </WidgetGroup>
 
-        <!-- D-button labels (top, aligned with D1-D4) -->
+        <!-- D-button labels: library tabs (when library open) -->
+        <WidgetGroup>
+          <ObjectName>DButtonLabels</ObjectName>
+          <Size>480,12</Size><SizePolicy>me,f</SizePolicy>
+          <Layout>horizontal</Layout>
+          <Connection><ConfigKey>[Skin],show_library</ConfigKey><BindProperty>visible</BindProperty></Connection>
+          <Children>
+            <Label><ObjectName>DLabelActive</ObjectName><Size>120,12</Size><Text>TRACKS</Text></Label>
+            <Label><ObjectName>DLabel</ObjectName><Size>120,12</Size><Text>PLAYLISTS</Text></Label>
+            <Label><ObjectName>DLabel</ObjectName><Size>120,12</Size><Text>CRATES</Text></Label>
+            <Label><ObjectName>DLabel</ObjectName><Size>120,12</Size><Text>PREPARE</Text></Label>
+          </Children>
+        </WidgetGroup>
+        <!-- D-button labels: normal deck controls (when library closed) -->
         <WidgetGroup>
           <ObjectName>DButtonLabels</ObjectName>
           <Size>480,12</Size>
           <SizePolicy>me,f</SizePolicy>
           <Layout>horizontal</Layout>
+          <Connection><ConfigKey>[Skin],show_library</ConfigKey><BindProperty>visible</BindProperty><Transform><Not/></Transform></Connection>
           <Children>
             <Label><ObjectName>DLabel</ObjectName><Size>120,12</Size><Text>SYNC</Text></Label>
             <Label><ObjectName>DLabel</ObjectName><Size>120,12</Size><Text>TEMPO-</Text></Label>
