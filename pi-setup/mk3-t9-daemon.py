@@ -46,6 +46,10 @@ TOGGLE_MASK = 0x04
 SETTINGS_BYTE = 0x07
 SETTINGS_MASK = 0x02
 
+# navPush button: Report 0x01, byte 0x01, mask 0x01
+NAVPUSH_BYTE = 0x01
+NAVPUSH_MASK = 0x01
+
 # Mouse mode toggle: Auto (0x08, 0x20) + Macro (0x07, 0x01)
 MOUSE_AUTO_BYTE = 0x08
 MOUSE_AUTO_MASK = 0x20
@@ -247,6 +251,8 @@ def main():
         t9_active = False
         toggle_was_pressed = False
         settings_was_pressed = False
+        navpush_was_pressed = False
+        navpush_count = 0  # track presses to skip first (focus switch)
         mouse_auto_was = False
         mouse_macro_was = False
         pad_was_pressed = {}  # physical pad -> bool
@@ -310,6 +316,7 @@ def main():
 
                         if t9_active:
                             print(f"{LOG_PREFIX}: T9 mode ON", file=sys.stderr)
+                            navpush_count = 0
                             engine = make_engine()
                             leds.set_t9_layout()
                             leds.send()
@@ -343,6 +350,18 @@ def main():
 
                     mouse_auto_was = m_auto
                     mouse_macro_was = m_macro
+
+                    # --- NavPush: second press loads track, deactivate T9 ---
+                    navpush_pressed = (data[NAVPUSH_BYTE] & NAVPUSH_MASK) != 0
+                    if navpush_pressed and not navpush_was_pressed and t9_active:
+                        navpush_count += 1
+                        if navpush_count >= 2:
+                            # First navPush switches focus to track table,
+                            # second loads track — deactivate T9
+                            print(f"{LOG_PREFIX}: navPush load, deactivating T9", file=sys.stderr)
+                            deactivate_t9()
+                            navpush_count = 0
+                    navpush_was_pressed = navpush_pressed
 
                 # --- Report 0x02: pad presses ---
                 if report_id == PAD_REPORT_ID and t9_active and engine:
