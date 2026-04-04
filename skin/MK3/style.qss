@@ -274,6 +274,11 @@
     selection-color: #ffffff;
 }
 
+#LibraryView QCheckBox {
+    width: 0px;
+    max-width: 0px;
+}
+
 #LibraryView QHeaderView::section {
     background-color: #1a1a2e;
     color: #aaaaaa;
