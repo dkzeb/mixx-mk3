@@ -306,6 +306,7 @@ MaschineMK3.mixerVisible    = false;    // whether the mixer panel is shown
 MaschineMK3.overlayActive   = false;    // overlay widget has focus — suppress HID processing
 
 MaschineMK3.padMode       = "cuepoints"; // "cuepoints" | "loops" | "effects" | "t9" — cuepoints is default
+MaschineMK3.cueDisplayVisible = false;   // whether the cue point panel is shown on screen
 
 // Effects pad mapping: pad number → {unit, slot} or {unit, "enable"}
 // Layout (physical, bottom to top):
@@ -413,7 +414,7 @@ MaschineMK3.updatePanels = function() {
     var noPanelOpen = !showLib && !showMix;
     var showPadsLoops = noPanelOpen && MaschineMK3.padMode === "loops";
     var showPadsFx = noPanelOpen && MaschineMK3.padMode === "effects";
-    var showPadsCues = noPanelOpen && MaschineMK3.padMode === "cuepoints";
+    var showPadsCues = noPanelOpen && MaschineMK3.cueDisplayVisible;
     var anyPanel = showLib || showMix || showPadsLoops || showPadsFx || showPadsCues;
 
     engine.setValue("[Skin]", "show_library", showLib ? 1 : 0);
@@ -564,8 +565,8 @@ MaschineMK3.updatePadModeLED = function() {
     } else {
         MaschineMK3.setLed("performFxSelect", 8);
     }
-    // padMode LED
-    MaschineMK3.setLed("padMode", MaschineMK3.padMode === "cuepoints" ? 63 : 8);
+    // notes LED — bright when cue display visible
+    MaschineMK3.setLed("notes", MaschineMK3.cueDisplayVisible ? 63 : 0);
     // keyboard LED — bright when T9 active
     MaschineMK3.setLed("keyboard", MaschineMK3.padMode === "t9" ? 63 : 0);
 };
@@ -717,15 +718,14 @@ MaschineMK3.onButtonPress = function(name) {
         }
         break;
 
-    // --- PadMode button: toggle cuepoints on pads ---
-    case "padMode":
-        MaschineMK3.padMode = "cuepoints"; // always cuepoints — it's the default
-        if (MaschineMK3.padMode === "cuepoints") {
+    // --- Notes button: toggle cue point display panel ---
+    case "notes":
+        MaschineMK3.cueDisplayVisible = !MaschineMK3.cueDisplayVisible;
+        if (MaschineMK3.cueDisplayVisible) {
             MaschineMK3.libraryVisible = false;
             MaschineMK3.mixerVisible = false;
         }
-        MaschineMK3.updatePadModeLED();
-        MaschineMK3.updatePadLEDs();
+        MaschineMK3.setLed("notes", MaschineMK3.cueDisplayVisible ? 63 : 0);
         MaschineMK3.updatePanels();
         break;
 
@@ -738,10 +738,11 @@ MaschineMK3.onButtonPress = function(name) {
             // Normal press: toggle loops mode on/off
             MaschineMK3.padMode = (MaschineMK3.padMode === "loops") ? "cuepoints" : "loops";
         }
-        // Close library/mixer if opening a pad mode
+        // Close other panels if opening loops/effects
         if (MaschineMK3.padMode !== "cuepoints") {
             MaschineMK3.libraryVisible = false;
             MaschineMK3.mixerVisible = false;
+            MaschineMK3.cueDisplayVisible = false;
         }
         MaschineMK3.updatePadModeLED();
         MaschineMK3.updatePadLEDs();
