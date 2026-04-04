@@ -310,6 +310,22 @@ MaschineMK3.overlayActive   = false;    // overlay widget has focus — suppress
 MaschineMK3.padMode       = "cuepoints"; // "cuepoints" | "loops" | "effects" | "t9" — cuepoints is default
 MaschineMK3.cueDisplayVisible = false;   // whether the cue point panel is shown on screen
 
+// Library sidebar tab indices (fixed order in Mixxx)
+MaschineMK3.LIBRARY_TABS = {
+    "tracks":    0,
+    "playlists": 2,
+    "crates":    3,
+    "prepare":   7
+};
+// D-button → tab mapping (only active when library is open)
+MaschineMK3.libraryTabMap = {
+    "d1": "tracks",
+    "d2": "playlists",
+    "d3": "crates",
+    "d4": "prepare"
+};
+MaschineMK3.librarySidebarPos = 0;  // current sidebar index
+
 // Effects pad mapping: pad number → {unit, slot} or {unit, "enable"}
 // Layout (physical, bottom to top):
 //   1: Echo       2: Reverb      3: Filter       4: Unit1 ON/OFF
@@ -442,6 +458,48 @@ MaschineMK3.updatePanels = function() {
     if (showLib) {
         // focused_widget: 0=none, 1=search bar, 2=sidebar, 3=track table
         engine.setValue("[Library]", "focused_widget", 1);
+        MaschineMK3.updateLibraryTabLEDs();
+    } else {
+        // Restore D1-D4 LEDs to normal state
+        MaschineMK3.setLed("d1", 0);
+        MaschineMK3.setLed("d2", 0);
+        MaschineMK3.setLed("d3", 0);
+        MaschineMK3.setLed("d4", 0);
+    }
+};
+
+// ---------------------------------------------------------------------------
+// Library tab navigation — D1-D4 switch between sidebar features.
+// ---------------------------------------------------------------------------
+MaschineMK3.activeLibraryTab = "tracks";
+
+MaschineMK3.selectLibraryTab = function(tabName) {
+    var targetIdx = MaschineMK3.LIBRARY_TABS[tabName];
+    if (targetIdx === undefined) { return; }
+    var delta = targetIdx - MaschineMK3.librarySidebarPos;
+    if (delta === 0) {
+        // Already on this tab — focus the track table
+        engine.setValue("[Library]", "focused_widget", 3);
+        return;
+    }
+    // Focus sidebar, navigate to target, then open it
+    engine.setValue("[Library]", "focused_widget", 2);
+    engine.setValue("[Playlist]", "SelectPlaylist", delta);
+    engine.setValue("[Library]", "GoToItem", 1);
+    engine.setValue("[Library]", "GoToItem", 0);
+    MaschineMK3.librarySidebarPos = targetIdx;
+    MaschineMK3.activeLibraryTab = tabName;
+    MaschineMK3.updateLibraryTabLEDs();
+    // Return focus to track table
+    engine.setValue("[Library]", "focused_widget", 3);
+};
+
+MaschineMK3.updateLibraryTabLEDs = function() {
+    var map = MaschineMK3.libraryTabMap;
+    for (var dBtn in map) {
+        if (map.hasOwnProperty(dBtn)) {
+            MaschineMK3.setLed(dBtn, map[dBtn] === MaschineMK3.activeLibraryTab ? 63 : 16);
+        }
     }
 };
 
@@ -769,10 +827,15 @@ MaschineMK3.onButtonPress = function(name) {
         MaschineMK3.updatePanels();
         break;
 
-    // --- D buttons: per-deck controls ---
+    // --- D buttons: library tabs (D1-D4 when library open) or per-deck controls ---
     case "d1": case "d2": case "d3": case "d4":
     case "d5": case "d6": case "d7": case "d8":
         var dNum = parseInt(name.charAt(1), 10);  // 1-8
+        // Library tab switching: D1-D4 when library is visible
+        if (MaschineMK3.libraryVisible && MaschineMK3.libraryTabMap[name]) {
+            MaschineMK3.selectLibraryTab(MaschineMK3.libraryTabMap[name]);
+            break;
+        }
         // Normal DJ mode D-button behavior
         if (dNum === 1) {
             engine.setValue("[Channel1]", "sync_enabled",
@@ -811,6 +874,8 @@ MaschineMK3.onButtonPress = function(name) {
         if (MaschineMK3.libraryVisible) {
             MaschineMK3.mixerVisible = false;
             MaschineMK3.padMode = "t9";
+            MaschineMK3.librarySidebarPos = 0;
+            MaschineMK3.activeLibraryTab = "tracks";
         } else {
             MaschineMK3.padMode = "cuepoints";
         }
