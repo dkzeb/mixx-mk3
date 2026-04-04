@@ -330,12 +330,17 @@
           <SizePolicy>me,me</SizePolicy>
           <Layout>horizontal</Layout>
           <Children>
-            <LibrarySidebar>
-              <ObjectName>LibrarySidebar</ObjectName>
+            <WidgetGroup>
               <Size>140,0</Size>
               <SizePolicy>f,me</SizePolicy>
               <Connection><ConfigKey>[Skin],show_sidebar</ConfigKey><BindProperty>visible</BindProperty></Connection>
-            </LibrarySidebar>
+              <Children>
+                <LibrarySidebar>
+                  <ObjectName>LibrarySidebar</ObjectName>
+                  <SizePolicy>me,me</SizePolicy>
+                </LibrarySidebar>
+              </Children>
+            </WidgetGroup>
             <Library>
               <ObjectName>LibraryView</ObjectName>
               <SizePolicy>me,me</SizePolicy>
