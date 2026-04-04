@@ -478,20 +478,29 @@ MaschineMK3.selectLibraryTab = function(tabName) {
     if (targetIdx === undefined) { return; }
     var delta = targetIdx - MaschineMK3.librarySidebarPos;
     if (delta === 0) {
-        // Already on this tab — focus the track table
         engine.setValue("[Library]", "focused_widget", 3);
         return;
     }
-    // Focus sidebar, navigate to target, then open it
+    // Step 1: focus sidebar
     engine.setValue("[Library]", "focused_widget", 2);
-    engine.setValue("[Playlist]", "SelectPlaylist", delta);
-    engine.setValue("[Library]", "GoToItem", 1);
-    engine.setValue("[Library]", "GoToItem", 0);
+    // Step 2: navigate after sidebar has focus
+    engine.beginTimer(50, function() {
+        engine.setValue("[Playlist]", "SelectPlaylist", delta);
+        // Step 3: open the selected feature
+        engine.beginTimer(50, function() {
+            engine.setValue("[Library]", "GoToItem", 1);
+            engine.beginTimer(20, function() {
+                engine.setValue("[Library]", "GoToItem", 0);
+                // Step 4: focus track table
+                engine.beginTimer(50, function() {
+                    engine.setValue("[Library]", "focused_widget", 3);
+                }, true);
+            }, true);
+        }, true);
+    }, true);
     MaschineMK3.librarySidebarPos = targetIdx;
     MaschineMK3.activeLibraryTab = tabName;
     MaschineMK3.updateLibraryTabLEDs();
-    // Return focus to track table
-    engine.setValue("[Library]", "focused_widget", 3);
 };
 
 MaschineMK3.updateLibraryTabLEDs = function() {
