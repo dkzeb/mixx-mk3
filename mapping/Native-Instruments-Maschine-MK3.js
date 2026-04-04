@@ -304,6 +304,7 @@ MaschineMK3.autoPressed   = false;     // "auto" button held — enables knob sn
 MaschineMK3.autoSnap      = {};        // knob name -> {group, key, value} saved on touch
 MaschineMK3.activeDeck    = 1;         // 1 or 2 — which deck the browser loads to
 MaschineMK3.libraryVisible  = false;    // whether the library panel is shown
+MaschineMK3.sidebarVisible  = false;    // whether the library sidebar is shown
 MaschineMK3.mixerVisible    = false;    // whether the mixer panel is shown
 MaschineMK3.overlayActive   = false;    // overlay widget has focus — suppress HID processing
 
@@ -872,10 +873,22 @@ MaschineMK3.onButtonPress = function(name) {
             MaschineMK3.activeLibraryTab = "tracks";
         } else {
             MaschineMK3.padMode = "cuepoints";
+            MaschineMK3.sidebarVisible = false;
+            engine.setValue("[Skin]", "show_sidebar", 0);
+            MaschineMK3.setLed("arranger", 0);
         }
         MaschineMK3.updatePadModeLED();
         MaschineMK3.updatePadLEDs();
         MaschineMK3.updatePanels();
+        break;
+
+    // --- Arranger: toggle sidebar when library is open ---
+    case "arranger":
+        if (MaschineMK3.libraryVisible) {
+            MaschineMK3.sidebarVisible = !MaschineMK3.sidebarVisible;
+            engine.setValue("[Skin]", "show_sidebar", MaschineMK3.sidebarVisible ? 1 : 0);
+            MaschineMK3.setLed("arranger", MaschineMK3.sidebarVisible ? 63 : 0);
+        }
         break;
 
     // --- Mixer: toggle mixer panel ---

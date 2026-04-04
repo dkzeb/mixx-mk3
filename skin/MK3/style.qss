@@ -281,6 +281,15 @@
     margin: 0px;
 }
 
+#LibrarySidebar {
+    font-size: 11px;
+    color: #ffffff;
+    background-color: #111122;
+    border-right: 1px solid #16a085;
+    selection-background-color: #16a085;
+    selection-color: #ffffff;
+}
+
 #LibraryView QHeaderView::section {
     background-color: #1a1a2e;
     color: #aaaaaa;

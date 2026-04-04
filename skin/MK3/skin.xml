@@ -20,6 +20,7 @@
       <attribute config_key="[Skin],show_pads_fx">0</attribute>
       <attribute config_key="[Skin],show_pads_cues">0</attribute>
       <attribute config_key="[Skin],show_t9">0</attribute>
+      <attribute config_key="[Skin],show_sidebar">0</attribute>
       <attribute config_key="[Skin],auto_touch_k1">0</attribute>
       <attribute config_key="[Skin],auto_touch_k2">0</attribute>
       <attribute config_key="[Skin],auto_touch_k3">0</attribute>
@@ -325,16 +326,22 @@
           <Size>480,22</Size>
           <SizePolicy>me,f</SizePolicy>
         </SearchBox>
-        <!-- Hidden sidebar — required for SelectPlaylist/focused_widget controls -->
-        <LibrarySidebar>
-          <ObjectName>LibrarySidebar</ObjectName>
-          <Size>0,0</Size>
-          <SizePolicy>f,f</SizePolicy>
-        </LibrarySidebar>
-        <Library>
-          <ObjectName>LibraryView</ObjectName>
+        <WidgetGroup>
           <SizePolicy>me,me</SizePolicy>
-        </Library>
+          <Layout>horizontal</Layout>
+          <Children>
+            <LibrarySidebar>
+              <ObjectName>LibrarySidebar</ObjectName>
+              <Size>140,0</Size>
+              <SizePolicy>f,me</SizePolicy>
+              <Connection><ConfigKey>[Skin],show_sidebar</ConfigKey><BindProperty>visible</BindProperty></Connection>
+            </LibrarySidebar>
+            <Library>
+              <ObjectName>LibraryView</ObjectName>
+              <SizePolicy>me,me</SizePolicy>
+            </Library>
+          </Children>
+        </WidgetGroup>
       </Children>
     </WidgetGroup>
 
