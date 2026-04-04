@@ -319,11 +319,10 @@ MaschineMK3.LIBRARY_TABS = {
     "prepare":   7
 };
 // D-button → tab mapping (only active when library is open)
+// D1=Tracks, D2=unused, D3=Prepare, D4=Rescan
 MaschineMK3.libraryTabMap = {
     "d1": "tracks",
-    "d2": "playlists",
-    "d3": "crates",
-    "d4": "prepare"
+    "d3": "prepare"
 };
 MaschineMK3.librarySidebarPos = 0;  // current sidebar index
 
@@ -496,6 +495,7 @@ MaschineMK3.updateLibraryTabLEDs = function() {
             MaschineMK3.setLed(dBtn, map[dBtn] === MaschineMK3.activeLibraryTab ? 63 : 16);
         }
     }
+    MaschineMK3.setLed("d4", 16);  // Rescan — always dim (action, not tab)
 };
 
 // ---------------------------------------------------------------------------
@@ -829,6 +829,10 @@ MaschineMK3.onButtonPress = function(name) {
         // Library tab switching: D1-D4 when library is visible
         if (MaschineMK3.libraryVisible && MaschineMK3.libraryTabMap[name]) {
             MaschineMK3.selectLibraryTab(MaschineMK3.libraryTabMap[name]);
+            break;
+        }
+        if (MaschineMK3.libraryVisible && name === "d4") {
+            engine.setValue("[Library]", "rescanLibrary", 1);
             break;
         }
         // Normal DJ mode D-button behavior
