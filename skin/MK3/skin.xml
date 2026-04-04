@@ -382,8 +382,8 @@
                   <SizePolicy>f,me</SizePolicy>
                   <Size>44,0</Size>
                   <Children>
+                    <Label><ObjectName>MixerLabel</ObjectName><Size>44f,12f</Size><Text>HI</Text></Label>
                     <KnobComposed>
-                      <TooltipId>pregain</TooltipId>
                       <Size>40f,34f</Size>
                       <Knob>knob.svg</Knob>
                       <BackPath>knob_bg_purple.svg</BackPath>
@@ -391,8 +391,8 @@
                       <KnobCenterYOffset>1.602</KnobCenterYOffset>
                       <Connection><ConfigKey>[EqualizerRack1_[Channel1]_Effect1],parameter3</ConfigKey></Connection>
                     </KnobComposed>
+                    <Label><ObjectName>MixerLabel</ObjectName><Size>44f,12f</Size><Text>MID</Text></Label>
                     <KnobComposed>
-                      <TooltipId>pregain</TooltipId>
                       <Size>40f,34f</Size>
                       <Knob>knob.svg</Knob>
                       <BackPath>knob_bg_purple.svg</BackPath>
@@ -400,8 +400,8 @@
                       <KnobCenterYOffset>1.602</KnobCenterYOffset>
                       <Connection><ConfigKey>[EqualizerRack1_[Channel1]_Effect1],parameter2</ConfigKey></Connection>
                     </KnobComposed>
+                    <Label><ObjectName>MixerLabel</ObjectName><Size>44f,12f</Size><Text>LO</Text></Label>
                     <KnobComposed>
-                      <TooltipId>pregain</TooltipId>
                       <Size>40f,34f</Size>
                       <Knob>knob.svg</Knob>
                       <BackPath>knob_bg_purple.svg</BackPath>
@@ -409,8 +409,8 @@
                       <KnobCenterYOffset>1.602</KnobCenterYOffset>
                       <Connection><ConfigKey>[EqualizerRack1_[Channel1]_Effect1],parameter1</ConfigKey></Connection>
                     </KnobComposed>
+                    <Label><ObjectName>MixerLabel</ObjectName><Size>44f,12f</Size><Text>FX</Text></Label>
                     <KnobComposed>
-                      <TooltipId>QuickEffectRack_super1</TooltipId>
                       <Size>40f,34f</Size>
                       <Knob>knob.svg</Knob>
                       <BackPath>knob_bg_blue.svg</BackPath>
@@ -427,6 +427,7 @@
                   <SizePolicy>f,me</SizePolicy>
                   <Size>44,0</Size>
                   <Children>
+                    <Label><ObjectName>MixerLabel</ObjectName><Size>44f,12f</Size><Text>GAIN</Text></Label>
                     <KnobComposed>
                       <TooltipId>pregain</TooltipId>
                       <Size>40f,34f</Size>
@@ -656,6 +657,7 @@
                   <SizePolicy>f,me</SizePolicy>
                   <Size>44,0</Size>
                   <Children>
+                    <Label><ObjectName>MixerLabel</ObjectName><Size>44f,12f</Size><Text>GAIN</Text></Label>
                     <KnobComposed>
                       <TooltipId>pregain</TooltipId>
                       <Size>40f,34f</Size>
@@ -686,8 +688,8 @@
                   <SizePolicy>f,me</SizePolicy>
                   <Size>44,0</Size>
                   <Children>
+                    <Label><ObjectName>MixerLabel</ObjectName><Size>44f,12f</Size><Text>HI</Text></Label>
                     <KnobComposed>
-                      <TooltipId>pregain</TooltipId>
                       <Size>40f,34f</Size>
                       <Knob>knob.svg</Knob>
                       <BackPath>knob_bg_purple.svg</BackPath>
@@ -695,8 +697,8 @@
                       <KnobCenterYOffset>1.602</KnobCenterYOffset>
                       <Connection><ConfigKey>[EqualizerRack1_[Channel2]_Effect1],parameter3</ConfigKey></Connection>
                     </KnobComposed>
+                    <Label><ObjectName>MixerLabel</ObjectName><Size>44f,12f</Size><Text>MID</Text></Label>
                     <KnobComposed>
-                      <TooltipId>pregain</TooltipId>
                       <Size>40f,34f</Size>
                       <Knob>knob.svg</Knob>
                       <BackPath>knob_bg_purple.svg</BackPath>
@@ -704,8 +706,8 @@
                       <KnobCenterYOffset>1.602</KnobCenterYOffset>
                       <Connection><ConfigKey>[EqualizerRack1_[Channel2]_Effect1],parameter2</ConfigKey></Connection>
                     </KnobComposed>
+                    <Label><ObjectName>MixerLabel</ObjectName><Size>44f,12f</Size><Text>LO</Text></Label>
                     <KnobComposed>
-                      <TooltipId>pregain</TooltipId>
                       <Size>40f,34f</Size>
                       <Knob>knob.svg</Knob>
                       <BackPath>knob_bg_purple.svg</BackPath>
@@ -713,8 +715,8 @@
                       <KnobCenterYOffset>1.602</KnobCenterYOffset>
                       <Connection><ConfigKey>[EqualizerRack1_[Channel2]_Effect1],parameter1</ConfigKey></Connection>
                     </KnobComposed>
+                    <Label><ObjectName>MixerLabel</ObjectName><Size>44f,12f</Size><Text>FX</Text></Label>
                     <KnobComposed>
-                      <TooltipId>QuickEffectRack_super1</TooltipId>
                       <Size>40f,34f</Size>
                       <Knob>knob.svg</Knob>
                       <BackPath>knob_bg_blue.svg</BackPath>

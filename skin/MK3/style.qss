@@ -100,6 +100,12 @@ WVuMeter, #PeakIndicator {
     background-color: #222222;
 }
 
+#MixerLabel {
+    font-size: 9px;
+    color: #aaaaaa;
+    qproperty-alignment: AlignCenter;
+}
+
 #CrossfaderContainer {
     background-color: #333333;
 }
