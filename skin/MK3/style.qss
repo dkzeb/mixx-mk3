@@ -300,3 +300,43 @@ WVuMeter, #PeakIndicator {
     border-bottom: 1px solid #333333;
 }
 
+/* Stem Mixer Panel */
+#StemMixerPanel {
+    background-color: #0d0d1a;
+}
+
+#StemHeader {
+    color: #e67e22;
+    font: bold 11px sans-serif;
+    padding-left: 10px;
+    background-color: #1a1a2e;
+}
+
+#StemHeaderShift {
+    color: #16a085;
+    font: bold 11px sans-serif;
+    padding-left: 10px;
+    background-color: #1a1a2e;
+}
+
+#StemContent {
+    margin: 4px;
+}
+
+#StemChannel {
+    margin: 0 8px;
+    background-color: #1a1a2e;
+    border-radius: 4px;
+    padding: 4px;
+}
+
+#StemLabel {
+    color: #cccccc;
+    font: bold 10px sans-serif;
+    qproperty-alignment: AlignCenter;
+}
+
+#StemMuteButton {
+    margin-top: 4px;
+}
+

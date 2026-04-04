@@ -279,6 +279,74 @@ MaschineMK3.Color = {
 };
 
 // ---------------------------------------------------------------------------
+// rgbToPaletteIndex — map a Mixxx 32-bit RGB color to the nearest MK3 LED
+// palette index (0-71). The MK3 palette has 18 hues x 4 brightness levels.
+// We match on hue and return the brightest variant (base + 3).
+// ---------------------------------------------------------------------------
+MaschineMK3.rgbToPaletteIndex = function(rgb) {
+    var r = (rgb >> 16) & 0xFF;
+    var g = (rgb >> 8) & 0xFF;
+    var b = rgb & 0xFF;
+
+    // Default to white if color is black/zero
+    if (r === 0 && g === 0 && b === 0) { return MaschineMK3.Color.WHITE; }
+
+    var max = Math.max(r, g, b);
+    var min = Math.min(r, g, b);
+    if (max === 0) { return MaschineMK3.Color.WHITE; }
+
+    var delta = max - min;
+    if (delta === 0) { return MaschineMK3.Color.WHITE; } // grey
+
+    var hue = 0;
+    if (max === r) {
+        hue = ((g - b) / delta) % 6;
+    } else if (max === g) {
+        hue = (b - r) / delta + 2;
+    } else {
+        hue = (r - g) / delta + 4;
+    }
+    hue = Math.round(hue * 60);
+    if (hue < 0) { hue += 360; }
+
+    var C = MaschineMK3.Color;
+    if (hue < 15 || hue >= 345) { return C.RED; }
+    if (hue < 45)  { return C.ORANGE; }
+    if (hue < 75)  { return C.YELLOW; }
+    if (hue < 150) { return C.GREEN; }
+    if (hue < 195) { return C.CYAN; }
+    if (hue < 255) { return C.BLUE; }
+    if (hue < 300) { return C.PURPLE; }
+    return C.PINK;
+};
+
+// ---------------------------------------------------------------------------
+// updateStemLEDs — set G1-G8 LED color/brightness from stem state.
+// Color = stem color mapped to palette. Brightness scaled by volume. Off when muted.
+// ---------------------------------------------------------------------------
+MaschineMK3.updateStemLEDs = function() {
+    for (var deck = 1; deck <= 2; deck++) {
+        for (var stem = 1; stem <= 4; stem++) {
+            var gName = "g" + ((deck - 1) * 4 + stem);
+            var stemGroup = "[Channel" + deck + "Stem" + stem + "]";
+            var isMuted = engine.getValue(stemGroup, "mute");
+            if (isMuted) {
+                MaschineMK3.setLed(gName, MaschineMK3.Color.OFF);
+            } else {
+                var color = engine.getValue(stemGroup, "color");
+                var paletteIdx = MaschineMK3.rgbToPaletteIndex(color);
+                var volume = engine.getValue(stemGroup, "volume");
+                // Palette has 4 brightness levels per hue (base+0=dimmest, base+3=brightest)
+                var brightnessLevel = Math.round(volume * 3); // 0-3
+                var ledValue = paletteIdx + brightnessLevel;
+                if (volume > 0 && ledValue < 1) { ledValue = 1; }
+                MaschineMK3.setLed(gName, ledValue);
+            }
+        }
+    }
+};
+
+// ---------------------------------------------------------------------------
 // Output report buffers (mirrors the LED state sent to the device).
 // Indices are 1-based (matching byteAddr in the LED map); index 0 = report ID.
 // report80: 63 bytes of data  (report ID 0x80, total packet = 64 bytes)
@@ -306,6 +374,7 @@ MaschineMK3.activeDeck    = 1;         // 1 or 2 — which deck the browser load
 MaschineMK3.libraryVisible  = false;    // whether the library panel is shown
 MaschineMK3.sidebarVisible  = false;    // whether the library sidebar is shown
 MaschineMK3.mixerVisible    = false;    // whether the mixer panel is shown
+MaschineMK3.stemMixerVisible = false;   // whether the stem mixer panel is shown
 MaschineMK3.overlayActive   = false;    // overlay widget has focus — suppress HID processing
 
 MaschineMK3.padMode       = "cuepoints"; // "cuepoints" | "loops" | "effects" | "t9" — cuepoints is default
@@ -401,7 +470,7 @@ MaschineMK3.updateDeckLEDs = function() {
     engine.setValue("[Skin]", "active_deck_b", MaschineMK3.activeDeck === 2 ? 1 : 0);
 
     // If any panel is open, move it to the new non-active side
-    if (MaschineMK3.libraryVisible || MaschineMK3.mixerVisible) {
+    if (MaschineMK3.libraryVisible || MaschineMK3.mixerVisible || MaschineMK3.stemMixerVisible) {
         MaschineMK3.updatePanels();
     }
 
@@ -428,14 +497,16 @@ MaschineMK3.updateLibrary = function() {
 MaschineMK3.updatePanels = function() {
     var showLib = MaschineMK3.libraryVisible;
     var showMix = MaschineMK3.mixerVisible;
-    var noPanelOpen = !showLib && !showMix;
+    var showStemMix = MaschineMK3.stemMixerVisible;
+    var noPanelOpen = !showLib && !showMix && !showStemMix;
     var showPadsLoops = noPanelOpen && MaschineMK3.padMode === "loops";
     var showPadsFx = noPanelOpen && MaschineMK3.padMode === "effects";
     var showPadsCues = noPanelOpen && MaschineMK3.cueDisplayVisible;
-    var anyPanel = showLib || showMix || showPadsLoops || showPadsFx || showPadsCues;
+    var anyPanel = showLib || showMix || showStemMix || showPadsLoops || showPadsFx || showPadsCues;
 
     engine.setValue("[Skin]", "show_library", showLib ? 1 : 0);
     engine.setValue("[Skin]", "show_mixer", showMix ? 1 : 0);
+    engine.setValue("[Skin]", "show_stem_mixer", showStemMix ? 1 : 0);
     engine.setValue("[Skin]", "show_t9", showLib ? 1 : 0);
     engine.setValue("[Skin]", "show_pads_loops", showPadsLoops ? 1 : 0);
     engine.setValue("[Skin]", "show_pads_fx", showPadsFx ? 1 : 0);
@@ -452,7 +523,7 @@ MaschineMK3.updatePanels = function() {
     }
 
     MaschineMK3.setLed("browserPlugin", showLib ? 63 : 16);
-    MaschineMK3.setLed("mixer", showMix ? 63 : 16);
+    MaschineMK3.setLed("mixer", (showMix || showStemMix) ? 63 : 16);
 
     if (showLib) {
         // focused_widget: 0=none, 1=search bar, 2=sidebar, 3=track table
@@ -781,18 +852,41 @@ MaschineMK3.onButtonPress = function(name) {
         engine.setValue("[Skin]", "shift_held", 1);
         break;
 
-    // --- G1-G8: Hotcues (G1-G4 = Deck A cues 1-4, G5-G8 = Deck B cues 1-4) ---
+    // --- G1-G8: Stem mute (normal) or stem solo (shift) ---
+    // G1-G4 = Deck A stems 1-4, G5-G8 = Deck B stems 1-4
     case "g1": case "g2": case "g3": case "g4":
     case "g5": case "g6": case "g7": case "g8":
         var gIdx = parseInt(name.charAt(1), 10);  // 1-8
-        var gDeck = gIdx <= 4 ? "[Channel1]" : "[Channel2]";
-        var gCue = gIdx <= 4 ? gIdx : gIdx - 4;   // cue 1-4
+        var gDeck = gIdx <= 4 ? 1 : 2;
+        var gStem = gIdx <= 4 ? gIdx : gIdx - 4;  // stem 1-4
+        var stemGroup = "[Channel" + gDeck + "Stem" + gStem + "]";
         if (MaschineMK3.shiftPressed) {
-            // Shift + press: set/move cue point to current position
-            engine.setValue(gDeck, "hotcue_" + gCue + "_set", 1);
+            // Shift+G: solo/unsolo this stem (mute all others, or unmute all if already solo)
+            var allOthersMuted = true;
+            var thisMuted = engine.getValue(stemGroup, "mute");
+            for (var s = 1; s <= 4; s++) {
+                if (s !== gStem) {
+                    if (!engine.getValue("[Channel" + gDeck + "Stem" + s + "]", "mute")) {
+                        allOthersMuted = false;
+                        break;
+                    }
+                }
+            }
+            if (allOthersMuted && !thisMuted) {
+                // Already solo — unsolo (unmute all)
+                for (var s2 = 1; s2 <= 4; s2++) {
+                    engine.setValue("[Channel" + gDeck + "Stem" + s2 + "]", "mute", 0);
+                }
+            } else {
+                // Solo: mute all others, unmute this
+                for (var s3 = 1; s3 <= 4; s3++) {
+                    engine.setValue("[Channel" + gDeck + "Stem" + s3 + "]", "mute", s3 !== gStem ? 1 : 0);
+                }
+            }
         } else {
-            // Normal press: go to cue point (sets if not yet set)
-            engine.setValue(gDeck, "hotcue_" + gCue + "_activate", 1);
+            // Normal: toggle mute
+            var muted = engine.getValue(stemGroup, "mute");
+            engine.setValue(stemGroup, "mute", muted ? 0 : 1);
         }
         break;
 
@@ -802,6 +896,7 @@ MaschineMK3.onButtonPress = function(name) {
         if (MaschineMK3.cueDisplayVisible) {
             MaschineMK3.libraryVisible = false;
             MaschineMK3.mixerVisible = false;
+            MaschineMK3.stemMixerVisible = false;
         }
         MaschineMK3.setLed("notes", MaschineMK3.cueDisplayVisible ? 63 : 0);
         MaschineMK3.updatePanels();
@@ -820,6 +915,7 @@ MaschineMK3.onButtonPress = function(name) {
         if (MaschineMK3.padMode !== "cuepoints") {
             MaschineMK3.libraryVisible = false;
             MaschineMK3.mixerVisible = false;
+            MaschineMK3.stemMixerVisible = false;
             MaschineMK3.cueDisplayVisible = false;
         }
         MaschineMK3.updatePadModeLED();
@@ -881,6 +977,7 @@ MaschineMK3.onButtonPress = function(name) {
         MaschineMK3.libraryVisible = !MaschineMK3.libraryVisible;
         if (MaschineMK3.libraryVisible) {
             MaschineMK3.mixerVisible = false;
+            MaschineMK3.stemMixerVisible = false;
             MaschineMK3.padMode = "t9";
             MaschineMK3.librarySidebarPos = 0;
             MaschineMK3.activeLibraryTab = "tracks";
@@ -904,11 +1001,21 @@ MaschineMK3.onButtonPress = function(name) {
         }
         break;
 
-    // --- Mixer: toggle mixer panel ---
+    // --- Mixer: toggle mixer panel; Shift+mixer: toggle stem mixer ---
     case "mixer":
-        MaschineMK3.mixerVisible = !MaschineMK3.mixerVisible;
-        if (MaschineMK3.mixerVisible) {
-            MaschineMK3.libraryVisible = false;
+        if (MaschineMK3.shiftPressed) {
+            MaschineMK3.stemMixerVisible = !MaschineMK3.stemMixerVisible;
+            if (MaschineMK3.stemMixerVisible) {
+                MaschineMK3.mixerVisible = false;
+                MaschineMK3.libraryVisible = false;
+                MaschineMK3.cueDisplayVisible = false;
+            }
+        } else {
+            MaschineMK3.mixerVisible = !MaschineMK3.mixerVisible;
+            if (MaschineMK3.mixerVisible) {
+                MaschineMK3.libraryVisible = false;
+                MaschineMK3.stemMixerVisible = false;
+            }
         }
         if (MaschineMK3.padMode === "t9") { MaschineMK3.padMode = "cuepoints"; }
         MaschineMK3.updatePadModeLED();
@@ -988,13 +1095,9 @@ MaschineMK3.onButtonRelease = function(name) {
         break;
     case "browserPlugin":
         break;
-    // G button releases — deactivate hotcue
+    // G button releases — no action needed (stem mute is toggle)
     case "g1": case "g2": case "g3": case "g4":
     case "g5": case "g6": case "g7": case "g8":
-        var gIdx = parseInt(name.charAt(1), 10);
-        var gDeck = gIdx <= 4 ? "[Channel1]" : "[Channel2]";
-        var gCue = gIdx <= 4 ? gIdx : gIdx - 4;
-        engine.setValue(gDeck, "hotcue_" + gCue + "_activate", 0);
         break;
     // Cue is momentary — release resets the control
     case "recCountIn":
@@ -1037,6 +1140,20 @@ MaschineMK3.onButtonRelease = function(name) {
 // Returns {group, key} or null (e.g. jog has no persistent value).
 // ---------------------------------------------------------------------------
 MaschineMK3.getKnobBinding = function(knobName) {
+    if (MaschineMK3.stemMixerVisible) {
+        // Stem mixer: opposite-side knobs control active deck's stems
+        var stemKnobs = MaschineMK3.activeDeck === 1
+            ? {k5: 1, k6: 2, k7: 3, k8: 4}
+            : {k1: 1, k2: 2, k3: 3, k4: 4};
+        var stemNum = stemKnobs[knobName];
+        if (stemNum) {
+            var stemGroup = "[Channel" + MaschineMK3.activeDeck + "Stem" + stemNum + "]";
+            if (MaschineMK3.shiftPressed) {
+                return {group: stemGroup, key: "pan"};
+            }
+            return {group: stemGroup, key: "volume"};
+        }
+    }
     if (MaschineMK3.mixerVisible) {
         switch (knobName) {
         case "k1": return {group: "[EqualizerRack1_[Channel1]_Effect1]", key: "parameter3"};
@@ -1135,6 +1252,24 @@ MaschineMK3.onKnobChange = function(name, value) {
     // Cap delta to prevent jumps (encoder should only move a few ticks at a time)
     if (delta > 50) { delta = 50; }
     if (delta < -50) { delta = -50; }
+
+    if (MaschineMK3.stemMixerVisible) {
+        // --- Stem mixer mode: opposite-side knobs control active deck's stems ---
+        var stemKnobs = MaschineMK3.activeDeck === 1
+            ? {k5: 1, k6: 2, k7: 3, k8: 4}
+            : {k1: 1, k2: 2, k3: 3, k4: 4};
+        var stemNum = stemKnobs[name];
+        if (stemNum) {
+            var stemGroup = "[Channel" + MaschineMK3.activeDeck + "Stem" + stemNum + "]";
+            if (MaschineMK3.shiftPressed) {
+                MaschineMK3.adjustValue(stemGroup, "pan", delta, 0.005, 0, 1);
+            } else {
+                MaschineMK3.adjustValue(stemGroup, "volume", delta, 0.005, 0, 1);
+            }
+            return;
+        }
+        // Non-stem knobs fall through to normal mode
+    }
 
     if (MaschineMK3.mixerVisible) {
         // --- Mixer mode: K1-K4 = Deck A EQ+Vol, K5-K8 = Deck B EQ+Vol ---
@@ -1455,25 +1590,21 @@ MaschineMK3.init = function(/* id, debugging */) {
     engine.makeConnection("[Channel2]", "beatloop_size",
         function() { MaschineMK3.updatePadLEDs(); });
 
-    // --- G button LED feedback (hotcue status for cues 1-4 per deck) ---
-    MaschineMK3.updateGButtonLEDs = function() {
-        var C = MaschineMK3.Color;
-        for (var i = 1; i <= 4; i++) {
-            var hc1 = engine.getValue("[Channel1]", "hotcue_" + i + "_status");
-            MaschineMK3.setLed("g" + i, hc1 ? C.YELLOW : C.OFF);
-            var hc2 = engine.getValue("[Channel2]", "hotcue_" + i + "_status");
-            MaschineMK3.setLed("g" + (i + 4), hc2 ? C.ORANGE : C.OFF);
+    // --- G button LED feedback: stem mute/volume/color ---
+    for (var sDeck = 1; sDeck <= 2; sDeck++) {
+        for (var sStem = 1; sStem <= 4; sStem++) {
+            (function(d, s) {
+                var stemGroup = "[Channel" + d + "Stem" + s + "]";
+                engine.makeConnection(stemGroup, "mute",
+                    function() { MaschineMK3.updateStemLEDs(); });
+                engine.makeConnection(stemGroup, "volume",
+                    function() { MaschineMK3.updateStemLEDs(); });
+                engine.makeConnection(stemGroup, "color",
+                    function() { MaschineMK3.updateStemLEDs(); });
+            })(sDeck, sStem);
         }
-    };
-    for (var hc = 1; hc <= 4; hc++) {
-        (function(idx) {
-            engine.makeConnection("[Channel1]", "hotcue_" + idx + "_status",
-                function() { MaschineMK3.updateGButtonLEDs(); });
-            engine.makeConnection("[Channel2]", "hotcue_" + idx + "_status",
-                function() { MaschineMK3.updateGButtonLEDs(); });
-        })(hc);
     }
-    MaschineMK3.updateGButtonLEDs();
+    MaschineMK3.updateStemLEDs();
 
     // --- Track loaded: close library/T9 when a track is loaded into either deck ---
     MaschineMK3.onTrackLoaded = function() {

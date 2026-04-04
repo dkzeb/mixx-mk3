@@ -15,6 +15,7 @@
       <attribute config_key="[Skin],hide_deck_a">0</attribute>
       <attribute config_key="[Skin],hide_deck_b">0</attribute>
       <attribute config_key="[Skin],show_mixer">0</attribute>
+      <attribute config_key="[Skin],show_stem_mixer">0</attribute>
       <attribute config_key="[Skin],shift_held">0</attribute>
       <attribute config_key="[Skin],show_pads_loops">0</attribute>
       <attribute config_key="[Skin],show_pads_fx">0</attribute>
@@ -753,6 +754,354 @@
               </Connection>
             </SliderComposed>
             <WidgetGroup><Size>8f,0f</Size></WidgetGroup>
+          </Children>
+        </WidgetGroup>
+
+      </Children>
+    </WidgetGroup>
+
+    <!-- ═══════ STEM MIXER PANEL (480x272) ═══════ -->
+    <WidgetGroup>
+      <ObjectName>StemMixerPanel</ObjectName>
+      <Size>480,272</Size>
+      <SizePolicy>f,f</SizePolicy>
+      <Layout>vertical</Layout>
+      <Connection>
+        <ConfigKey>[Skin],show_stem_mixer</ConfigKey>
+        <BindProperty>visible</BindProperty>
+      </Connection>
+      <Children>
+
+        <!-- Header: STEMS — Deck A (visible when deck A is active) -->
+        <WidgetGroup>
+          <Connection><ConfigKey>[Skin],active_deck_a</ConfigKey><BindProperty>visible</BindProperty></Connection>
+          <Size>480f,24f</Size>
+          <Children>
+            <Label><ObjectName>StemHeader</ObjectName><Size>480f,24f</Size><Text>STEMS VOL — Deck A</Text>
+              <Connection><ConfigKey>[Skin],shift_held</ConfigKey><BindProperty>visible</BindProperty><Transform><Not/></Transform></Connection></Label>
+            <Label><ObjectName>StemHeaderShift</ObjectName><Size>480f,24f</Size><Text>STEMS PAN — Deck A</Text>
+              <Connection><ConfigKey>[Skin],shift_held</ConfigKey><BindProperty>visible</BindProperty></Connection></Label>
+          </Children>
+        </WidgetGroup>
+        <!-- Header: STEMS — Deck B (visible when deck B is active) -->
+        <WidgetGroup>
+          <Connection><ConfigKey>[Skin],active_deck_b</ConfigKey><BindProperty>visible</BindProperty></Connection>
+          <Size>480f,24f</Size>
+          <Children>
+            <Label><ObjectName>StemHeader</ObjectName><Size>480f,24f</Size><Text>STEMS VOL — Deck B</Text>
+              <Connection><ConfigKey>[Skin],shift_held</ConfigKey><BindProperty>visible</BindProperty><Transform><Not/></Transform></Connection></Label>
+            <Label><ObjectName>StemHeaderShift</ObjectName><Size>480f,24f</Size><Text>STEMS PAN — Deck B</Text>
+              <Connection><ConfigKey>[Skin],shift_held</ConfigKey><BindProperty>visible</BindProperty></Connection></Label>
+          </Children>
+        </WidgetGroup>
+
+        <!-- Stem channels -->
+        <WidgetGroup>
+          <ObjectName>StemContent</ObjectName>
+          <SizePolicy>me,me</SizePolicy>
+          <Layout>horizontal</Layout>
+          <Children>
+
+            <!-- ═══ Deck A stems (visible when deck A is active) ═══ -->
+            <WidgetGroup>
+              <SizePolicy>me,me</SizePolicy>
+              <Layout>horizontal</Layout>
+              <Connection><ConfigKey>[Skin],active_deck_a</ConfigKey><BindProperty>visible</BindProperty></Connection>
+              <Children>
+
+                <!-- Stem 1: Drums -->
+                <WidgetGroup>
+                  <ObjectName>StemChannel</ObjectName>
+                  <Layout>vertical</Layout>
+                  <SizePolicy>me,me</SizePolicy>
+                  <Children>
+                    <Label><ObjectName>StemLabel</ObjectName><Size>0me,16f</Size><Text>Drums</Text></Label>
+                    <SliderComposed>
+                      <SizePolicy>f,me</SizePolicy>
+                      <Size>40,0</Size>
+                      <Slider scalemode="STRETCH">slider-vertical.svg</Slider>
+                      <Handle scalemode="STRETCH_ASPECT">handle-volume-deck1.svg</Handle>
+                      <Horizontal>false</Horizontal>
+                      <Connection>
+                        <ConfigKey>[Channel1Stem1],volume</ConfigKey>
+                        <EmitOnDownPress>false</EmitOnDownPress>
+                      </Connection>
+                    </SliderComposed>
+                    <PushButton>
+                      <ObjectName>StemMuteButton</ObjectName>
+                      <Size>40f,20f</Size>
+                      <NumberStates>2</NumberStates>
+                      <State><Number>0</Number>
+                        <Unpressed scalemode="STRETCH_ASPECT">btn_stem_unmuted.svg</Unpressed>
+                        <Pressed scalemode="STRETCH_ASPECT">btn_stem_unmuted.svg</Pressed>
+                      </State>
+                      <State><Number>1</Number>
+                        <Unpressed scalemode="STRETCH_ASPECT">btn_stem_muted.svg</Unpressed>
+                        <Pressed scalemode="STRETCH_ASPECT">btn_stem_muted.svg</Pressed>
+                      </State>
+                      <Connection><ConfigKey>[Channel1Stem1],mute</ConfigKey><ButtonState>LeftButton</ButtonState></Connection>
+                    </PushButton>
+                  </Children>
+                </WidgetGroup>
+
+                <!-- Stem 2: Bass -->
+                <WidgetGroup>
+                  <ObjectName>StemChannel</ObjectName>
+                  <Layout>vertical</Layout>
+                  <SizePolicy>me,me</SizePolicy>
+                  <Children>
+                    <Label><ObjectName>StemLabel</ObjectName><Size>0me,16f</Size><Text>Bass</Text></Label>
+                    <SliderComposed>
+                      <SizePolicy>f,me</SizePolicy>
+                      <Size>40,0</Size>
+                      <Slider scalemode="STRETCH">slider-vertical.svg</Slider>
+                      <Handle scalemode="STRETCH_ASPECT">handle-volume-deck1.svg</Handle>
+                      <Horizontal>false</Horizontal>
+                      <Connection>
+                        <ConfigKey>[Channel1Stem2],volume</ConfigKey>
+                        <EmitOnDownPress>false</EmitOnDownPress>
+                      </Connection>
+                    </SliderComposed>
+                    <PushButton>
+                      <ObjectName>StemMuteButton</ObjectName>
+                      <Size>40f,20f</Size>
+                      <NumberStates>2</NumberStates>
+                      <State><Number>0</Number>
+                        <Unpressed scalemode="STRETCH_ASPECT">btn_stem_unmuted.svg</Unpressed>
+                        <Pressed scalemode="STRETCH_ASPECT">btn_stem_unmuted.svg</Pressed>
+                      </State>
+                      <State><Number>1</Number>
+                        <Unpressed scalemode="STRETCH_ASPECT">btn_stem_muted.svg</Unpressed>
+                        <Pressed scalemode="STRETCH_ASPECT">btn_stem_muted.svg</Pressed>
+                      </State>
+                      <Connection><ConfigKey>[Channel1Stem2],mute</ConfigKey><ButtonState>LeftButton</ButtonState></Connection>
+                    </PushButton>
+                  </Children>
+                </WidgetGroup>
+
+                <!-- Stem 3: Other -->
+                <WidgetGroup>
+                  <ObjectName>StemChannel</ObjectName>
+                  <Layout>vertical</Layout>
+                  <SizePolicy>me,me</SizePolicy>
+                  <Children>
+                    <Label><ObjectName>StemLabel</ObjectName><Size>0me,16f</Size><Text>Other</Text></Label>
+                    <SliderComposed>
+                      <SizePolicy>f,me</SizePolicy>
+                      <Size>40,0</Size>
+                      <Slider scalemode="STRETCH">slider-vertical.svg</Slider>
+                      <Handle scalemode="STRETCH_ASPECT">handle-volume-deck1.svg</Handle>
+                      <Horizontal>false</Horizontal>
+                      <Connection>
+                        <ConfigKey>[Channel1Stem3],volume</ConfigKey>
+                        <EmitOnDownPress>false</EmitOnDownPress>
+                      </Connection>
+                    </SliderComposed>
+                    <PushButton>
+                      <ObjectName>StemMuteButton</ObjectName>
+                      <Size>40f,20f</Size>
+                      <NumberStates>2</NumberStates>
+                      <State><Number>0</Number>
+                        <Unpressed scalemode="STRETCH_ASPECT">btn_stem_unmuted.svg</Unpressed>
+                        <Pressed scalemode="STRETCH_ASPECT">btn_stem_unmuted.svg</Pressed>
+                      </State>
+                      <State><Number>1</Number>
+                        <Unpressed scalemode="STRETCH_ASPECT">btn_stem_muted.svg</Unpressed>
+                        <Pressed scalemode="STRETCH_ASPECT">btn_stem_muted.svg</Pressed>
+                      </State>
+                      <Connection><ConfigKey>[Channel1Stem3],mute</ConfigKey><ButtonState>LeftButton</ButtonState></Connection>
+                    </PushButton>
+                  </Children>
+                </WidgetGroup>
+
+                <!-- Stem 4: Vox -->
+                <WidgetGroup>
+                  <ObjectName>StemChannel</ObjectName>
+                  <Layout>vertical</Layout>
+                  <SizePolicy>me,me</SizePolicy>
+                  <Children>
+                    <Label><ObjectName>StemLabel</ObjectName><Size>0me,16f</Size><Text>Vox</Text></Label>
+                    <SliderComposed>
+                      <SizePolicy>f,me</SizePolicy>
+                      <Size>40,0</Size>
+                      <Slider scalemode="STRETCH">slider-vertical.svg</Slider>
+                      <Handle scalemode="STRETCH_ASPECT">handle-volume-deck1.svg</Handle>
+                      <Horizontal>false</Horizontal>
+                      <Connection>
+                        <ConfigKey>[Channel1Stem4],volume</ConfigKey>
+                        <EmitOnDownPress>false</EmitOnDownPress>
+                      </Connection>
+                    </SliderComposed>
+                    <PushButton>
+                      <ObjectName>StemMuteButton</ObjectName>
+                      <Size>40f,20f</Size>
+                      <NumberStates>2</NumberStates>
+                      <State><Number>0</Number>
+                        <Unpressed scalemode="STRETCH_ASPECT">btn_stem_unmuted.svg</Unpressed>
+                        <Pressed scalemode="STRETCH_ASPECT">btn_stem_unmuted.svg</Pressed>
+                      </State>
+                      <State><Number>1</Number>
+                        <Unpressed scalemode="STRETCH_ASPECT">btn_stem_muted.svg</Unpressed>
+                        <Pressed scalemode="STRETCH_ASPECT">btn_stem_muted.svg</Pressed>
+                      </State>
+                      <Connection><ConfigKey>[Channel1Stem4],mute</ConfigKey><ButtonState>LeftButton</ButtonState></Connection>
+                    </PushButton>
+                  </Children>
+                </WidgetGroup>
+
+              </Children>
+            </WidgetGroup>
+
+            <!-- ═══ Deck B stems (visible when deck B is active) ═══ -->
+            <WidgetGroup>
+              <SizePolicy>me,me</SizePolicy>
+              <Layout>horizontal</Layout>
+              <Connection><ConfigKey>[Skin],active_deck_b</ConfigKey><BindProperty>visible</BindProperty></Connection>
+              <Children>
+
+                <!-- Stem 1: Drums -->
+                <WidgetGroup>
+                  <ObjectName>StemChannel</ObjectName>
+                  <Layout>vertical</Layout>
+                  <SizePolicy>me,me</SizePolicy>
+                  <Children>
+                    <Label><ObjectName>StemLabel</ObjectName><Size>0me,16f</Size><Text>Drums</Text></Label>
+                    <SliderComposed>
+                      <SizePolicy>f,me</SizePolicy>
+                      <Size>40,0</Size>
+                      <Slider scalemode="STRETCH">slider-vertical.svg</Slider>
+                      <Handle scalemode="STRETCH_ASPECT">handle-volume-deck2.svg</Handle>
+                      <Horizontal>false</Horizontal>
+                      <Connection>
+                        <ConfigKey>[Channel2Stem1],volume</ConfigKey>
+                        <EmitOnDownPress>false</EmitOnDownPress>
+                      </Connection>
+                    </SliderComposed>
+                    <PushButton>
+                      <ObjectName>StemMuteButton</ObjectName>
+                      <Size>40f,20f</Size>
+                      <NumberStates>2</NumberStates>
+                      <State><Number>0</Number>
+                        <Unpressed scalemode="STRETCH_ASPECT">btn_stem_unmuted.svg</Unpressed>
+                        <Pressed scalemode="STRETCH_ASPECT">btn_stem_unmuted.svg</Pressed>
+                      </State>
+                      <State><Number>1</Number>
+                        <Unpressed scalemode="STRETCH_ASPECT">btn_stem_muted.svg</Unpressed>
+                        <Pressed scalemode="STRETCH_ASPECT">btn_stem_muted.svg</Pressed>
+                      </State>
+                      <Connection><ConfigKey>[Channel2Stem1],mute</ConfigKey><ButtonState>LeftButton</ButtonState></Connection>
+                    </PushButton>
+                  </Children>
+                </WidgetGroup>
+
+                <!-- Stem 2: Bass -->
+                <WidgetGroup>
+                  <ObjectName>StemChannel</ObjectName>
+                  <Layout>vertical</Layout>
+                  <SizePolicy>me,me</SizePolicy>
+                  <Children>
+                    <Label><ObjectName>StemLabel</ObjectName><Size>0me,16f</Size><Text>Bass</Text></Label>
+                    <SliderComposed>
+                      <SizePolicy>f,me</SizePolicy>
+                      <Size>40,0</Size>
+                      <Slider scalemode="STRETCH">slider-vertical.svg</Slider>
+                      <Handle scalemode="STRETCH_ASPECT">handle-volume-deck2.svg</Handle>
+                      <Horizontal>false</Horizontal>
+                      <Connection>
+                        <ConfigKey>[Channel2Stem2],volume</ConfigKey>
+                        <EmitOnDownPress>false</EmitOnDownPress>
+                      </Connection>
+                    </SliderComposed>
+                    <PushButton>
+                      <ObjectName>StemMuteButton</ObjectName>
+                      <Size>40f,20f</Size>
+                      <NumberStates>2</NumberStates>
+                      <State><Number>0</Number>
+                        <Unpressed scalemode="STRETCH_ASPECT">btn_stem_unmuted.svg</Unpressed>
+                        <Pressed scalemode="STRETCH_ASPECT">btn_stem_unmuted.svg</Pressed>
+                      </State>
+                      <State><Number>1</Number>
+                        <Unpressed scalemode="STRETCH_ASPECT">btn_stem_muted.svg</Unpressed>
+                        <Pressed scalemode="STRETCH_ASPECT">btn_stem_muted.svg</Pressed>
+                      </State>
+                      <Connection><ConfigKey>[Channel2Stem2],mute</ConfigKey><ButtonState>LeftButton</ButtonState></Connection>
+                    </PushButton>
+                  </Children>
+                </WidgetGroup>
+
+                <!-- Stem 3: Other -->
+                <WidgetGroup>
+                  <ObjectName>StemChannel</ObjectName>
+                  <Layout>vertical</Layout>
+                  <SizePolicy>me,me</SizePolicy>
+                  <Children>
+                    <Label><ObjectName>StemLabel</ObjectName><Size>0me,16f</Size><Text>Other</Text></Label>
+                    <SliderComposed>
+                      <SizePolicy>f,me</SizePolicy>
+                      <Size>40,0</Size>
+                      <Slider scalemode="STRETCH">slider-vertical.svg</Slider>
+                      <Handle scalemode="STRETCH_ASPECT">handle-volume-deck2.svg</Handle>
+                      <Horizontal>false</Horizontal>
+                      <Connection>
+                        <ConfigKey>[Channel2Stem3],volume</ConfigKey>
+                        <EmitOnDownPress>false</EmitOnDownPress>
+                      </Connection>
+                    </SliderComposed>
+                    <PushButton>
+                      <ObjectName>StemMuteButton</ObjectName>
+                      <Size>40f,20f</Size>
+                      <NumberStates>2</NumberStates>
+                      <State><Number>0</Number>
+                        <Unpressed scalemode="STRETCH_ASPECT">btn_stem_unmuted.svg</Unpressed>
+                        <Pressed scalemode="STRETCH_ASPECT">btn_stem_unmuted.svg</Pressed>
+                      </State>
+                      <State><Number>1</Number>
+                        <Unpressed scalemode="STRETCH_ASPECT">btn_stem_muted.svg</Unpressed>
+                        <Pressed scalemode="STRETCH_ASPECT">btn_stem_muted.svg</Pressed>
+                      </State>
+                      <Connection><ConfigKey>[Channel2Stem3],mute</ConfigKey><ButtonState>LeftButton</ButtonState></Connection>
+                    </PushButton>
+                  </Children>
+                </WidgetGroup>
+
+                <!-- Stem 4: Vox -->
+                <WidgetGroup>
+                  <ObjectName>StemChannel</ObjectName>
+                  <Layout>vertical</Layout>
+                  <SizePolicy>me,me</SizePolicy>
+                  <Children>
+                    <Label><ObjectName>StemLabel</ObjectName><Size>0me,16f</Size><Text>Vox</Text></Label>
+                    <SliderComposed>
+                      <SizePolicy>f,me</SizePolicy>
+                      <Size>40,0</Size>
+                      <Slider scalemode="STRETCH">slider-vertical.svg</Slider>
+                      <Handle scalemode="STRETCH_ASPECT">handle-volume-deck2.svg</Handle>
+                      <Horizontal>false</Horizontal>
+                      <Connection>
+                        <ConfigKey>[Channel2Stem4],volume</ConfigKey>
+                        <EmitOnDownPress>false</EmitOnDownPress>
+                      </Connection>
+                    </SliderComposed>
+                    <PushButton>
+                      <ObjectName>StemMuteButton</ObjectName>
+                      <Size>40f,20f</Size>
+                      <NumberStates>2</NumberStates>
+                      <State><Number>0</Number>
+                        <Unpressed scalemode="STRETCH_ASPECT">btn_stem_unmuted.svg</Unpressed>
+                        <Pressed scalemode="STRETCH_ASPECT">btn_stem_unmuted.svg</Pressed>
+                      </State>
+                      <State><Number>1</Number>
+                        <Unpressed scalemode="STRETCH_ASPECT">btn_stem_muted.svg</Unpressed>
+                        <Pressed scalemode="STRETCH_ASPECT">btn_stem_muted.svg</Pressed>
+                      </State>
+                      <Connection><ConfigKey>[Channel2Stem4],mute</ConfigKey><ButtonState>LeftButton</ButtonState></Connection>
+                    </PushButton>
+                  </Children>
+                </WidgetGroup>
+
+              </Children>
+            </WidgetGroup>
+
           </Children>
         </WidgetGroup>
 
