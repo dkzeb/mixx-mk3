@@ -64,26 +64,12 @@
           </Connection>
         </WidgetGroup>
 
-        <!-- D-button labels: library tabs (when library open) -->
-        <WidgetGroup>
-          <ObjectName>DButtonLabels</ObjectName>
-          <Size>480,12</Size><SizePolicy>me,f</SizePolicy>
-          <Layout>horizontal</Layout>
-          <Connection><ConfigKey>[Skin],show_library</ConfigKey><BindProperty>visible</BindProperty></Connection>
-          <Children>
-            <Label><ObjectName>DLabelActive</ObjectName><Size>120,12</Size><Text>TRACKS</Text></Label>
-            <Label><ObjectName>DLabel</ObjectName><Size>120,12</Size><Text>PLAYLISTS</Text></Label>
-            <Label><ObjectName>DLabel</ObjectName><Size>120,12</Size><Text>CRATES</Text></Label>
-            <Label><ObjectName>DLabel</ObjectName><Size>120,12</Size><Text>PREPARE</Text></Label>
-          </Children>
-        </WidgetGroup>
-        <!-- D-button labels: normal deck controls (when library closed) -->
+        <!-- D-button labels: normal deck controls -->
         <WidgetGroup>
           <ObjectName>DButtonLabels</ObjectName>
           <Size>480,12</Size>
           <SizePolicy>me,f</SizePolicy>
           <Layout>horizontal</Layout>
-          <Connection><ConfigKey>[Skin],show_library</ConfigKey><BindProperty>visible</BindProperty><Transform><Not/></Transform></Connection>
           <Children>
             <Label><ObjectName>DLabel</ObjectName><Size>120,12</Size><Text>SYNC</Text></Label>
             <Label><ObjectName>DLabel</ObjectName><Size>120,12</Size><Text>TEMPO-</Text></Label>
@@ -322,11 +308,29 @@
         <BindProperty>visible</BindProperty>
       </Connection>
       <Children>
+        <!-- Library tab labels (aligned with D1-D4) -->
+        <WidgetGroup>
+          <ObjectName>DButtonLabels</ObjectName>
+          <Size>480,12</Size><SizePolicy>me,f</SizePolicy>
+          <Layout>horizontal</Layout>
+          <Children>
+            <Label><ObjectName>DLabelActive</ObjectName><Size>120,12</Size><Text>TRACKS</Text></Label>
+            <Label><ObjectName>DLabel</ObjectName><Size>120,12</Size><Text>PLAYLISTS</Text></Label>
+            <Label><ObjectName>DLabel</ObjectName><Size>120,12</Size><Text>CRATES</Text></Label>
+            <Label><ObjectName>DLabel</ObjectName><Size>120,12</Size><Text>PREPARE</Text></Label>
+          </Children>
+        </WidgetGroup>
         <SearchBox>
           <ObjectName>LibrarySearch</ObjectName>
           <Size>480,22</Size>
           <SizePolicy>me,f</SizePolicy>
         </SearchBox>
+        <!-- Hidden sidebar — required for SelectPlaylist/focused_widget controls -->
+        <LibrarySidebar>
+          <ObjectName>LibrarySidebar</ObjectName>
+          <Size>0,0</Size>
+          <SizePolicy>f,f</SizePolicy>
+        </LibrarySidebar>
         <Library>
           <ObjectName>LibraryView</ObjectName>
           <SizePolicy>me,me</SizePolicy>
