@@ -21,6 +21,7 @@ sudo apt-get update -qq
 sudo apt-get install -y \
     mixxx \
     libusb-1.0-0-dev \
+    libfreetype-dev \
     libx11-dev \
     libxext-dev \
     xvfb \
