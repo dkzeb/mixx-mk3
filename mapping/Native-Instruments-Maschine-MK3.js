@@ -589,9 +589,12 @@ MaschineMK3.updatePadLEDs = function() {
     }
 
     if (MaschineMK3.padMode === "cuepoints") {
+        // Pads 1-8 = Deck 1 cues 1-8, pads 9-16 = Deck 2 cues 1-8
         for (var pad = 1; pad <= 16; pad++) {
             var ledName = MaschineMK3.padPhysicalToLed[pad];
-            var hcStatus = engine.getValue(ch, "hotcue_" + pad + "_status");
+            var cueDeck = pad <= 8 ? "[Channel1]" : "[Channel2]";
+            var cueNum = pad <= 8 ? pad : pad - 8;
+            var hcStatus = engine.getValue(cueDeck, "hotcue_" + cueNum + "_status");
             MaschineMK3.setLed(ledName, hcStatus ? C.YELLOW : C.OFF);
         }
         return;
@@ -1042,12 +1045,16 @@ MaschineMK3.onPadPress = function(padNumber) {
     var ch = "[Channel" + MaschineMK3.activeDeck + "]";
 
     if (MaschineMK3.padMode === "cuepoints") {
+        // Pads 1-8 = Deck 1 cues 1-8, pads 9-16 = Deck 2 cues 1-8
+        var cueDeck = padNumber <= 8 ? "[Channel1]" : "[Channel2]";
+        var cueNum = padNumber <= 8 ? padNumber : padNumber - 8;
         if (MaschineMK3.shiftPressed) {
-            // Shift + pad: set/move cue point
-            engine.setValue(ch, "hotcue_" + padNumber + "_set", 1);
+            // Shift + pad: overwrite cue point (clear first, then set)
+            engine.setValue(cueDeck, "hotcue_" + cueNum + "_clear", 1);
+            engine.setValue(cueDeck, "hotcue_" + cueNum + "_set", 1);
         } else {
             // Normal pad: activate cue point (sets if not yet set)
-            engine.setValue(ch, "hotcue_" + padNumber + "_activate", 1);
+            engine.setValue(cueDeck, "hotcue_" + cueNum + "_activate", 1);
         }
         MaschineMK3.updatePadLEDs();
         return;
@@ -1103,8 +1110,9 @@ MaschineMK3.onPadPress = function(padNumber) {
 MaschineMK3.onPadRelease = function(padNumber) {
     if (MaschineMK3.padMode === "t9") { return; }
     if (MaschineMK3.padMode === "cuepoints") {
-        var ch = "[Channel" + MaschineMK3.activeDeck + "]";
-        engine.setValue(ch, "hotcue_" + padNumber + "_activate", 0);
+        var cueDeck = padNumber <= 8 ? "[Channel1]" : "[Channel2]";
+        var cueNum = padNumber <= 8 ? padNumber : padNumber - 8;
+        engine.setValue(cueDeck, "hotcue_" + cueNum + "_activate", 0);
     }
 };
 
@@ -1274,8 +1282,8 @@ MaschineMK3.init = function(/* id, debugging */) {
     }
     MaschineMK3.updateGButtonLEDs();
 
-    // --- Hotcue pad LED feedback ---
-    for (var hcPad = 1; hcPad <= 16; hcPad++) {
+    // --- Hotcue pad LED feedback (cues 1-8 per deck) ---
+    for (var hcPad = 1; hcPad <= 8; hcPad++) {
         (function(idx) {
             engine.makeConnection("[Channel1]", "hotcue_" + idx + "_status",
                 function() { MaschineMK3.updatePadLEDs(); });

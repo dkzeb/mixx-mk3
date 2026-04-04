@@ -635,40 +635,42 @@
           <SizePolicy>me,me</SizePolicy>
           <Layout>vertical</Layout>
           <Children>
+            <!-- Top half: Deck B (pads 9-16 = cues 1-8) -->
             <WidgetGroup>
               <SizePolicy>me,me</SizePolicy><Layout>horizontal</Layout>
               <Children>
-                <Label><ObjectName>PadCellCue</ObjectName><SizePolicy>me,me</SizePolicy><Text>CUE 13</Text></Label>
-                <Label><ObjectName>PadCellCue</ObjectName><SizePolicy>me,me</SizePolicy><Text>CUE 14</Text></Label>
-                <Label><ObjectName>PadCellCue</ObjectName><SizePolicy>me,me</SizePolicy><Text>CUE 15</Text></Label>
-                <Label><ObjectName>PadCellCue</ObjectName><SizePolicy>me,me</SizePolicy><Text>CUE 16</Text></Label>
+                <Label><ObjectName>PadCellCue</ObjectName><SizePolicy>me,me</SizePolicy><Text>B5</Text></Label>
+                <Label><ObjectName>PadCellCue</ObjectName><SizePolicy>me,me</SizePolicy><Text>B6</Text></Label>
+                <Label><ObjectName>PadCellCue</ObjectName><SizePolicy>me,me</SizePolicy><Text>B7</Text></Label>
+                <Label><ObjectName>PadCellCue</ObjectName><SizePolicy>me,me</SizePolicy><Text>B8</Text></Label>
               </Children>
             </WidgetGroup>
             <WidgetGroup>
               <SizePolicy>me,me</SizePolicy><Layout>horizontal</Layout>
               <Children>
-                <Label><ObjectName>PadCellCue</ObjectName><SizePolicy>me,me</SizePolicy><Text>CUE 9</Text></Label>
-                <Label><ObjectName>PadCellCue</ObjectName><SizePolicy>me,me</SizePolicy><Text>CUE 10</Text></Label>
-                <Label><ObjectName>PadCellCue</ObjectName><SizePolicy>me,me</SizePolicy><Text>CUE 11</Text></Label>
-                <Label><ObjectName>PadCellCue</ObjectName><SizePolicy>me,me</SizePolicy><Text>CUE 12</Text></Label>
+                <Label><ObjectName>PadCellCue</ObjectName><SizePolicy>me,me</SizePolicy><Text>B1</Text></Label>
+                <Label><ObjectName>PadCellCue</ObjectName><SizePolicy>me,me</SizePolicy><Text>B2</Text></Label>
+                <Label><ObjectName>PadCellCue</ObjectName><SizePolicy>me,me</SizePolicy><Text>B3</Text></Label>
+                <Label><ObjectName>PadCellCue</ObjectName><SizePolicy>me,me</SizePolicy><Text>B4</Text></Label>
+              </Children>
+            </WidgetGroup>
+            <!-- Bottom half: Deck A (pads 1-8 = cues 1-8) -->
+            <WidgetGroup>
+              <SizePolicy>me,me</SizePolicy><Layout>horizontal</Layout>
+              <Children>
+                <Label><ObjectName>PadCellCue</ObjectName><SizePolicy>me,me</SizePolicy><Text>A5</Text></Label>
+                <Label><ObjectName>PadCellCue</ObjectName><SizePolicy>me,me</SizePolicy><Text>A6</Text></Label>
+                <Label><ObjectName>PadCellCue</ObjectName><SizePolicy>me,me</SizePolicy><Text>A7</Text></Label>
+                <Label><ObjectName>PadCellCue</ObjectName><SizePolicy>me,me</SizePolicy><Text>A8</Text></Label>
               </Children>
             </WidgetGroup>
             <WidgetGroup>
               <SizePolicy>me,me</SizePolicy><Layout>horizontal</Layout>
               <Children>
-                <Label><ObjectName>PadCellCue</ObjectName><SizePolicy>me,me</SizePolicy><Text>CUE 5</Text></Label>
-                <Label><ObjectName>PadCellCue</ObjectName><SizePolicy>me,me</SizePolicy><Text>CUE 6</Text></Label>
-                <Label><ObjectName>PadCellCue</ObjectName><SizePolicy>me,me</SizePolicy><Text>CUE 7</Text></Label>
-                <Label><ObjectName>PadCellCue</ObjectName><SizePolicy>me,me</SizePolicy><Text>CUE 8</Text></Label>
-              </Children>
-            </WidgetGroup>
-            <WidgetGroup>
-              <SizePolicy>me,me</SizePolicy><Layout>horizontal</Layout>
-              <Children>
-                <Label><ObjectName>PadCellCue</ObjectName><SizePolicy>me,me</SizePolicy><Text>CUE 1</Text></Label>
-                <Label><ObjectName>PadCellCue</ObjectName><SizePolicy>me,me</SizePolicy><Text>CUE 2</Text></Label>
-                <Label><ObjectName>PadCellCue</ObjectName><SizePolicy>me,me</SizePolicy><Text>CUE 3</Text></Label>
-                <Label><ObjectName>PadCellCue</ObjectName><SizePolicy>me,me</SizePolicy><Text>CUE 4</Text></Label>
+                <Label><ObjectName>PadCellCue</ObjectName><SizePolicy>me,me</SizePolicy><Text>A1</Text></Label>
+                <Label><ObjectName>PadCellCue</ObjectName><SizePolicy>me,me</SizePolicy><Text>A2</Text></Label>
+                <Label><ObjectName>PadCellCue</ObjectName><SizePolicy>me,me</SizePolicy><Text>A3</Text></Label>
+                <Label><ObjectName>PadCellCue</ObjectName><SizePolicy>me,me</SizePolicy><Text>A4</Text></Label>
               </Children>
             </WidgetGroup>
           </Children>
