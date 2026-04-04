@@ -841,8 +841,11 @@ MaschineMK3.onButtonPress = function(name) {
     case "d5": case "d6": case "d7": case "d8":
         var dNum = parseInt(name.charAt(1), 10);  // 1-8
         // Library tab switching: D1-D4 when library is visible
-        print("D-button: " + name + " libraryVisible=" + MaschineMK3.libraryVisible + " tabMap=" + MaschineMK3.libraryTabMap[name]);
+        // DEBUG: flash settings LED to confirm D-button press reaches here
+        MaschineMK3.setLed("settings", 63);
         if (MaschineMK3.libraryVisible && MaschineMK3.libraryTabMap[name]) {
+            // DEBUG: flash fileSave LED to confirm library tab path
+            MaschineMK3.setLed("fileSave", 63);
             MaschineMK3.selectLibraryTab(MaschineMK3.libraryTabMap[name]);
             break;
         }
@@ -1315,9 +1318,6 @@ MaschineMK3.parseReport01 = function(data) {
         var wasDown = MaschineMK3.lastButtonState[name] || false;
 
         if (pressed && !wasDown) {
-            if (name.charAt(0) === "d" && name.length === 2) {
-                print("[MK3] PRESS " + name + " libraryVisible=" + MaschineMK3.libraryVisible);
-            }
             MaschineMK3.onButtonPress(name);
         } else if (!pressed && wasDown) {
             MaschineMK3.onButtonRelease(name);
