@@ -59,54 +59,49 @@
 }
 
 #MixerPanel {
-    background-color: #111122;
+    background-color: #333333;
 }
 
-#MixerTitle {
-    font-size: 12px;
-    font-weight: bold;
-    color: #16a085;
-    qproperty-alignment: AlignCenter;
-    background-color: #0d0d1a;
-    border-bottom: 1px solid #16a085;
-    padding: 2px;
+#MixerContent {
+    qproperty-layoutAlignment: 'AlignHCenter';
 }
 
-#MixerStripA, #MixerStripB {
-    background-color: #0d0d1a;
-    border-right: 1px solid #222222;
-    padding: 4px;
+#DeckMixer {
+    background-color: #333333;
 }
 
-#MixerChLabel {
-    font-size: 11px;
-    font-weight: bold;
-    color: #ffffff;
-    qproperty-alignment: AlignCenter;
-    padding: 2px;
+#ButtonContainer {
+    qproperty-layoutAlignment: 'AlignCenter';
+    padding: 3px 0px;
 }
 
-#MixerKnobLabel {
-    font-size: 9px;
-    color: #888888;
-    qproperty-alignment: AlignCenter;
+#DeckPFLButton {
+    border: 0px;
 }
 
-#MixerValue {
-    font-size: 16px;
-    font-weight: bold;
-    color: #16a085;
-    qproperty-alignment: AlignCenter;
-    background-color: #1a1a2e;
-    padding: 1px;
+#DeckPFLButton[value="0"] {
+    background-color: #333333;
 }
 
-#VuMeterA, #VuMeterB {
-    margin: 4px 20px;
+#DeckPFLButton[value="1"] {
+    background-color: #0080ff;
 }
 
-#MixerCrossfader {
-    margin: 0px 20px;
+#channel_VuMeter_Group {
+    qproperty-layoutSpacing: 2;
+    qproperty-layoutAlignment: 'AlignHCenter';
+}
+
+#vumeter_v {
+    qproperty-layoutSpacing: 2;
+}
+
+WVuMeter, #PeakIndicator {
+    background-color: #222222;
+}
+
+#CrossfaderContainer {
+    background-color: #333333;
 }
 
 #PadPanel {

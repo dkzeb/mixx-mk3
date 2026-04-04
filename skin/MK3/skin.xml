@@ -350,7 +350,7 @@
       </Children>
     </WidgetGroup>
 
-    <!-- ═══════ MIXER PANEL (480x272) ═══════ -->
+    <!-- ═══════ MIXER PANEL (480x272) — Deere-style ═══════ -->
     <WidgetGroup>
       <ObjectName>MixerPanel</ObjectName>
       <Size>480,272</Size>
@@ -361,162 +361,399 @@
         <BindProperty>visible</BindProperty>
       </Connection>
       <Children>
-        <Label><ObjectName>MixerTitle</ObjectName><Size>480,16</Size><Text>MIXER</Text></Label>
+
+        <!-- Main mixer content -->
         <WidgetGroup>
+          <ObjectName>MixerContent</ObjectName>
           <SizePolicy>me,me</SizePolicy>
           <Layout>horizontal</Layout>
           <Children>
 
-            <!-- Deck A strip: sliders left, VU right -->
+            <!-- ═══ Channel 1 (Deck A) ═══ -->
             <WidgetGroup>
-              <ObjectName>MixerStripA</ObjectName>
-              <Size>240,0</Size>
-              <SizePolicy>f,me</SizePolicy>
+              <ObjectName>DeckMixer</ObjectName>
               <Layout>horizontal</Layout>
+              <SizePolicy>me,me</SizePolicy>
               <Children>
-                <!-- Sliders column -->
+
+                <!-- EQ Knobs: HI, MID, LO, QuickEffect -->
                 <WidgetGroup>
-                  <SizePolicy>me,me</SizePolicy>
                   <Layout>vertical</Layout>
+                  <SizePolicy>f,me</SizePolicy>
+                  <Size>44,0</Size>
                   <Children>
-                    <Label><ObjectName>MixerChLabel</ObjectName><Size>0,14</Size><Text>DECK A</Text></Label>
-                    <Label><ObjectName>MixerKnobLabel</ObjectName><Size>0,10</Size><Text>K1: HI</Text></Label>
-                    <SliderComposed>
-                      <ObjectName>MixerSlider</ObjectName><Size>0,14</Size><SizePolicy>me,f</SizePolicy>
-                      <Horizontal>true</Horizontal>
-                      <Handle>skin:slider_handle.png</Handle><Slider>skin:slider_bg.png</Slider>
+                    <KnobComposed>
+                      <TooltipId>channel_equalizer_parameter</TooltipId>
+                      <Size>40f,34f</Size>
+                      <Knob>knob.svg</Knob>
+                      <BackPath>knob_bg_purple.svg</BackPath>
+                      <MinAngle>-135</MinAngle><MaxAngle>135</MaxAngle>
+                      <KnobCenterYOffset>1.602</KnobCenterYOffset>
                       <Connection><ConfigKey>[EqualizerRack1_[Channel1]_Effect1],parameter3</ConfigKey></Connection>
-                    </SliderComposed>
-                    <Label><ObjectName>MixerKnobLabel</ObjectName><Size>0,10</Size><Text>K2: MID</Text></Label>
-                    <SliderComposed>
-                      <ObjectName>MixerSlider</ObjectName><Size>0,14</Size><SizePolicy>me,f</SizePolicy>
-                      <Horizontal>true</Horizontal>
-                      <Handle>skin:slider_handle.png</Handle><Slider>skin:slider_bg.png</Slider>
+                    </KnobComposed>
+                    <KnobComposed>
+                      <TooltipId>channel_equalizer_parameter</TooltipId>
+                      <Size>40f,34f</Size>
+                      <Knob>knob.svg</Knob>
+                      <BackPath>knob_bg_purple.svg</BackPath>
+                      <MinAngle>-135</MinAngle><MaxAngle>135</MaxAngle>
+                      <KnobCenterYOffset>1.602</KnobCenterYOffset>
                       <Connection><ConfigKey>[EqualizerRack1_[Channel1]_Effect1],parameter2</ConfigKey></Connection>
-                    </SliderComposed>
-                    <Label><ObjectName>MixerKnobLabel</ObjectName><Size>0,10</Size><Text>K3: LO</Text></Label>
-                    <SliderComposed>
-                      <ObjectName>MixerSlider</ObjectName><Size>0,14</Size><SizePolicy>me,f</SizePolicy>
-                      <Horizontal>true</Horizontal>
-                      <Handle>skin:slider_handle.png</Handle><Slider>skin:slider_bg.png</Slider>
+                    </KnobComposed>
+                    <KnobComposed>
+                      <TooltipId>channel_equalizer_parameter</TooltipId>
+                      <Size>40f,34f</Size>
+                      <Knob>knob.svg</Knob>
+                      <BackPath>knob_bg_purple.svg</BackPath>
+                      <MinAngle>-135</MinAngle><MaxAngle>135</MaxAngle>
+                      <KnobCenterYOffset>1.602</KnobCenterYOffset>
                       <Connection><ConfigKey>[EqualizerRack1_[Channel1]_Effect1],parameter1</ConfigKey></Connection>
-                    </SliderComposed>
-                    <Label><ObjectName>MixerKnobLabel</ObjectName><Size>0,10</Size><Text>K4: VOL</Text></Label>
-                    <SliderComposed>
-                      <ObjectName>MixerSlider</ObjectName><Size>0,14</Size><SizePolicy>me,f</SizePolicy>
-                      <Horizontal>true</Horizontal>
-                      <Handle>skin:slider_handle.png</Handle><Slider>skin:slider_bg.png</Slider>
-                      <Connection><ConfigKey>[Channel1],volume</ConfigKey></Connection>
-                    </SliderComposed>
-                    <Label><ObjectName>MixerKnobLabel</ObjectName><Size>0,10</Size><Text>GAIN</Text></Label>
-                    <SliderComposed>
-                      <ObjectName>MixerSlider</ObjectName><Size>0,14</Size><SizePolicy>me,f</SizePolicy>
-                      <Horizontal>true</Horizontal>
-                      <Handle>skin:slider_handle.png</Handle><Slider>skin:slider_bg.png</Slider>
+                    </KnobComposed>
+                    <KnobComposed>
+                      <TooltipId>QuickEffectRack_super1</TooltipId>
+                      <Size>40f,34f</Size>
+                      <Knob>knob.svg</Knob>
+                      <BackPath>knob_bg_blue.svg</BackPath>
+                      <MinAngle>-135</MinAngle><MaxAngle>135</MaxAngle>
+                      <KnobCenterYOffset>1.602</KnobCenterYOffset>
+                      <Connection><ConfigKey>[QuickEffectRack1_[Channel1]],super1</ConfigKey></Connection>
+                    </KnobComposed>
+                  </Children>
+                </WidgetGroup>
+
+                <!-- Gain knob + Volume fader -->
+                <WidgetGroup>
+                  <Layout>vertical</Layout>
+                  <SizePolicy>f,me</SizePolicy>
+                  <Size>44,0</Size>
+                  <Children>
+                    <KnobComposed>
+                      <TooltipId>pregain</TooltipId>
+                      <Size>40f,34f</Size>
+                      <Knob>knob.svg</Knob>
+                      <BackPath>knob_bg_green.svg</BackPath>
+                      <MinAngle>-135</MinAngle><MaxAngle>135</MaxAngle>
+                      <KnobCenterYOffset>1.602</KnobCenterYOffset>
                       <Connection><ConfigKey>[Channel1],pregain</ConfigKey></Connection>
+                    </KnobComposed>
+                    <SliderComposed>
+                      <TooltipId>channel_volume</TooltipId>
+                      <SizePolicy>f,me</SizePolicy>
+                      <Size>40,0</Size>
+                      <Slider scalemode="STRETCH">slider-vertical.svg</Slider>
+                      <Handle scalemode="STRETCH_ASPECT">handle-volume-deck1.svg</Handle>
+                      <Horizontal>false</Horizontal>
+                      <Connection>
+                        <ConfigKey>[Channel1],volume</ConfigKey>
+                        <EmitOnDownPress>false</EmitOnDownPress>
+                      </Connection>
                     </SliderComposed>
                   </Children>
                 </WidgetGroup>
-                <!-- VU Meter (right side of Deck A) -->
-                <VuMeter>
-                  <ObjectName>VuMeterA</ObjectName>
-                  <Size>18,0</Size>
+
+                <!-- PFL button + stereo VU meters -->
+                <WidgetGroup>
+                  <Layout>vertical</Layout>
                   <SizePolicy>f,me</SizePolicy>
-                  <PathVu>skin:vu_fill_v.png</PathVu>
-                  <PathBack>skin:vu_bg_v.png</PathBack>
-                  <Horizontal>false</Horizontal>
-                  <PeakHoldSize>3</PeakHoldSize>
-                  <PeakHoldTime>500</PeakHoldTime>
-                  <PeakFallTime>50</PeakFallTime>
-                  <PeakFallStep>2</PeakFallStep>
-                  <Connection><ConfigKey>[Channel1],vu_meter</ConfigKey></Connection>
-                </VuMeter>
+                  <Size>30,0</Size>
+                  <Children>
+                    <WidgetGroup>
+                      <ObjectName>ButtonContainer</ObjectName>
+                      <Layout>horizontal</Layout>
+                      <Children>
+                        <PushButton>
+                          <TooltipId>pfl</TooltipId>
+                          <ObjectName>DeckPFLButton</ObjectName>
+                          <Size>22f,22f</Size>
+                          <NumberStates>2</NumberStates>
+                          <State>
+                            <Number>0</Number>
+                            <Unpressed scalemode="STRETCH_ASPECT">icon/ic_headphones_48px.svg</Unpressed>
+                            <Pressed scalemode="STRETCH_ASPECT">icon/ic_headphones_48px.svg</Pressed>
+                          </State>
+                          <State>
+                            <Number>1</Number>
+                            <Unpressed scalemode="STRETCH_ASPECT">icon/ic_headphones_48px.svg</Unpressed>
+                            <Pressed scalemode="STRETCH_ASPECT">icon/ic_headphones_48px.svg</Pressed>
+                          </State>
+                          <Connection>
+                            <ConfigKey>[Channel1],pfl</ConfigKey>
+                            <ButtonState>LeftButton</ButtonState>
+                          </Connection>
+                        </PushButton>
+                      </Children>
+                    </WidgetGroup>
+                    <WidgetGroup>
+                      <ObjectName>channel_VuMeter_Group</ObjectName>
+                      <Layout>horizontal</Layout>
+                      <SizePolicy>f,me</SizePolicy>
+                      <Size>22,0</Size>
+                      <Children>
+                        <WidgetGroup>
+                          <ObjectName>vumeter_v</ObjectName>
+                          <Layout>vertical</Layout>
+                          <Size>8f,0me</Size>
+                          <Children>
+                            <StatusLight>
+                              <ObjectName>PeakIndicator</ObjectName>
+                              <Size>8f,8f</Size>
+                              <PathStatusLight scalemode="STRETCH">vumeter_clip.png</PathStatusLight>
+                              <Connection><ConfigKey>[Channel1],peak_indicator_left</ConfigKey></Connection>
+                            </StatusLight>
+                            <VuMeter>
+                              <Size>8f,0me</Size>
+                              <MinimumSize>8,40</MinimumSize>
+                              <PathBack scalemode="STRETCH">vumeter_v_bg.png</PathBack>
+                              <PathVu scalemode="STRETCH">vumeter_v.png</PathVu>
+                              <Horizontal>false</Horizontal>
+                              <PeakHoldSize>5</PeakHoldSize>
+                              <PeakHoldTime>300</PeakHoldTime>
+                              <PeakFallTime>20</PeakFallTime>
+                              <PeakFallStep>1</PeakFallStep>
+                              <Connection><ConfigKey>[Channel1],vu_meter_left</ConfigKey></Connection>
+                            </VuMeter>
+                          </Children>
+                        </WidgetGroup>
+                        <WidgetGroup>
+                          <ObjectName>vumeter_v</ObjectName>
+                          <Layout>vertical</Layout>
+                          <Size>8f,0me</Size>
+                          <Children>
+                            <StatusLight>
+                              <ObjectName>PeakIndicator</ObjectName>
+                              <Size>8f,8f</Size>
+                              <PathStatusLight scalemode="STRETCH">vumeter_clip.png</PathStatusLight>
+                              <Connection><ConfigKey>[Channel1],peak_indicator_right</ConfigKey></Connection>
+                            </StatusLight>
+                            <VuMeter>
+                              <Size>8f,0me</Size>
+                              <MinimumSize>8,40</MinimumSize>
+                              <PathBack scalemode="STRETCH">vumeter_v_bg.png</PathBack>
+                              <PathVu scalemode="STRETCH">vumeter_v.png</PathVu>
+                              <Horizontal>false</Horizontal>
+                              <PeakHoldSize>5</PeakHoldSize>
+                              <PeakHoldTime>300</PeakHoldTime>
+                              <PeakFallTime>20</PeakFallTime>
+                              <PeakFallStep>1</PeakFallStep>
+                              <Connection><ConfigKey>[Channel1],vu_meter_right</ConfigKey></Connection>
+                            </VuMeter>
+                          </Children>
+                        </WidgetGroup>
+                      </Children>
+                    </WidgetGroup>
+                  </Children>
+                </WidgetGroup>
+
               </Children>
             </WidgetGroup>
 
-            <!-- Deck B strip: VU left, sliders right -->
+            <!-- Center spacer -->
+            <WidgetGroup><Size>16f,0f</Size></WidgetGroup>
+
+            <!-- ═══ Channel 2 (Deck B) — mirrored ═══ -->
             <WidgetGroup>
-              <ObjectName>MixerStripB</ObjectName>
-              <Size>240,0</Size>
-              <SizePolicy>f,me</SizePolicy>
+              <ObjectName>DeckMixer</ObjectName>
               <Layout>horizontal</Layout>
+              <SizePolicy>me,me</SizePolicy>
               <Children>
-                <!-- VU Meter (left side of Deck B) -->
-                <VuMeter>
-                  <ObjectName>VuMeterB</ObjectName>
-                  <Size>18,0</Size>
-                  <SizePolicy>f,me</SizePolicy>
-                  <PathVu>skin:vu_fill_v.png</PathVu>
-                  <PathBack>skin:vu_bg_v.png</PathBack>
-                  <Horizontal>false</Horizontal>
-                  <PeakHoldSize>3</PeakHoldSize>
-                  <PeakHoldTime>500</PeakHoldTime>
-                  <PeakFallTime>50</PeakFallTime>
-                  <PeakFallStep>2</PeakFallStep>
-                  <Connection><ConfigKey>[Channel2],vu_meter</ConfigKey></Connection>
-                </VuMeter>
-                <!-- Sliders column -->
+
+                <!-- PFL button + stereo VU meters -->
                 <WidgetGroup>
-                  <SizePolicy>me,me</SizePolicy>
                   <Layout>vertical</Layout>
+                  <SizePolicy>f,me</SizePolicy>
+                  <Size>30,0</Size>
                   <Children>
-                    <Label><ObjectName>MixerChLabel</ObjectName><Size>0,14</Size><Text>DECK B</Text></Label>
-                    <Label><ObjectName>MixerKnobLabel</ObjectName><Size>0,10</Size><Text>K5: HI</Text></Label>
-                    <SliderComposed>
-                      <ObjectName>MixerSlider</ObjectName><Size>0,14</Size><SizePolicy>me,f</SizePolicy>
-                      <Horizontal>true</Horizontal>
-                      <Handle>skin:slider_handle.png</Handle><Slider>skin:slider_bg.png</Slider>
-                      <Connection><ConfigKey>[EqualizerRack1_[Channel2]_Effect1],parameter3</ConfigKey></Connection>
-                    </SliderComposed>
-                    <Label><ObjectName>MixerKnobLabel</ObjectName><Size>0,10</Size><Text>K6: MID</Text></Label>
-                    <SliderComposed>
-                      <ObjectName>MixerSlider</ObjectName><Size>0,14</Size><SizePolicy>me,f</SizePolicy>
-                      <Horizontal>true</Horizontal>
-                      <Handle>skin:slider_handle.png</Handle><Slider>skin:slider_bg.png</Slider>
-                      <Connection><ConfigKey>[EqualizerRack1_[Channel2]_Effect1],parameter2</ConfigKey></Connection>
-                    </SliderComposed>
-                    <Label><ObjectName>MixerKnobLabel</ObjectName><Size>0,10</Size><Text>K7: LO</Text></Label>
-                    <SliderComposed>
-                      <ObjectName>MixerSlider</ObjectName><Size>0,14</Size><SizePolicy>me,f</SizePolicy>
-                      <Horizontal>true</Horizontal>
-                      <Handle>skin:slider_handle.png</Handle><Slider>skin:slider_bg.png</Slider>
-                      <Connection><ConfigKey>[EqualizerRack1_[Channel2]_Effect1],parameter1</ConfigKey></Connection>
-                    </SliderComposed>
-                    <Label><ObjectName>MixerKnobLabel</ObjectName><Size>0,10</Size><Text>K8: VOL</Text></Label>
-                    <SliderComposed>
-                      <ObjectName>MixerSlider</ObjectName><Size>0,14</Size><SizePolicy>me,f</SizePolicy>
-                      <Horizontal>true</Horizontal>
-                      <Handle>skin:slider_handle.png</Handle><Slider>skin:slider_bg.png</Slider>
-                      <Connection><ConfigKey>[Channel2],volume</ConfigKey></Connection>
-                    </SliderComposed>
-                    <Label><ObjectName>MixerKnobLabel</ObjectName><Size>0,10</Size><Text>GAIN</Text></Label>
-                    <SliderComposed>
-                      <ObjectName>MixerSlider</ObjectName><Size>0,14</Size><SizePolicy>me,f</SizePolicy>
-                      <Horizontal>true</Horizontal>
-                      <Handle>skin:slider_handle.png</Handle><Slider>skin:slider_bg.png</Slider>
+                    <WidgetGroup>
+                      <ObjectName>ButtonContainer</ObjectName>
+                      <Layout>horizontal</Layout>
+                      <Children>
+                        <PushButton>
+                          <TooltipId>pfl</TooltipId>
+                          <ObjectName>DeckPFLButton</ObjectName>
+                          <Size>22f,22f</Size>
+                          <NumberStates>2</NumberStates>
+                          <State>
+                            <Number>0</Number>
+                            <Unpressed scalemode="STRETCH_ASPECT">icon/ic_headphones_48px.svg</Unpressed>
+                            <Pressed scalemode="STRETCH_ASPECT">icon/ic_headphones_48px.svg</Pressed>
+                          </State>
+                          <State>
+                            <Number>1</Number>
+                            <Unpressed scalemode="STRETCH_ASPECT">icon/ic_headphones_48px.svg</Unpressed>
+                            <Pressed scalemode="STRETCH_ASPECT">icon/ic_headphones_48px.svg</Pressed>
+                          </State>
+                          <Connection>
+                            <ConfigKey>[Channel2],pfl</ConfigKey>
+                            <ButtonState>LeftButton</ButtonState>
+                          </Connection>
+                        </PushButton>
+                      </Children>
+                    </WidgetGroup>
+                    <WidgetGroup>
+                      <ObjectName>channel_VuMeter_Group</ObjectName>
+                      <Layout>horizontal</Layout>
+                      <SizePolicy>f,me</SizePolicy>
+                      <Size>22,0</Size>
+                      <Children>
+                        <WidgetGroup>
+                          <ObjectName>vumeter_v</ObjectName>
+                          <Layout>vertical</Layout>
+                          <Size>8f,0me</Size>
+                          <Children>
+                            <StatusLight>
+                              <ObjectName>PeakIndicator</ObjectName>
+                              <Size>8f,8f</Size>
+                              <PathStatusLight scalemode="STRETCH">vumeter_clip.png</PathStatusLight>
+                              <Connection><ConfigKey>[Channel2],peak_indicator_left</ConfigKey></Connection>
+                            </StatusLight>
+                            <VuMeter>
+                              <Size>8f,0me</Size>
+                              <MinimumSize>8,40</MinimumSize>
+                              <PathBack scalemode="STRETCH">vumeter_v_bg.png</PathBack>
+                              <PathVu scalemode="STRETCH">vumeter_v.png</PathVu>
+                              <Horizontal>false</Horizontal>
+                              <PeakHoldSize>5</PeakHoldSize>
+                              <PeakHoldTime>300</PeakHoldTime>
+                              <PeakFallTime>20</PeakFallTime>
+                              <PeakFallStep>1</PeakFallStep>
+                              <Connection><ConfigKey>[Channel2],vu_meter_left</ConfigKey></Connection>
+                            </VuMeter>
+                          </Children>
+                        </WidgetGroup>
+                        <WidgetGroup>
+                          <ObjectName>vumeter_v</ObjectName>
+                          <Layout>vertical</Layout>
+                          <Size>8f,0me</Size>
+                          <Children>
+                            <StatusLight>
+                              <ObjectName>PeakIndicator</ObjectName>
+                              <Size>8f,8f</Size>
+                              <PathStatusLight scalemode="STRETCH">vumeter_clip.png</PathStatusLight>
+                              <Connection><ConfigKey>[Channel2],peak_indicator_right</ConfigKey></Connection>
+                            </StatusLight>
+                            <VuMeter>
+                              <Size>8f,0me</Size>
+                              <MinimumSize>8,40</MinimumSize>
+                              <PathBack scalemode="STRETCH">vumeter_v_bg.png</PathBack>
+                              <PathVu scalemode="STRETCH">vumeter_v.png</PathVu>
+                              <Horizontal>false</Horizontal>
+                              <PeakHoldSize>5</PeakHoldSize>
+                              <PeakHoldTime>300</PeakHoldTime>
+                              <PeakFallTime>20</PeakFallTime>
+                              <PeakFallStep>1</PeakFallStep>
+                              <Connection><ConfigKey>[Channel2],vu_meter_right</ConfigKey></Connection>
+                            </VuMeter>
+                          </Children>
+                        </WidgetGroup>
+                      </Children>
+                    </WidgetGroup>
+                  </Children>
+                </WidgetGroup>
+
+                <!-- Gain knob + Volume fader -->
+                <WidgetGroup>
+                  <Layout>vertical</Layout>
+                  <SizePolicy>f,me</SizePolicy>
+                  <Size>44,0</Size>
+                  <Children>
+                    <KnobComposed>
+                      <TooltipId>pregain</TooltipId>
+                      <Size>40f,34f</Size>
+                      <Knob>knob.svg</Knob>
+                      <BackPath>knob_bg_green.svg</BackPath>
+                      <MinAngle>-135</MinAngle><MaxAngle>135</MaxAngle>
+                      <KnobCenterYOffset>1.602</KnobCenterYOffset>
                       <Connection><ConfigKey>[Channel2],pregain</ConfigKey></Connection>
+                    </KnobComposed>
+                    <SliderComposed>
+                      <TooltipId>channel_volume</TooltipId>
+                      <SizePolicy>f,me</SizePolicy>
+                      <Size>40,0</Size>
+                      <Slider scalemode="STRETCH">slider-vertical.svg</Slider>
+                      <Handle scalemode="STRETCH_ASPECT">handle-volume-deck2.svg</Handle>
+                      <Horizontal>false</Horizontal>
+                      <Connection>
+                        <ConfigKey>[Channel2],volume</ConfigKey>
+                        <EmitOnDownPress>false</EmitOnDownPress>
+                      </Connection>
                     </SliderComposed>
                   </Children>
                 </WidgetGroup>
+
+                <!-- EQ Knobs: HI, MID, LO, QuickEffect -->
+                <WidgetGroup>
+                  <Layout>vertical</Layout>
+                  <SizePolicy>f,me</SizePolicy>
+                  <Size>44,0</Size>
+                  <Children>
+                    <KnobComposed>
+                      <TooltipId>channel_equalizer_parameter</TooltipId>
+                      <Size>40f,34f</Size>
+                      <Knob>knob.svg</Knob>
+                      <BackPath>knob_bg_purple.svg</BackPath>
+                      <MinAngle>-135</MinAngle><MaxAngle>135</MaxAngle>
+                      <KnobCenterYOffset>1.602</KnobCenterYOffset>
+                      <Connection><ConfigKey>[EqualizerRack1_[Channel2]_Effect1],parameter3</ConfigKey></Connection>
+                    </KnobComposed>
+                    <KnobComposed>
+                      <TooltipId>channel_equalizer_parameter</TooltipId>
+                      <Size>40f,34f</Size>
+                      <Knob>knob.svg</Knob>
+                      <BackPath>knob_bg_purple.svg</BackPath>
+                      <MinAngle>-135</MinAngle><MaxAngle>135</MaxAngle>
+                      <KnobCenterYOffset>1.602</KnobCenterYOffset>
+                      <Connection><ConfigKey>[EqualizerRack1_[Channel2]_Effect1],parameter2</ConfigKey></Connection>
+                    </KnobComposed>
+                    <KnobComposed>
+                      <TooltipId>channel_equalizer_parameter</TooltipId>
+                      <Size>40f,34f</Size>
+                      <Knob>knob.svg</Knob>
+                      <BackPath>knob_bg_purple.svg</BackPath>
+                      <MinAngle>-135</MinAngle><MaxAngle>135</MaxAngle>
+                      <KnobCenterYOffset>1.602</KnobCenterYOffset>
+                      <Connection><ConfigKey>[EqualizerRack1_[Channel2]_Effect1],parameter1</ConfigKey></Connection>
+                    </KnobComposed>
+                    <KnobComposed>
+                      <TooltipId>QuickEffectRack_super1</TooltipId>
+                      <Size>40f,34f</Size>
+                      <Knob>knob.svg</Knob>
+                      <BackPath>knob_bg_blue.svg</BackPath>
+                      <MinAngle>-135</MinAngle><MaxAngle>135</MaxAngle>
+                      <KnobCenterYOffset>1.602</KnobCenterYOffset>
+                      <Connection><ConfigKey>[QuickEffectRack1_[Channel2]],super1</ConfigKey></Connection>
+                    </KnobComposed>
+                  </Children>
+                </WidgetGroup>
+
               </Children>
             </WidgetGroup>
 
           </Children>
         </WidgetGroup>
 
-        <!-- Crossfader (full width) -->
-        <Label><ObjectName>MixerKnobLabel</ObjectName><Size>480,10</Size><Text>CROSSFADER</Text></Label>
-        <SliderComposed>
-          <ObjectName>MixerCrossfader</ObjectName>
-          <Size>470,16</Size>
-          <SizePolicy>me,f</SizePolicy>
-          <Horizontal>true</Horizontal>
-          <Handle>skin:crossfader_handle.png</Handle>
-          <Slider>skin:crossfader_bg.png</Slider>
-          <Connection>
-            <ConfigKey>[Master],crossfader</ConfigKey>
-          </Connection>
-        </SliderComposed>
+        <!-- Crossfader -->
+        <WidgetGroup>
+          <ObjectName>CrossfaderContainer</ObjectName>
+          <Layout>horizontal</Layout>
+          <Size>480f,40f</Size>
+          <Children>
+            <WidgetGroup><Size>8f,0f</Size></WidgetGroup>
+            <SliderComposed>
+              <TooltipId>crossfader</TooltipId>
+              <SizePolicy>me,f</SizePolicy>
+              <Size>0,34</Size>
+              <Slider scalemode="STRETCH">slider-crossfader.svg</Slider>
+              <Handle scalemode="STRETCH_ASPECT">handle-crossfader-grey.svg</Handle>
+              <Horizontal>true</Horizontal>
+              <Connection>
+                <ConfigKey>[Master],crossfader</ConfigKey>
+                <EmitOnDownPress>false</EmitOnDownPress>
+              </Connection>
+            </SliderComposed>
+            <WidgetGroup><Size>8f,0f</Size></WidgetGroup>
+          </Children>
+        </WidgetGroup>
+
       </Children>
     </WidgetGroup>
 
