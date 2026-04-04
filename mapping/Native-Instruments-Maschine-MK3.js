@@ -476,15 +476,20 @@ MaschineMK3.activeLibraryTab = "tracks";
 MaschineMK3.selectLibraryTab = function(tabName) {
     var targetIdx = MaschineMK3.LIBRARY_TABS[tabName];
     if (targetIdx === undefined) { return; }
-    var delta = targetIdx - MaschineMK3.librarySidebarPos;
-    if (delta === 0) { return; }
-    // Focus sidebar, navigate to target feature
+    // Navigate to top of sidebar first, then down to target
     engine.setValue("[Library]", "focused_widget", 2);
     engine.beginTimer(50, function() {
-        engine.setValue("[Playlist]", "SelectPlaylist", delta);
-        MaschineMK3.librarySidebarPos = targetIdx;
-        MaschineMK3.activeLibraryTab = tabName;
-        MaschineMK3.updateLibraryTabLEDs();
+        // Go to top (large negative)
+        engine.setValue("[Playlist]", "SelectPlaylist", -20);
+        engine.beginTimer(50, function() {
+            // Go down to target index
+            if (targetIdx > 0) {
+                engine.setValue("[Playlist]", "SelectPlaylist", targetIdx);
+            }
+            MaschineMK3.librarySidebarPos = targetIdx;
+            MaschineMK3.activeLibraryTab = tabName;
+            MaschineMK3.updateLibraryTabLEDs();
+        }, true);
     }, true);
 };
 
@@ -832,7 +837,7 @@ MaschineMK3.onButtonPress = function(name) {
             break;
         }
         if (MaschineMK3.libraryVisible && name === "d4") {
-            engine.setValue("[Library]", "rescanLibrary", 1);
+            engine.setValue("[Library]", "scanLibrary", 1);
             break;
         }
         // Normal DJ mode D-button behavior
