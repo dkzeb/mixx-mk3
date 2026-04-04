@@ -841,6 +841,7 @@ MaschineMK3.onButtonPress = function(name) {
     case "d5": case "d6": case "d7": case "d8":
         var dNum = parseInt(name.charAt(1), 10);  // 1-8
         // Library tab switching: D1-D4 when library is visible
+        print("D-button: " + name + " libraryVisible=" + MaschineMK3.libraryVisible + " tabMap=" + MaschineMK3.libraryTabMap[name]);
         if (MaschineMK3.libraryVisible && MaschineMK3.libraryTabMap[name]) {
             MaschineMK3.selectLibraryTab(MaschineMK3.libraryTabMap[name]);
             break;
