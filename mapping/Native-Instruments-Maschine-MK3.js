@@ -1278,6 +1278,20 @@ MaschineMK3.init = function(/* id, debugging */) {
     }
     MaschineMK3.updateGButtonLEDs();
 
+    // --- Track loaded: close library/T9 when a track is loaded into either deck ---
+    MaschineMK3.onTrackLoaded = function() {
+        if (MaschineMK3.libraryVisible) {
+            MaschineMK3.libraryVisible = false;
+            if (MaschineMK3.padMode === "t9") { MaschineMK3.padMode = "cuepoints"; }
+            MaschineMK3.cueDisplayVisible = false;
+            MaschineMK3.updatePadModeLED();
+            MaschineMK3.updatePadLEDs();
+            MaschineMK3.updatePanels();
+        }
+    };
+    engine.makeConnection("[Channel1]", "track_loaded", MaschineMK3.onTrackLoaded);
+    engine.makeConnection("[Channel2]", "track_loaded", MaschineMK3.onTrackLoaded);
+
     // --- Hotcue pad LED feedback (cues 1-8 per deck) ---
     for (var hcPad = 1; hcPad <= 8; hcPad++) {
         (function(idx) {
