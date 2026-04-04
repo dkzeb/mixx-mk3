@@ -21,13 +21,12 @@ AFTER=$(git rev-parse HEAD)
 
 if [ "$BEFORE" = "$AFTER" ]; then
     echo "Already up to date."
-    exit 0
+else
+    echo ""
+    echo "Changes:"
+    git log --oneline "$BEFORE".."$AFTER"
+    echo ""
 fi
-
-echo ""
-echo "Changes:"
-git log --oneline "$BEFORE".."$AFTER"
-echo ""
 
 # ── Mapping ──────────────────────────────────────────────────────────
 mkdir -p "$PI_HOME/.mixxx/controllers"
