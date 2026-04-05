@@ -1112,6 +1112,7 @@ MaschineMK3.onButtonPress = function(name) {
             MaschineMK3.tempoVisible = false;
         }
         MaschineMK3.setLed("notes", MaschineMK3.cueDisplayVisible ? 63 : 0);
+        MaschineMK3.updateTempoLed();
         MaschineMK3.updatePanels();
         break;
 
@@ -1134,6 +1135,7 @@ MaschineMK3.onButtonPress = function(name) {
         }
         MaschineMK3.updatePadModeLED();
         MaschineMK3.updatePadLEDs();
+        MaschineMK3.updateTempoLed();
         MaschineMK3.updatePanels();
         break;
 
@@ -1237,6 +1239,7 @@ MaschineMK3.onButtonPress = function(name) {
         }
         MaschineMK3.updatePadModeLED();
         MaschineMK3.updatePadLEDs();
+        MaschineMK3.updateTempoLed();
         MaschineMK3.updatePanels();
         break;
 
@@ -1270,6 +1273,7 @@ MaschineMK3.onButtonPress = function(name) {
         if (MaschineMK3.padMode === "t9") { MaschineMK3.padMode = "cuepoints"; }
         MaschineMK3.updatePadModeLED();
         MaschineMK3.updatePadLEDs();
+        MaschineMK3.updateTempoLed();
         MaschineMK3.updatePanels();
         break;
 
