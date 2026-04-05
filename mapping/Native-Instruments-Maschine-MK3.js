@@ -2074,11 +2074,12 @@ MaschineMK3.init = function(/* id, debugging */) {
     // --- Shift LED (dim = available) ---
     MaschineMK3.setLed("shift", 8);
 
-    // --- Browser + Mixer + Channel LEDs (dim = available); settings LED managed by overlay daemon ---
+    // --- Browser + Mixer + Channel + Settings LEDs (dim = available) ---
     MaschineMK3.setLed("browserPlugin", 16);
     MaschineMK3.setLed("mixer", 16);
     MaschineMK3.setLed("tempo", 16);
     MaschineMK3.setLed("channelMidi", 16);
+    MaschineMK3.setLed("settings", 16);
     MaschineMK3.setLed("keyboard", 0);
 
     // --- Nav encoder LEDs (always dimly lit for navigation) ---
