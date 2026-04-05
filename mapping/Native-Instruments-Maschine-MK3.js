@@ -534,6 +534,9 @@ MaschineMK3.toggleTempoPanel = function() {
     MaschineMK3.updatePanels();
     if (MaschineMK3.tempoVisible) {
         MaschineMK3.updateTempoDButtonLEDs();
+        // Push current ramp target to skin
+        engine.setValue("[Skin]", "ramp_target_a", MaschineMK3.tempoState.rampMultiplierA);
+        engine.setValue("[Skin]", "ramp_target_b", MaschineMK3.tempoState.rampMultiplierB);
     }
 };
 
@@ -572,16 +575,23 @@ MaschineMK3.handleRampTargetKnob = function(deck, delta) {
     var mulKey = (deck === 1) ? "rampMultiplierA" : "rampMultiplierB";
     MaschineMK3.tempoState[key] += delta;
 
+    var changed = false;
     if (MaschineMK3.tempoState[key] >= RAMP_TARGET_STEP_THRESHOLD) {
         MaschineMK3.tempoState[key] = 0;
         if (MaschineMK3.tempoState[mulKey] < RAMP_MULTIPLIERS.length - 1) {
             MaschineMK3.tempoState[mulKey]++;
+            changed = true;
         }
     } else if (MaschineMK3.tempoState[key] <= -RAMP_TARGET_STEP_THRESHOLD) {
         MaschineMK3.tempoState[key] = 0;
         if (MaschineMK3.tempoState[mulKey] > 0) {
             MaschineMK3.tempoState[mulKey]--;
+            changed = true;
         }
+    }
+    if (changed) {
+        var skinKey = (deck === 1) ? "ramp_target_a" : "ramp_target_b";
+        engine.setValue("[Skin]", skinKey, MaschineMK3.tempoState[mulKey]);
     }
 };
 

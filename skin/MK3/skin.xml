@@ -25,6 +25,8 @@
       <attribute config_key="[Skin],show_tempo">0</attribute>
       <attribute config_key="[Skin],show_ramp_a">0</attribute>
       <attribute config_key="[Skin],show_ramp_b">0</attribute>
+      <attribute config_key="[Skin],ramp_target_a">0</attribute>
+      <attribute config_key="[Skin],ramp_target_b">0</attribute>
       <attribute config_key="[Skin],auto_touch_k1">0</attribute>
       <attribute config_key="[Skin],auto_touch_k2">0</attribute>
       <attribute config_key="[Skin],auto_touch_k3">0</attribute>
@@ -1517,7 +1519,27 @@
             <Label><ObjectName>TempoKnobLabel</ObjectName><Size>120f,40f</Size><Text>K1: TEMPO</Text></Label>
             <Label><ObjectName>TempoKnobLabel</ObjectName><Size>120f,40f</Size><Text>K2: KEY</Text></Label>
             <Label><ObjectName>TempoKnobLabel</ObjectName><Size>120f,40f</Size><Text>K3: &#x2014;</Text></Label>
-            <Label><ObjectName>TempoKnobLabel</ObjectName><Size>120f,40f</Size><Text>K4: TARGET</Text></Label>
+            <WidgetGroup>
+              <Size>120f,40f</Size>
+              <Layout>stacked</Layout>
+              <Children>
+                <Label><ObjectName>TempoKnobLabelActive</ObjectName><Size>120f,40f</Size><Text>K4: 1x</Text>
+                  <Connection><ConfigKey>[Skin],ramp_target_a</ConfigKey><BindProperty>visible</BindProperty>
+                    <Transform><IsEqual>0</IsEqual></Transform>
+                  </Connection>
+                </Label>
+                <Label><ObjectName>TempoKnobLabelActive</ObjectName><Size>120f,40f</Size><Text>K4: &#xBD;x</Text>
+                  <Connection><ConfigKey>[Skin],ramp_target_a</ConfigKey><BindProperty>visible</BindProperty>
+                    <Transform><IsEqual>1</IsEqual></Transform>
+                  </Connection>
+                </Label>
+                <Label><ObjectName>TempoKnobLabelActive</ObjectName><Size>120f,40f</Size><Text>K4: 2x</Text>
+                  <Connection><ConfigKey>[Skin],ramp_target_a</ConfigKey><BindProperty>visible</BindProperty>
+                    <Transform><IsEqual>2</IsEqual></Transform>
+                  </Connection>
+                </Label>
+              </Children>
+            </WidgetGroup>
           </Children>
         </WidgetGroup>
 
@@ -1858,7 +1880,27 @@
             <Label><ObjectName>TempoKnobLabel</ObjectName><Size>120f,40f</Size><Text>K5: TEMPO</Text></Label>
             <Label><ObjectName>TempoKnobLabel</ObjectName><Size>120f,40f</Size><Text>K6: KEY</Text></Label>
             <Label><ObjectName>TempoKnobLabel</ObjectName><Size>120f,40f</Size><Text>K7: &#x2014;</Text></Label>
-            <Label><ObjectName>TempoKnobLabel</ObjectName><Size>120f,40f</Size><Text>K8: TARGET</Text></Label>
+            <WidgetGroup>
+              <Size>120f,40f</Size>
+              <Layout>stacked</Layout>
+              <Children>
+                <Label><ObjectName>TempoKnobLabelActive</ObjectName><Size>120f,40f</Size><Text>K8: 1x</Text>
+                  <Connection><ConfigKey>[Skin],ramp_target_b</ConfigKey><BindProperty>visible</BindProperty>
+                    <Transform><IsEqual>0</IsEqual></Transform>
+                  </Connection>
+                </Label>
+                <Label><ObjectName>TempoKnobLabelActive</ObjectName><Size>120f,40f</Size><Text>K8: &#xBD;x</Text>
+                  <Connection><ConfigKey>[Skin],ramp_target_b</ConfigKey><BindProperty>visible</BindProperty>
+                    <Transform><IsEqual>1</IsEqual></Transform>
+                  </Connection>
+                </Label>
+                <Label><ObjectName>TempoKnobLabelActive</ObjectName><Size>120f,40f</Size><Text>K8: 2x</Text>
+                  <Connection><ConfigKey>[Skin],ramp_target_b</ConfigKey><BindProperty>visible</BindProperty>
+                    <Transform><IsEqual>2</IsEqual></Transform>
+                  </Connection>
+                </Label>
+              </Children>
+            </WidgetGroup>
           </Children>
         </WidgetGroup>
 

@@ -408,3 +408,10 @@ WVuMeter, #PeakIndicator {
   qproperty-alignment: AlignCenter;
 }
 
+#TempoKnobLabelActive {
+  font-size: 10px;
+  color: #88ff88;
+  font-weight: bold;
+  qproperty-alignment: AlignCenter;
+}
+
