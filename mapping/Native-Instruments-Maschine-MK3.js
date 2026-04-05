@@ -400,6 +400,8 @@ MaschineMK3.tempoState = {
     rampLedTimer: 0,
     rampLedState: false,
 };
+MaschineMK3.scratchingDeck1 = false;     // vinyl scratch mode active on K2
+MaschineMK3.scratchingDeck2 = false;     // vinyl scratch mode active on K6
 MaschineMK3.overlayActive   = false;    // overlay widget has focus — suppress HID processing
 
 MaschineMK3.padMode       = "cuepoints"; // "cuepoints" | "loops" | "effects" | "t9" — cuepoints is default
@@ -1016,11 +1018,19 @@ MaschineMK3.onButtonPress = function(name) {
         return;
     }
 
-    // --- Knob touch: save value when Auto is held ---
+    // --- Knob touch: vinyl scratch on K2/K6, save value when Auto is held ---
     var knobName = MaschineMK3.knobTouchToName[name];
     if (knobName) {
         if (MaschineMK3.autoPressed) {
             MaschineMK3.autoSnapSave(knobName);
+        }
+        // Vinyl scratch: touching K2 or K6 enables scratch mode
+        if (knobName === "k2" && !MaschineMK3.tempoVisible && !MaschineMK3.mixerVisible && !MaschineMK3.stemMixerVisible) {
+            MaschineMK3.scratchingDeck1 = true;
+            engine.scratchEnable(1, 128, 33.33, 1.0/8, 1.0/8/32);
+        } else if (knobName === "k6" && !MaschineMK3.tempoVisible && !MaschineMK3.mixerVisible && !MaschineMK3.stemMixerVisible) {
+            MaschineMK3.scratchingDeck2 = true;
+            engine.scratchEnable(2, 128, 33.33, 1.0/8, 1.0/8/32);
         }
         return;
     }
@@ -1068,6 +1078,25 @@ MaschineMK3.onButtonPress = function(name) {
             // followGrid: sync phase + tempo to other deck
             engine.setValue(ch, "beatsync", 1);
         }
+        break;
+
+    // --- Channel: reset to default state, close all panels ---
+    case "channelMidi":
+        MaschineMK3.libraryVisible = false;
+        MaschineMK3.mixerVisible = false;
+        MaschineMK3.stemMixerVisible = false;
+        MaschineMK3.tempoVisible = false;
+        MaschineMK3.cueDisplayVisible = false;
+        MaschineMK3.sidebarVisible = false;
+        MaschineMK3.padMode = "cuepoints";
+        engine.setValue("[Skin]", "show_sidebar", 0);
+        MaschineMK3.setLed("arranger", 0);
+        MaschineMK3.setLed("notes", 0);
+        MaschineMK3.updateTempoLed();
+        MaschineMK3.updatePadModeLED();
+        MaschineMK3.updatePadLEDs();
+        MaschineMK3.updateDeckLEDs();
+        MaschineMK3.updatePanels();
         break;
 
     // --- Modifier ---
@@ -1344,9 +1373,17 @@ MaschineMK3.onButtonRelease = function(name) {
         return;
     }
 
-    // --- Knob touch release: restore snapped value for this knob ---
+    // --- Knob touch release: vinyl scratch off, restore snapped value ---
     var knobName = MaschineMK3.knobTouchToName[name];
     if (knobName) {
+        // Vinyl scratch: releasing K2 or K6 disables scratch mode
+        if (knobName === "k2" && MaschineMK3.scratchingDeck1) {
+            MaschineMK3.scratchingDeck1 = false;
+            engine.scratchDisable(1);
+        } else if (knobName === "k6" && MaschineMK3.scratchingDeck2) {
+            MaschineMK3.scratchingDeck2 = false;
+            engine.scratchDisable(2);
+        }
         MaschineMK3.autoSnapRestore(knobName);
         return;
     }
@@ -1610,9 +1647,11 @@ MaschineMK3.onKnobChange = function(name, value) {
         case "k1": // Tempo rate
             MaschineMK3.adjustValue("[Channel1]", "rate", delta, 0.002, -1, 1);
             break;
-        case "k2": // Scrub/jog or Shift=zoom
+        case "k2": // Vinyl scratch / jog / Shift=zoom
             if (MaschineMK3.shiftPressed) {
                 MaschineMK3.adjustValue("[Channel1]", "waveform_zoom", delta, -0.1, 1, 10);
+            } else if (MaschineMK3.scratchingDeck1) {
+                engine.scratchTick(1, delta);
             } else {
                 engine.setValue("[Channel1]", "jog", delta * 0.1);
             }
@@ -1626,9 +1665,11 @@ MaschineMK3.onKnobChange = function(name, value) {
         case "k5": // Tempo rate
             MaschineMK3.adjustValue("[Channel2]", "rate", delta, 0.002, -1, 1);
             break;
-        case "k6": // Scrub/jog or Shift=zoom
+        case "k6": // Vinyl scratch / jog / Shift=zoom
             if (MaschineMK3.shiftPressed) {
                 MaschineMK3.adjustValue("[Channel2]", "waveform_zoom", delta, -0.1, 1, 10);
+            } else if (MaschineMK3.scratchingDeck2) {
+                engine.scratchTick(2, delta);
             } else {
                 engine.setValue("[Channel2]", "jog", delta * 0.1);
             }
