@@ -803,7 +803,7 @@ MaschineMK3.connectTransportLEDs = function() {
 
     MaschineMK3.transportConnections.push(
         engine.makeConnection(ch, "play_indicator", function(value) {
-            MaschineMK3.setLed("play", value ? 63 : 0);
+            MaschineMK3.setLed("play", value ? 63 : 16);
         })
     );
     MaschineMK3.transportConnections.push(
@@ -813,7 +813,9 @@ MaschineMK3.connectTransportLEDs = function() {
     );
 
     // Trigger immediate update
-    MaschineMK3.setLed("play", engine.getValue(ch, "play_indicator") ? 63 : 0);
+    MaschineMK3.setLed("play", engine.getValue(ch, "play_indicator") ? 63 : 16);
+    MaschineMK3.setLed("stop", 16);
+    MaschineMK3.setLed("followGrid", 16);
     MaschineMK3.setLed("restartLoop", 16);
     MaschineMK3.setLed("recCountIn", engine.getValue(ch, "cue_indicator") ? 63 : 0);
 };
@@ -1055,6 +1057,17 @@ MaschineMK3.onButtonPress = function(name) {
         break;
     case "restartLoop":
         engine.setValue(ch, "playposition", 0);
+        break;
+
+    // --- Follow Grid: beatgrid align / beat sync ---
+    case "followGrid":
+        if (MaschineMK3.shiftPressed) {
+            // Shift+followGrid: align beatgrid to current position
+            engine.setValue(ch, "beats_translate_curpos", 1);
+        } else {
+            // followGrid: sync phase + tempo to other deck
+            engine.setValue(ch, "beatsync", 1);
+        }
         break;
 
     // --- Modifier ---
