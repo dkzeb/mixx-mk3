@@ -13,7 +13,7 @@ Environment=XCURSOR_SIZE=24
 Environment=XDG_RUNTIME_DIR=/run/user/1000
 ExecStartPre=/bin/bash -c 'for i in $(seq 1 30); do wpctl status 2>/dev/null | grep -q "Maschine MK3" && exit 0; sleep 1; done; echo "MK3 audio not found after 30s, starting anyway"'
 ExecStartPre=-/bin/bash /home/pi/mixxx-mk3/pi-setup/mk3-check-update.sh
-ExecStart=/usr/bin/pw-jack /usr/bin/mixxx --fullScreen
+ExecStart=/usr/bin/pw-jack /usr/local/bin/mixxx --fullScreen
 Restart=on-failure
 RestartSec=5
 
