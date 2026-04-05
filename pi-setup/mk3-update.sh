@@ -35,8 +35,14 @@ cp "$PROJECT_DIR/mapping/Native-Instruments-Maschine-MK3.js" "$PI_HOME/.mixxx/co
 echo "  Mapping updated"
 
 # ── Skin ─────────────────────────────────────────────────────────────
-sudo mkdir -p /usr/share/mixxx/skins/MK3
-sudo cp -r "$PROJECT_DIR/skin/MK3/"* /usr/share/mixxx/skins/MK3/
+# Install skin to both system paths (Mixxx may use either depending on install method)
+for SKIN_DIR in /usr/share/mixxx/skins/MK3 /usr/local/share/mixxx/skins/MK3; do
+    sudo mkdir -p "$SKIN_DIR"
+    sudo cp -r "$PROJECT_DIR/skin/MK3/"* "$SKIN_DIR/"
+done
+# Remove user skin override (Mixxx loads from ~/.mixxx/skins/ first, but without
+# all assets the skin:* paths break — let Mixxx use the system skin dir instead)
+rm -rf "$PI_HOME/.mixxx/skins/MK3"
 echo "  Skin updated"
 
 # ── Services ─────────────────────────────────────────────────────────
