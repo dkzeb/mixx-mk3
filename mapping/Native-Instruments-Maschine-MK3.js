@@ -1979,9 +1979,18 @@ MaschineMK3.init = function(/* id, debugging */) {
     });
     // PFL (headphone cue) LED feedback + auto headMix routing
     MaschineMK3.updateHeadphoneRouting = function() {
-        var anyPfl = engine.getValue("[Channel1]", "pfl") || engine.getValue("[Channel2]", "pfl");
-        // 0 = PFL only, 1 = main only
-        engine.setValue("[Master]", "headMix", anyPfl ? 0 : 1);
+        var pfl1 = engine.getValue("[Channel1]", "pfl");
+        var pfl2 = engine.getValue("[Channel2]", "pfl");
+        if (!pfl1 && !pfl2) {
+            // No PFL active — play full main mix in headphones
+            engine.setValue("[Master]", "headMix", 1);
+        } else if (pfl1 && pfl2) {
+            // Both decks PFL — play full main mix in headphones
+            engine.setValue("[Master]", "headMix", 1);
+        } else {
+            // One deck PFL — play only that deck (PFL only, no main mix)
+            engine.setValue("[Master]", "headMix", 0);
+        }
     };
     engine.makeConnection("[Channel1]", "pfl", function(value) {
         MaschineMK3.setLed("d4", value ? 63 : 16);

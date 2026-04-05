@@ -1,0 +1,15 @@
+[Unit]
+Description=Mirror MK3 headphone output to Pi built-in audio
+After=mixxx.service pipewire.service
+Wants=mixxx.service
+
+[Service]
+Type=simple
+User=zeb
+Environment=XDG_RUNTIME_DIR=/run/user/1000
+ExecStart=/bin/bash /home/zeb/mixxx-mk3/pi-setup/mk3-headphone-mirror.sh
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target
