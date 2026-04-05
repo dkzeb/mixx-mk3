@@ -1979,18 +1979,13 @@ MaschineMK3.init = function(/* id, debugging */) {
     });
     // PFL (headphone cue) LED feedback + auto headMix routing
     MaschineMK3.updateHeadphoneRouting = function() {
+        // Headphones are on Pi 3.5mm (separate from MK3 speakers).
+        // headMix parameter: 0.0 = PFL only, 1.0 = main only.
+        // Use setParameter (normalized 0-1) not setValue (raw internal).
         var pfl1 = engine.getValue("[Channel1]", "pfl");
         var pfl2 = engine.getValue("[Channel2]", "pfl");
-        if (!pfl1 && !pfl2) {
-            // No PFL active — play full main mix in headphones
-            engine.setValue("[Master]", "headMix", 1.0);
-        } else if (pfl1 && pfl2) {
-            // Both decks PFL — play full main mix in headphones
-            engine.setValue("[Master]", "headMix", 1.0);
-        } else {
-            // One deck PFL — play only that deck, no main mix
-            engine.setValue("[Master]", "headMix", 0.0);
-        }
+        var onePfl = (pfl1 && !pfl2) || (!pfl1 && pfl2);
+        engine.setParameter("[Master]", "headMix", onePfl ? 0.0 : 1.0);
     };
     engine.makeConnection("[Channel1]", "pfl", function(value) {
         MaschineMK3.setLed("d4", value ? 63 : 16);
@@ -2001,7 +1996,7 @@ MaschineMK3.init = function(/* id, debugging */) {
         MaschineMK3.updateHeadphoneRouting();
     });
     // Set initial routing (main mix in headphones)
-    engine.setValue("[Master]", "headMix", 1);
+    engine.setParameter("[Master]", "headMix", 1.0);
 
     // Dim the D buttons (always available)
     MaschineMK3.setLed("d1", 16);
