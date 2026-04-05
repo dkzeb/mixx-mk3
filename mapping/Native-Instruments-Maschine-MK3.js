@@ -548,7 +548,7 @@ MaschineMK3.updateTempoLed = function() {
     if (anyRamp) {
         return;
     }
-    MaschineMK3.setLed("tempo", MaschineMK3.tempoVisible ? 63 : 0);
+    MaschineMK3.setLed("tempo", MaschineMK3.tempoVisible ? 63 : 16);
 };
 
 // ---------------------------------------------------------------------------
@@ -697,7 +697,7 @@ MaschineMK3.rampTick = function(deck) {
 // ---------------------------------------------------------------------------
 MaschineMK3.updateRampLed = function() {
     MaschineMK3.tempoState.rampLedState = !MaschineMK3.tempoState.rampLedState;
-    MaschineMK3.setLed("tempo", MaschineMK3.tempoState.rampLedState ? 63 : 0);
+    MaschineMK3.setLed("tempo", MaschineMK3.tempoState.rampLedState ? 63 : 16);
 };
 
 // ---------------------------------------------------------------------------
@@ -2015,7 +2015,7 @@ MaschineMK3.init = function(/* id, debugging */) {
     // --- Browser + Mixer LEDs (dim = available); settings LED managed by overlay daemon ---
     MaschineMK3.setLed("browserPlugin", 16);
     MaschineMK3.setLed("mixer", 16);
-    MaschineMK3.setLed("tempo", 0);
+    MaschineMK3.setLed("tempo", 16);
     MaschineMK3.setLed("keyboard", 0);
 
     // --- Nav encoder LEDs (always dimly lit for navigation) ---
