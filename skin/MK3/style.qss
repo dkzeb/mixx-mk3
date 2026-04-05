@@ -340,3 +340,71 @@ WVuMeter, #PeakIndicator {
     margin-top: 4px;
 }
 
+#RampIndicator {
+  font-size: 10px;
+  font-weight: bold;
+  color: #88aaff;
+  background-color: #222244;
+  border-radius: 2px;
+  padding: 1px 4px;
+}
+
+#TempoPanelA, #TempoPanelB {
+  background-color: #1a1a2e;
+}
+
+#TempoDButtonBar {
+  background-color: #252545;
+  border-bottom: 1px solid #444444;
+}
+
+#TempoDLabel {
+  font-size: 10px;
+  color: #aaaaaa;
+  qproperty-alignment: AlignCenter;
+  border-right: 1px solid #333333;
+}
+
+#TempoTrackInfo {
+  padding: 2px 8px;
+}
+
+#TempoDeckLabel {
+  font-size: 11px;
+  font-weight: bold;
+  color: #88aaff;
+}
+
+#TempoTrackTitle {
+  font-size: 11px;
+  color: #aaaaaa;
+}
+
+#TempoBPMArea {
+  qproperty-alignment: AlignCenter;
+}
+
+#TempoLabel {
+  font-size: 11px;
+  color: #888888;
+  qproperty-alignment: AlignCenter;
+  letter-spacing: 2px;
+}
+
+#TempoBPMDisplay {
+  font-size: 48px;
+  font-weight: bold;
+  color: #ffffff;
+  qproperty-alignment: AlignCenter;
+}
+
+#TempoKnobBar {
+  border-top: 1px solid #333333;
+}
+
+#TempoKnobLabel {
+  font-size: 10px;
+  color: #888888;
+  qproperty-alignment: AlignCenter;
+}
+

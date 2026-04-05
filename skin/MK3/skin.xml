@@ -22,6 +22,9 @@
       <attribute config_key="[Skin],show_pads_cues">0</attribute>
       <attribute config_key="[Skin],show_t9">0</attribute>
       <attribute config_key="[Skin],show_sidebar">0</attribute>
+      <attribute config_key="[Skin],show_tempo">0</attribute>
+      <attribute config_key="[Skin],show_ramp_a">0</attribute>
+      <attribute config_key="[Skin],show_ramp_b">0</attribute>
       <attribute config_key="[Skin],auto_touch_k1">0</attribute>
       <attribute config_key="[Skin],auto_touch_k2">0</attribute>
       <attribute config_key="[Skin],auto_touch_k3">0</attribute>
@@ -200,6 +203,15 @@
                 <ConfigKey>[Channel1],visual_bpm</ConfigKey>
               </Connection>
             </NumberBpm>
+            <Label>
+              <ObjectName>RampIndicator</ObjectName>
+              <Size>60f,14f</Size>
+              <Text>RAMP&#x2192;B</Text>
+              <Connection>
+                <ConfigKey>[Skin],show_ramp_a</ConfigKey>
+                <BindProperty>visible</BindProperty>
+              </Connection>
+            </Label>
             <NumberPos>
               <ObjectName>PositionDisplay</ObjectName>
               <Channel>1</Channel>
@@ -1434,6 +1446,84 @@
       </Children>
     </WidgetGroup>
 
+    <!-- ═══ TEMPO PANEL — DECK A (Left Screen) ═══ -->
+    <WidgetGroup>
+      <ObjectName>TempoPanelA</ObjectName>
+      <Size>480,272</Size>
+      <SizePolicy>f,f</SizePolicy>
+      <Layout>vertical</Layout>
+      <Connection>
+        <ConfigKey>[Skin],show_tempo</ConfigKey>
+        <BindProperty>visible</BindProperty>
+      </Connection>
+      <Children>
+
+        <!-- D-button labels (top bar) -->
+        <WidgetGroup>
+          <ObjectName>TempoDButtonBar</ObjectName>
+          <SizePolicy>me,f</SizePolicy>
+          <Size>0,24</Size>
+          <Layout>horizontal</Layout>
+          <Children>
+            <Label><ObjectName>TempoDLabel</ObjectName><Size>120f,24f</Size><Text>D1: SYNC</Text></Label>
+            <Label><ObjectName>TempoDLabel</ObjectName><Size>120f,24f</Size><Text>D2: KEYLOCK</Text></Label>
+            <Label><ObjectName>TempoDLabel</ObjectName><Size>120f,24f</Size><Text>D3: RAMP&#x2192;B</Text></Label>
+            <Label><ObjectName>TempoDLabel</ObjectName><Size>120f,24f</Size><Text>D4: RESET</Text></Label>
+          </Children>
+        </WidgetGroup>
+
+        <!-- Track info -->
+        <WidgetGroup>
+          <ObjectName>TempoTrackInfo</ObjectName>
+          <SizePolicy>me,f</SizePolicy>
+          <Size>0,20</Size>
+          <Layout>horizontal</Layout>
+          <Children>
+            <Label><ObjectName>TempoDeckLabel</ObjectName><Size>60f,20f</Size><Text>DECK A</Text></Label>
+            <TrackProperty>
+              <ObjectName>TempoTrackTitle</ObjectName>
+              <SizePolicy>me,f</SizePolicy>
+              <Property>title</Property>
+              <Channel>1</Channel>
+            </TrackProperty>
+          </Children>
+        </WidgetGroup>
+
+        <!-- BPM display (large) -->
+        <WidgetGroup>
+          <ObjectName>TempoBPMArea</ObjectName>
+          <SizePolicy>me,me</SizePolicy>
+          <Layout>vertical</Layout>
+          <Children>
+            <Label><ObjectName>TempoLabel</ObjectName><Size>0me,16f</Size><Text>TEMPO</Text></Label>
+            <NumberBpm>
+              <ObjectName>TempoBPMDisplay</ObjectName>
+              <Channel>1</Channel>
+              <SizePolicy>me,me</SizePolicy>
+              <Connection>
+                <ConfigKey>[Channel1],visual_bpm</ConfigKey>
+              </Connection>
+            </NumberBpm>
+          </Children>
+        </WidgetGroup>
+
+        <!-- Knob labels (bottom) -->
+        <WidgetGroup>
+          <ObjectName>TempoKnobBar</ObjectName>
+          <SizePolicy>me,f</SizePolicy>
+          <Size>0,40</Size>
+          <Layout>horizontal</Layout>
+          <Children>
+            <Label><ObjectName>TempoKnobLabel</ObjectName><Size>120f,40f</Size><Text>K1: TEMPO</Text></Label>
+            <Label><ObjectName>TempoKnobLabel</ObjectName><Size>120f,40f</Size><Text>K2: KEY</Text></Label>
+            <Label><ObjectName>TempoKnobLabel</ObjectName><Size>120f,40f</Size><Text>K3: &#x2014;</Text></Label>
+            <Label><ObjectName>TempoKnobLabel</ObjectName><Size>120f,40f</Size><Text>K4: TARGET</Text></Label>
+          </Children>
+        </WidgetGroup>
+
+      </Children>
+    </WidgetGroup>
+
     <!-- ═══════ RIGHT SCREEN: DECK B (480x272) ═══════ -->
     <WidgetGroup>
       <ObjectName>DeckB</ObjectName>
@@ -1592,6 +1682,15 @@
                 <ConfigKey>[Channel2],visual_bpm</ConfigKey>
               </Connection>
             </NumberBpm>
+            <Label>
+              <ObjectName>RampIndicator</ObjectName>
+              <Size>60f,14f</Size>
+              <Text>RAMP&#x2192;A</Text>
+              <Connection>
+                <ConfigKey>[Skin],show_ramp_b</ConfigKey>
+                <BindProperty>visible</BindProperty>
+              </Connection>
+            </Label>
             <NumberPos>
               <ObjectName>PositionDisplay</ObjectName>
               <Channel>2</Channel>
@@ -1682,6 +1781,84 @@
                 </Children></WidgetGroup>
               </Children>
             </WidgetGroup>
+          </Children>
+        </WidgetGroup>
+
+      </Children>
+    </WidgetGroup>
+
+    <!-- ═══ TEMPO PANEL — DECK B (Right Screen) ═══ -->
+    <WidgetGroup>
+      <ObjectName>TempoPanelB</ObjectName>
+      <Size>480,272</Size>
+      <SizePolicy>f,f</SizePolicy>
+      <Layout>vertical</Layout>
+      <Connection>
+        <ConfigKey>[Skin],show_tempo</ConfigKey>
+        <BindProperty>visible</BindProperty>
+      </Connection>
+      <Children>
+
+        <!-- D-button labels (top bar) -->
+        <WidgetGroup>
+          <ObjectName>TempoDButtonBar</ObjectName>
+          <SizePolicy>me,f</SizePolicy>
+          <Size>0,24</Size>
+          <Layout>horizontal</Layout>
+          <Children>
+            <Label><ObjectName>TempoDLabel</ObjectName><Size>120f,24f</Size><Text>D5: SYNC</Text></Label>
+            <Label><ObjectName>TempoDLabel</ObjectName><Size>120f,24f</Size><Text>D6: KEYLOCK</Text></Label>
+            <Label><ObjectName>TempoDLabel</ObjectName><Size>120f,24f</Size><Text>D7: RAMP&#x2192;A</Text></Label>
+            <Label><ObjectName>TempoDLabel</ObjectName><Size>120f,24f</Size><Text>D8: RESET</Text></Label>
+          </Children>
+        </WidgetGroup>
+
+        <!-- Track info -->
+        <WidgetGroup>
+          <ObjectName>TempoTrackInfo</ObjectName>
+          <SizePolicy>me,f</SizePolicy>
+          <Size>0,20</Size>
+          <Layout>horizontal</Layout>
+          <Children>
+            <Label><ObjectName>TempoDeckLabel</ObjectName><Size>60f,20f</Size><Text>DECK B</Text></Label>
+            <TrackProperty>
+              <ObjectName>TempoTrackTitle</ObjectName>
+              <SizePolicy>me,f</SizePolicy>
+              <Property>title</Property>
+              <Channel>2</Channel>
+            </TrackProperty>
+          </Children>
+        </WidgetGroup>
+
+        <!-- BPM display (large) -->
+        <WidgetGroup>
+          <ObjectName>TempoBPMArea</ObjectName>
+          <SizePolicy>me,me</SizePolicy>
+          <Layout>vertical</Layout>
+          <Children>
+            <Label><ObjectName>TempoLabel</ObjectName><Size>0me,16f</Size><Text>TEMPO</Text></Label>
+            <NumberBpm>
+              <ObjectName>TempoBPMDisplay</ObjectName>
+              <Channel>2</Channel>
+              <SizePolicy>me,me</SizePolicy>
+              <Connection>
+                <ConfigKey>[Channel2],visual_bpm</ConfigKey>
+              </Connection>
+            </NumberBpm>
+          </Children>
+        </WidgetGroup>
+
+        <!-- Knob labels (bottom) -->
+        <WidgetGroup>
+          <ObjectName>TempoKnobBar</ObjectName>
+          <SizePolicy>me,f</SizePolicy>
+          <Size>0,40</Size>
+          <Layout>horizontal</Layout>
+          <Children>
+            <Label><ObjectName>TempoKnobLabel</ObjectName><Size>120f,40f</Size><Text>K5: TEMPO</Text></Label>
+            <Label><ObjectName>TempoKnobLabel</ObjectName><Size>120f,40f</Size><Text>K6: KEY</Text></Label>
+            <Label><ObjectName>TempoKnobLabel</ObjectName><Size>120f,40f</Size><Text>K7: &#x2014;</Text></Label>
+            <Label><ObjectName>TempoKnobLabel</ObjectName><Size>120f,40f</Size><Text>K8: TARGET</Text></Label>
           </Children>
         </WidgetGroup>
 
