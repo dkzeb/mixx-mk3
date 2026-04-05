@@ -1,16 +1,20 @@
 #!/bin/bash
-# Mirror Mixxx headphone output (JACK ports out_2/out_3) to Pi built-in audio.
-# Runs as a systemd service alongside Mixxx. Retries until ports appear.
+# Route Mixxx headphone output to Pi built-in audio (3.5mm jack) instead of MK3.
+#
+# The MK3 hardware mixes all 4 output channels into its headphone jack,
+# making PFL isolation impossible when master also goes to the MK3.
+# Solution: disconnect headphones from MK3, route to Pi 3.5mm only.
+#
+# Master (out_0/out_1) stays on MK3 main outputs (1/4" jacks).
+# Headphones (out_2/out_3) go to Pi built-in audio (3.5mm jack).
 
 set -uo pipefail
 
-PI_SINK_L=""
-PI_SINK_R=""
 MIXXX_HP_L="Mixxx:out_2"
 MIXXX_HP_R="Mixxx:out_3"
+MK3_SINK="alsa_output.usb-Native_Instruments_Maschine_MK3"
 
 find_pi_sink() {
-    # Find Pi built-in audio sink ports (not the MK3)
     PI_SINK_L=$(pw-link -i 2>/dev/null | grep -v 'Maschine\|Midi' | grep 'playback_FL' | head -1)
     PI_SINK_R=$(pw-link -i 2>/dev/null | grep -v 'Maschine\|Midi' | grep 'playback_FR' | head -1)
 }
@@ -18,10 +22,17 @@ find_pi_sink() {
 echo "mk3-headphone-mirror: waiting for Mixxx headphone ports..."
 
 while true; do
-    # Check if Mixxx headphone ports exist
     if pw-link -o 2>/dev/null | grep -q "$MIXXX_HP_L"; then
         find_pi_sink
         if [ -n "$PI_SINK_L" ] && [ -n "$PI_SINK_R" ]; then
+            # Disconnect headphones from MK3 (prevents hardware mixing)
+            for mk3_port in $(pw-link -i 2>/dev/null | grep "$MK3_SINK" | grep 'playback_RL\|playback_RR'); do
+                pw-link -d "$MIXXX_HP_L" "$mk3_port" 2>/dev/null
+                pw-link -d "$MIXXX_HP_R" "$mk3_port" 2>/dev/null
+            done
+            echo "mk3-headphone-mirror: disconnected headphones from MK3"
+
+            # Connect headphones to Pi built-in audio
             pw-link "$MIXXX_HP_L" "$PI_SINK_L" 2>/dev/null
             pw-link "$MIXXX_HP_R" "$PI_SINK_R" 2>/dev/null
             echo "mk3-headphone-mirror: linked $MIXXX_HP_L -> $PI_SINK_L"
@@ -32,18 +43,21 @@ while true; do
     sleep 2
 done
 
-# Keep running and re-link if connection drops (e.g., Mixxx restarts)
+# Keep running — re-link if connection drops and prevent MK3 re-linking
 while true; do
     sleep 10
-    # Check if links still exist
-    if ! pw-link -l 2>/dev/null | grep -A1 "$MIXXX_HP_L" | grep -q "$PI_SINK_L"; then
-        if pw-link -o 2>/dev/null | grep -q "$MIXXX_HP_L"; then
-            find_pi_sink
-            if [ -n "$PI_SINK_L" ] && [ -n "$PI_SINK_R" ]; then
-                pw-link "$MIXXX_HP_L" "$PI_SINK_L" 2>/dev/null
-                pw-link "$MIXXX_HP_R" "$PI_SINK_R" 2>/dev/null
-                echo "mk3-headphone-mirror: re-linked"
-            fi
+    if pw-link -o 2>/dev/null | grep -q "$MIXXX_HP_L"; then
+        find_pi_sink
+        if [ -n "$PI_SINK_L" ] && [ -n "$PI_SINK_R" ]; then
+            # Ensure headphones are NOT linked to MK3
+            for mk3_port in $(pw-link -i 2>/dev/null | grep "$MK3_SINK" | grep 'playback_RL\|playback_RR'); do
+                pw-link -d "$MIXXX_HP_L" "$mk3_port" 2>/dev/null
+                pw-link -d "$MIXXX_HP_R" "$mk3_port" 2>/dev/null
+            done
+
+            # Ensure headphones ARE linked to Pi
+            pw-link "$MIXXX_HP_L" "$PI_SINK_L" 2>/dev/null
+            pw-link "$MIXXX_HP_R" "$PI_SINK_R" 2>/dev/null
         fi
     fi
 done

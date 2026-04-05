@@ -1983,13 +1983,13 @@ MaschineMK3.init = function(/* id, debugging */) {
         var pfl2 = engine.getValue("[Channel2]", "pfl");
         if (!pfl1 && !pfl2) {
             // No PFL active — play full main mix in headphones
-            engine.setValue("[Master]", "headMix", 1);
+            engine.setValue("[Master]", "headMix", 1.0);
         } else if (pfl1 && pfl2) {
             // Both decks PFL — play full main mix in headphones
-            engine.setValue("[Master]", "headMix", 1);
+            engine.setValue("[Master]", "headMix", 1.0);
         } else {
-            // One deck PFL — play only that deck (PFL only, no main mix)
-            engine.setValue("[Master]", "headMix", 0);
+            // One deck PFL — play only that deck, no main mix
+            engine.setValue("[Master]", "headMix", 0.0);
         }
     };
     engine.makeConnection("[Channel1]", "pfl", function(value) {
