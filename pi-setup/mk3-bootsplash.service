@@ -1,8 +1,6 @@
 [Unit]
 Description=MK3 Boot Splash
 After=local-fs.target
-Before=mk3-screen-daemon.service
-Conflicts=mk3-screen-daemon.service
 
 [Service]
 Type=simple
