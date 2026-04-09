@@ -144,7 +144,7 @@ int main(int argc, char** argv) {
         }
     }
 
-    mk3_t* dev = mk3_open();
+    mk3_t* dev = mk3_open_display();
     if (!dev) return 1;
 
     dev->disable_partial_rendering = disable_partial_rendering;
