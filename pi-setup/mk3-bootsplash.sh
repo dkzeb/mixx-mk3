@@ -46,9 +46,10 @@ while true; do
     # Right screen: boot log or handoff check (every LOG_INTERVAL frames)
     tick=$(( (tick + 1) % LOG_INTERVAL ))
     if [ "$tick" -eq 0 ]; then
-        # When Mixxx is starting, show final message and exit
-        if systemctl is-active mixxx.service 2>/dev/null | grep -qE "^(active|activating)"; then
+        # When Mixxx is running, show final message and exit
+        if systemctl is-active mixxx.service 2>/dev/null | grep -q "^active$"; then
             "$MK3" --text "Starting MaschinePi OS..." --target right --font-size 20 2>/dev/null || true
+            sleep 3
             exit 0
         fi
 

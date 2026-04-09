@@ -6,8 +6,7 @@ Wants=openbox.service
 [Service]
 Type=simple
 Environment=DISPLAY=:99
-ExecStartPre=-/bin/systemctl stop mk3-bootsplash.service
-ExecStartPre=/bin/sleep 1
+ExecStartPre=/bin/bash -c 'while systemctl is-active mk3-bootsplash.service 2>/dev/null | grep -q "^active"; do sleep 1; done'
 ExecStart=/usr/local/bin/mk3-screen-daemon --resolution 960x272 --fps 15 --no-partial
 Restart=always
 RestartSec=3
