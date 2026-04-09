@@ -5,52 +5,24 @@ set -euo pipefail
 # Left screen:  animated GIF logo (boomerang loop)
 # Right screen: live boot log output
 # Stopped automatically when mk3-screen-daemon takes over.
+#
+# Frames are pre-extracted at install time to /var/lib/mk3-bootsplash/
+# so boot startup is instant (no ffmpeg at boot).
 
-SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
-SPLASH_GIF="$SCRIPT_DIR/bootsplash-left-anim.gif"
-SPLASH_PNG="$SCRIPT_DIR/bootsplash-left.png"
 MK3="/usr/local/bin/mk3"
+FRAME_DIR="/var/lib/mk3-bootsplash"
 
-WIDTH=480
-HEIGHT=272
-FRAME_DIR=""
+trap 'exit 0' SIGTERM SIGINT
 
-cleanup() {
-    [ -n "$FRAME_DIR" ] && rm -rf "$FRAME_DIR"
-    exit 0
-}
-trap cleanup SIGTERM SIGINT EXIT
-
-# ── Extract GIF frames to raw RGB565 ─────────────────────────────────
-FRAME_DIR=$(mktemp -d)
+# ── Collect pre-extracted frames ──────────────────────────────────────
 FRAMES=()
-
-if [ -f "$SPLASH_GIF" ]; then
-    # Extract all GIF frames as a single raw RGB565 stream, then split per frame
-    ffmpeg -v quiet -i "$SPLASH_GIF" -pix_fmt rgb565le -s ${WIDTH}x${HEIGHT} \
-        -f rawvideo "$FRAME_DIR/all_frames.raw" 2>/dev/null || true
-
-    FRAME_BYTES=$((WIDTH * HEIGHT * 2))
-    if [ -f "$FRAME_DIR/all_frames.raw" ]; then
-        FILE_SIZE=$(stat -c%s "$FRAME_DIR/all_frames.raw")
-        NFRAMES=$((FILE_SIZE / FRAME_BYTES))
-        for ((i = 0; i < NFRAMES; i++)); do
-            dd if="$FRAME_DIR/all_frames.raw" of="$FRAME_DIR/frame_${i}.raw" \
-                bs=$FRAME_BYTES skip=$i count=1 2>/dev/null
-            FRAMES+=("$FRAME_DIR/frame_${i}.raw")
-        done
-        rm -f "$FRAME_DIR/all_frames.raw"
-    fi
-elif [ -f "$SPLASH_PNG" ]; then
-    # Fallback: static PNG as single frame
-    ffmpeg -v quiet -i "$SPLASH_PNG" -pix_fmt rgb565le -s ${WIDTH}x${HEIGHT} \
-        -f rawvideo "$FRAME_DIR/frame_0.raw" 2>/dev/null || true
-    [ -f "$FRAME_DIR/frame_0.raw" ] && FRAMES+=("$FRAME_DIR/frame_0.raw")
-fi
+for f in "$FRAME_DIR"/frame_*.raw; do
+    [ -f "$f" ] && FRAMES+=("$f")
+done
 
 NFRAMES=${#FRAMES[@]}
 if [ "$NFRAMES" -eq 0 ]; then
-    echo "No splash frames found" >&2
+    echo "No splash frames in $FRAME_DIR" >&2
     exit 1
 fi
 

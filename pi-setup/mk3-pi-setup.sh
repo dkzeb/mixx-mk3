@@ -245,6 +245,33 @@ sudo usermod -aG audio "$PI_USER"
 sudo usermod -aG video "$PI_USER"
 echo "Services enabled: xvfb, openbox, pipewire, wireplumber, mk3-screen-daemon, mixxx"
 
+# Pre-extract bootsplash frames for fast boot
+SPLASH_GIF="$SCRIPT_DIR/bootsplash-left-anim.gif"
+SPLASH_PNG="$SCRIPT_DIR/bootsplash-left.png"
+SPLASH_DIR="/var/lib/mk3-bootsplash"
+sudo mkdir -p "$SPLASH_DIR"
+if [ -f "$SPLASH_GIF" ]; then
+    sudo rm -f "$SPLASH_DIR"/frame_*.raw
+    ffmpeg -v quiet -i "$SPLASH_GIF" -pix_fmt rgb565le -s 480x272 \
+        -f rawvideo "$SPLASH_DIR/all_frames.raw" 2>/dev/null || true
+    FRAME_BYTES=$((480 * 272 * 2))
+    if [ -f "$SPLASH_DIR/all_frames.raw" ]; then
+        FILE_SIZE=$(stat -c%s "$SPLASH_DIR/all_frames.raw")
+        NFRAMES=$((FILE_SIZE / FRAME_BYTES))
+        for ((i = 0; i < NFRAMES; i++)); do
+            sudo dd if="$SPLASH_DIR/all_frames.raw" of="$SPLASH_DIR/frame_${i}.raw" \
+                bs=$FRAME_BYTES skip=$i count=1 2>/dev/null
+        done
+        sudo rm -f "$SPLASH_DIR/all_frames.raw"
+        echo "Bootsplash: $NFRAMES frames extracted to $SPLASH_DIR"
+    fi
+elif [ -f "$SPLASH_PNG" ]; then
+    sudo rm -f "$SPLASH_DIR"/frame_*.raw
+    ffmpeg -v quiet -i "$SPLASH_PNG" -pix_fmt rgb565le -s 480x272 \
+        -f rawvideo "$SPLASH_DIR/frame_0.raw" 2>/dev/null || true
+    echo "Bootsplash: static PNG extracted to $SPLASH_DIR"
+fi
+
 # ── 8. Tailscale VPN (optional) ────────────────────────────────────
 echo "--- [8/9] Tailscale VPN ---"
 if ! command -v tailscale &>/dev/null; then

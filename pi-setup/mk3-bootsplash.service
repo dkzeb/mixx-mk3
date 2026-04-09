@@ -1,6 +1,7 @@
 [Unit]
 Description=MK3 Boot Splash
-After=local-fs.target
+DefaultDependencies=no
+After=sysinit.target
 
 [Service]
 Type=simple
