@@ -1,7 +1,7 @@
 [Unit]
 Description=MK3 Boot Splash
 DefaultDependencies=no
-After=sysinit.target
+After=systemd-remount-fs.service
 
 [Service]
 Type=simple

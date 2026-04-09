@@ -6,6 +6,7 @@ Wants=openbox.service
 [Service]
 Type=simple
 Environment=DISPLAY=:99
+ExecStartPre=/bin/bash -c 'for i in $(seq 1 30); do xdpyinfo -display :99 >/dev/null 2>&1 && exit 0; sleep 1; done; echo "X11 not ready after 30s, starting anyway"'
 ExecStartPre=-/bin/systemctl stop mk3-bootsplash.service
 ExecStart=/usr/local/bin/mk3-screen-daemon --resolution 960x272 --fps 15 --no-partial
 Restart=always
