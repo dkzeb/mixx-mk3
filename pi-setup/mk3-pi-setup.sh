@@ -41,7 +41,31 @@ sudo apt-get install -y \
     dmz-cursor-theme \
     x11-xserver-utils \
     cifs-utils \
-    ffmpeg
+    ffmpeg \
+    libportaudio2 \
+    libportmidi0 \
+    libprotobuf-lite32t64 \
+    libqt6qml6 \
+    libqt6network6 \
+    libqt6sql6 \
+    libqt6xml6 \
+    libqt6svg6 \
+    libqt6svgwidgets6 \
+    libqt6widgets6 \
+    libqt6core5compat6 \
+    libsoundtouch1 \
+    libtag2 \
+    libupower-glib3 \
+    libshout-idjc3 \
+    libopusfile0 \
+    libmad0 \
+    libmodplug1 \
+    libqt6keychain1 \
+    libqt6opengl6 \
+    libqt6gui6 \
+    libqt6dbus6 \
+    libopengl0 \
+    libwavpack1
 
 # ── 1b. Install Mixxx 2.6 beta (pre-built .deb with stem support) ───
 echo "--- [1b/9] Installing Mixxx 2.6 beta ---"
@@ -75,16 +99,20 @@ cp "$PROJECT_DIR/mapping/Native-Instruments-Maschine-MK3.js" "$MIXXX_DIR/"
 chown -R "$PI_USER:$PI_USER" "$PI_HOME/.mixxx"
 echo "Mapping installed to: $MIXXX_DIR/"
 
-# Install MK3 skin (system dir only — remove stale user copies)
+# Install MK3 skin (checkinstall puts Mixxx in /usr/local)
 rm -rf "$PI_HOME/.mixxx/skins/MK3"
-SKIN_DIR="/usr/share/mixxx/skins/MK3"
-sudo mkdir -p "$SKIN_DIR"
-sudo cp -r "$PROJECT_DIR/skin/MK3/"* "$SKIN_DIR/"
-echo "Skin installed to: $SKIN_DIR/"
+for SKIN_PARENT in /usr/local/share/mixxx/skins /usr/share/mixxx/skins; do
+    if [ -d "$(dirname "$SKIN_PARENT")" ]; then
+        sudo mkdir -p "$SKIN_PARENT/MK3"
+        sudo cp -r "$PROJECT_DIR/skin/MK3/"* "$SKIN_PARENT/MK3/"
+        echo "Skin installed to: $SKIN_PARENT/MK3/"
+    fi
+done
 
 # ── 4. Configure Mixxx ──────────────────────────────────────────────
 echo "--- [4/9] Configuring Mixxx ---"
 mkdir -p "$PI_HOME/Music"
+chown "$PI_USER:$PI_USER" "$PI_HOME/Music"
 
 # Pre-configure library directory in Mixxx's SQLite DB to skip first-run dialog
 MIXXX_DB="$PI_HOME/.mixxx/mixxxdb.sqlite"
@@ -279,19 +307,24 @@ if ! command -v tailscale &>/dev/null; then
     curl -fsSL https://tailscale.com/install.sh | sh
 fi
 
-echo ""
-read -p "Set up Tailscale VPN now? (y/n): " TAILSCALE_SETUP
-if [ "$TAILSCALE_SETUP" = "y" ] || [ "$TAILSCALE_SETUP" = "Y" ]; then
-    echo "Starting Tailscale..."
-    echo "A login URL will appear below. Visit it in your browser to authenticate."
+if [ -t 0 ]; then
     echo ""
-    sudo tailscale up
-    echo ""
-    echo "Tailscale status:"
-    tailscale status
+    read -p "Set up Tailscale VPN now? (y/n): " TAILSCALE_SETUP
+    if [ "$TAILSCALE_SETUP" = "y" ] || [ "$TAILSCALE_SETUP" = "Y" ]; then
+        echo "Starting Tailscale..."
+        echo "A login URL will appear below. Visit it in your browser to authenticate."
+        echo ""
+        sudo tailscale up
+        echo ""
+        echo "Tailscale status:"
+        tailscale status
+    else
+        echo "Tailscale installed but not configured."
+        echo "Run 'sudo tailscale up' to authenticate later."
+    fi
 else
-    echo "Tailscale installed but not configured."
-    echo "You can set it up later via Settings > Network > Setup VPN on the MK3."
+    echo "Non-interactive mode — skipping Tailscale setup."
+    echo "Run 'sudo tailscale up' to authenticate later."
 fi
 
 # ── 9. SMB music share ─────────────────────────────────────────────
@@ -300,10 +333,17 @@ mkdir -p "$PI_HOME/Music/nas"
 
 if [ ! -f /etc/samba/credentials ]; then
     sudo mkdir -p /etc/samba
-    echo ""
-    read -p "SMB username: " SMB_USER
-    read -sp "SMB password: " SMB_PASS
-    echo ""
+    if [ -t 0 ]; then
+        echo ""
+        read -p "SMB username (blank for guest): " SMB_USER
+        read -sp "SMB password: " SMB_PASS
+        echo ""
+        SMB_USER="${SMB_USER:-guest}"
+    else
+        echo "Non-interactive mode — using guest SMB credentials."
+        SMB_USER="guest"
+        SMB_PASS=""
+    fi
     printf "username=%s\npassword=%s\n" "$SMB_USER" "$SMB_PASS" | sudo tee /etc/samba/credentials > /dev/null
     sudo chmod 600 /etc/samba/credentials
     echo "SMB credentials saved to /etc/samba/credentials"
