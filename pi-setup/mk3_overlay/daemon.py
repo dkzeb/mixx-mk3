@@ -99,7 +99,6 @@ class OverlayDaemon:
 
         report_id = report[0]
         if report_id != 0x01:
-            self._prev_report = report
             return
 
         pressed, released = parse_buttons(report, self._prev_report)

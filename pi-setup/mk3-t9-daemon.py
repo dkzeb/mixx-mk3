@@ -5,7 +5,9 @@ Reads pad presses from hidraw, drives pad LEDs, and injects keystrokes
 via xdotool to control Mixxx's library search. Runs as a systemd
 service alongside Mixxx.
 
-Toggle T9 mode with the browserPlugin button (byte 0x08, mask 0x04).
+T9 mode mirrors the JS mapping's library state: active when the browser
+is open (browserPlugin toggle), deactivated when the browser closes
+(browserPlugin toggle, mixer, settings, or mouse-mode combo).
 """
 import importlib.util
 import glob
@@ -41,6 +43,14 @@ LOG_PREFIX = "mk3-t9-daemon"
 # browserPlugin button: Report 0x01, byte 0x08, mask 0x04
 TOGGLE_BYTE = 0x08
 TOGGLE_MASK = 0x04
+
+# mixer button: Report 0x01, byte 0x07, mask 0x10
+MIXER_BYTE = 0x07
+MIXER_MASK = 0x10
+
+# shift button: Report 0x01, byte 0x01, mask 0x40
+SHIFT_BYTE = 0x01
+SHIFT_MASK = 0x40
 
 # settings button: Report 0x01, byte 0x07, mask 0x02
 SETTINGS_BYTE = 0x07
@@ -248,8 +258,10 @@ def main():
         print(f"{LOG_PREFIX}: listening on {hidraw}", file=sys.stderr)
 
         leds = LedWriter(fd)
+        library_open = False       # mirrors JS MaschineMK3.libraryVisible
         t9_active = False
         toggle_was_pressed = False
+        mixer_was_pressed = False
         settings_was_pressed = False
         channel_was_pressed = False
         mouse_auto_was = False
@@ -258,9 +270,22 @@ def main():
 
         engine = None
 
+        def activate_t9():
+            nonlocal t9_active, engine
+            t9_active = True
+            print(f"{LOG_PREFIX}: T9 mode ON", file=sys.stderr)
+            engine = make_engine()
+            leds.set_t9_layout()
+            leds.send()
+
         def deactivate_t9():
             nonlocal t9_active, engine
+            if not t9_active:
+                return
             t9_active = False
+            print(f"{LOG_PREFIX}: T9 mode OFF", file=sys.stderr)
+            if engine:
+                engine.reset()
             engine = None
             leds.all_off()
             leds.send()
@@ -306,33 +331,30 @@ def main():
 
                 report_id = data[0]
 
-                # --- Report 0x01: check keyboard button ---
+                # --- Report 0x01: button state ---
                 if report_id == 0x01 and len(data) > TOGGLE_BYTE:
+
+                    # --- browserPlugin: toggle library (mirrors JS) ---
                     pressed = (data[TOGGLE_BYTE] & TOGGLE_MASK) != 0
-
                     if pressed and not toggle_was_pressed:
-                        t9_active = not t9_active
-
-                        if t9_active:
-                            print(f"{LOG_PREFIX}: T9 mode ON", file=sys.stderr)
-                            engine = make_engine()
-                            leds.set_t9_layout()
-                            leds.send()
+                        library_open = not library_open
+                        if library_open:
+                            activate_t9()
                         else:
-                            print(f"{LOG_PREFIX}: T9 mode OFF", file=sys.stderr)
-                            if engine:
-                                engine.reset()
-                                engine = None
-                            leds.all_off()
-                            leds.send()
-                            pad_was_pressed.clear()
-
+                            deactivate_t9()
                     toggle_was_pressed = pressed
+
+                    # --- Mixer / Shift+Mixer: closes library in JS ---
+                    mixer_pressed = (data[MIXER_BYTE] & MIXER_MASK) != 0
+                    if mixer_pressed and not mixer_was_pressed and library_open:
+                        library_open = False
+                        deactivate_t9()
+                    mixer_was_pressed = mixer_pressed
 
                     # --- Settings button: deactivate T9 if active ---
                     settings_pressed = (data[SETTINGS_BYTE] & SETTINGS_MASK) != 0
                     if settings_pressed and not settings_was_pressed and t9_active:
-                        print(f"{LOG_PREFIX}: settings pressed, deactivating T9", file=sys.stderr)
+                        library_open = False
                         deactivate_t9()
                     settings_was_pressed = settings_pressed
 
@@ -350,7 +372,7 @@ def main():
                     m_macro_edge = m_macro and not mouse_macro_was
 
                     if ((m_auto_edge and m_macro) or (m_macro_edge and m_auto)) and t9_active:
-                        print(f"{LOG_PREFIX}: mouse combo pressed, deactivating T9", file=sys.stderr)
+                        library_open = False
                         deactivate_t9()
 
                     mouse_auto_was = m_auto
